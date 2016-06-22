@@ -5,16 +5,22 @@
 #-------------------------------------------------
 
 QT       += core gui
-
+QT       += network
+QT       += script
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = SeriesScrapper
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    control.cpp \
+    jsonparser.cpp \
+    directoryparser.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    control.h \
+    jsonparser.h \
+    directoryparser.h
 
 FORMS    += mainwindow.ui
