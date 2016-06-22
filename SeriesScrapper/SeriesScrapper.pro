@@ -14,13 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    control.cpp \
     jsonparser.cpp \
-    directoryparser.cpp
+    directoryparser.cpp \
+    application.cpp
 
 HEADERS  += mainwindow.h \
-    control.h \
     jsonparser.h \
-    directoryparser.h
+    directoryparser.h \
+    application.h
 
 FORMS    += mainwindow.ui

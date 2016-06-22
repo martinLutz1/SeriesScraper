@@ -10,10 +10,9 @@ JsonParser::JsonParser(QObject *parent) : QObject(parent)
 
 }
 
-QString JsonParser::getIDfromURL(QString pUrl, QString id)
+bool JsonParser::getIDfromURL(QString pUrl, QString id)
 {
     // create custom temporary event loop on stack
-    QString title = "";
     QEventLoop eventLoop;
 
     // "quit()" the event-loop, when the network request "finished()"
@@ -31,18 +30,27 @@ QString JsonParser::getIDfromURL(QString pUrl, QString id)
 
         QJsonParseError err;
         QJsonDocument doc = QJsonDocument::fromJson(byteArray, &err);
+        QStringList values;
         if(doc.isObject())
         {
             QJsonObject obj = doc.object();
-            title = obj.value("Title").toString();
-        }
+            QJsonArray array = obj.value("Episodes").toArray();
+            for (int i = 0; i < array.size(); i++)
+                values << array[i].toObject().value("Title").toString();
 
+            idList = values;
+            return true;
+        }
     }
     else {
-        //failure
         qDebug() << "Failure" << reply->errorString();
         delete reply;
     }
-    return title;
+    return false;
+}
+
+QStringList JsonParser::getIDValue()
+{
+    return idList;
 }
 
