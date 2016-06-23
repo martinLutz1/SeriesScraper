@@ -10,19 +10,22 @@ JsonParser::JsonParser(QObject *parent) : QObject(parent)
 
 }
 
-bool JsonParser::getIDfromURL(QString pUrl, QString id)
+bool JsonParser::getSeriesSeason(QString url, QString series, int season, QString id)
 {
-    // create custom temporary event loop on stack
+    // Create request string
+    QString requestUrl = url  + "t=" + series + "&season=" + QString::number(season);
+
+    // Create custom temporary event loop on stack
     QEventLoop eventLoop;
 
     // "quit()" the event-loop, when the network request "finished()"
     QNetworkAccessManager mgr;
     QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
 
-    // the HTTP request
-    QNetworkRequest req(pUrl);
+    // The HTTP request
+    QNetworkRequest req(requestUrl);
     QNetworkReply *reply = mgr.get(req);
-    eventLoop.exec(); // blocks stack until "finished()" has been called
+    eventLoop.exec(); // Blocks stack until "finished()" has been called
 
     if(reply->error() == QNetworkReply::NoError) {
         QByteArray byteArray = reply->readAll();
@@ -36,10 +39,11 @@ bool JsonParser::getIDfromURL(QString pUrl, QString id)
             QJsonObject obj = doc.object();
             QJsonArray array = obj.value("Episodes").toArray();
             for (int i = 0; i < array.size(); i++)
-                values << array[i].toObject().value("Title").toString();
+                values << array[i].toObject().value(id).toString();
 
+            amountSeasons = obj.value("totalSeasons").toString().toInt();
             idList = values;
-            return true;
+            return !array.isEmpty(); // True if we got any elements
         }
     }
     else {
@@ -52,5 +56,10 @@ bool JsonParser::getIDfromURL(QString pUrl, QString id)
 QStringList JsonParser::getIDValue()
 {
     return idList;
+}
+
+int JsonParser::getAmountSeasons()
+{
+    return amountSeasons;
 }
 

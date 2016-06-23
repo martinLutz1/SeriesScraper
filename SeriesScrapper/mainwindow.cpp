@@ -15,13 +15,17 @@ MainWindow::MainWindow(QWidget *parent, Application* application) :
 {
     ui->setupUi(this);
     checkPathTimer = new QTimer(this);
+    seriesTextChangeTimer = new QTimer(this);
     setUpTable();
     QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startCheckPathTimer()));
     QObject::connect(checkPathTimer, SIGNAL(timeout()), this, SLOT(checkPath()));
     QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChange(int,int)));
-    QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onSeriesTextChange(QString)));
+    QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
+    QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChange()));
+    QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this , SLOT(onSeasonChanged(int)));
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -46,6 +50,20 @@ void MainWindow::clearTable()
     tableRows = 0;
 }
 
+void MainWindow::setAmountSeasons(int amount)
+{
+    int recentAmount = ui->seasonComboBox->count();
+
+    if (amount > recentAmount) { // More items requested than avaible, add
+        for (; recentAmount < amount; recentAmount++)
+            ui->seasonComboBox->addItem(QString::number(recentAmount + 1));
+    }
+    else if (amount < recentAmount) { // Delete some items to fit amount
+        for (; recentAmount >= amount; recentAmount--)
+            ui->seasonComboBox->removeItem(recentAmount);
+    }
+}
+
 void MainWindow::openDirectory()
 {
     // Open directory-dialog to chose directory
@@ -63,11 +81,6 @@ void MainWindow::checkPath()
     checkPathTimer->stop();
     QDir dir;
     dir.setPath(ui->pathLineEdit->text());
-    QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
-    QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
-    QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
-    QChar checkmark = QChar(0x13, 0x27);
-    QChar times = QChar(0x15, 0x27);
 
     if (dir.path().isEmpty()) {
         ui->pathLineEdit->setStyleSheet(colorWhite);
@@ -88,15 +101,45 @@ void MainWindow::startCheckPathTimer()
     checkPathTimer->start(500);
 }
 
+void MainWindow::startSeriesTextChangeTimer()
+{
+    seriesTextChangeTimer->start(500);
+}
+
+void MainWindow::onSeriesTextChange()
+{
+    seriesTextChangeTimer->stop();
+    QString seriesText = ui->seriesLineEdit->text();
+
+    if (seriesText.isEmpty()) {
+        ui->seriesLineEdit->setStyleSheet(colorWhite);
+        ui->correctSeriesLabel->setText("");
+        setAmountSeasons(0);
+        clearTable();
+    }
+    else if (app->setSeries(seriesText, 1)) {
+        ui->seriesLineEdit->setStyleSheet(colorGreen);
+        ui->correctSeriesLabel->setText(checkmark);
+        ui->seasonComboBox->setCurrentIndex(0);
+    }
+    else {
+        ui->seriesLineEdit->setStyleSheet(colorRed);
+        ui->correctSeriesLabel->setText(times);
+        clearTable();
+        setAmountSeasons(0);
+    }
+}
+
+void MainWindow::onSeasonChanged(int index)
+{
+    app->setSeries(app->getSeries(), index + 1);
+    ui->seasonComboBox->setCurrentIndex(index);
+}
+
 void MainWindow::onCellChange(int row, int coloumn)
 {
     if (coloumn == 0) // Only Episode names
         app->setEpisode(row, ui->episodeNameTable->item(row, coloumn)->text());
-}
-
-void MainWindow::onSeriesTextChange(QString series)
-{
-qDebug() << series;
 }
 
 bool MainWindow::setRow(int row, QString episodeName, QString fileName)
@@ -121,9 +164,4 @@ bool MainWindow::setRow(int row, QString episodeName, QString fileName)
         ui->episodeNameTable->setItem(row, 1, file);
     }
     return true;
-}
-
-Ui::MainWindow *MainWindow::getUI()
-{
-    return ui;
 }

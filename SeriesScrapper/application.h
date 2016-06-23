@@ -19,6 +19,9 @@ public:
     int exec();
 
     void setEpisode(int index, QString episode);
+    bool setSeries(QString series, int season);
+    QString getSeries();
+    int getSeasons();
 
 
 private:
@@ -29,10 +32,11 @@ private:
     MainWindow* view;
     JsonParser* jsonParser;
 
+    QString series;
     QStringList episodes;
+    int amountSeasons;
 
 public slots:
-    //void onCellChanged(int row, int coloumn);
 
 };
 
