@@ -11,12 +11,22 @@ MainWindow::MainWindow(QWidget *parent, Application* application) :
     ui(new Ui::MainWindow),
     app(application),
     chosenPath(QDir::current()),
-    tableRows(0)
+    tableRows(0),
+    backgroundImage(whiteBackground)
 {
     ui->setupUi(this);
     checkPathTimer = new QTimer(this);
     seriesTextChangeTimer = new QTimer(this);
+
+    // Table
     setUpTable();
+    whiteBackground = ui->episodeNameTable->palette();
+    backgroundImage = whiteBackground;
+    QPixmap px(":/images/table_bg.png");
+    backgroundImage.setBrush(QPalette::Base, QBrush(px));
+    ui->episodeNameTable->setPalette(backgroundImage);
+
+
     QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startCheckPathTimer()));
     QObject::connect(checkPathTimer, SIGNAL(timeout()), this, SLOT(checkPath()));
@@ -45,6 +55,7 @@ void MainWindow::setUpTable()
 
 void MainWindow::clearTable()
 {
+    ui->episodeNameTable->setPalette(backgroundImage);
     for(int i = tableRows; i>=0; i--)
         ui->episodeNameTable->removeRow(i);
     tableRows = 0;
@@ -147,6 +158,8 @@ bool MainWindow::setRow(int row, QString episodeName, QString fileName)
     // Check if trying to access rows, that are not existent and not the next possible new row
     if (row > tableRows)
         return false;
+    else
+        ui->episodeNameTable->setPalette(whiteBackground);
 
     // Check if row items already exist to prevent multiple creations
     if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL) {

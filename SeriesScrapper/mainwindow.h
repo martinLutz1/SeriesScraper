@@ -35,6 +35,8 @@ private:
     int tableRows;
     QTimer *checkPathTimer;
     QTimer *seriesTextChangeTimer;
+    QPalette whiteBackground;
+    QPalette backgroundImage;
 
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
     QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
