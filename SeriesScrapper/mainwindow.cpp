@@ -149,8 +149,10 @@ void MainWindow::onSeasonChanged(int index)
 
 void MainWindow::onCellChange(int row, int coloumn)
 {
-    if (coloumn == 0) // Only Episode names
-        app->setEpisode(row, ui->episodeNameTable->item(row, coloumn)->text());
+    if (coloumn == 0) { // Only Episode names
+        QString newEpisodeName = ui->episodeNameTable->item(row, coloumn)->text();
+        app->changeEpisodeName(row, newEpisodeName);
+    }
 }
 
 bool MainWindow::setRow(int row, QString episodeName, QString fileName)

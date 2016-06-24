@@ -12,29 +12,30 @@ public:
     Application(int &argc, char *argv[]);
     ~Application();
 
-    // Initialzie the application
-    void init();
+    void init(); // Initialize the application
+    int exec(); // Execute the application
 
-    // Execute the application
-    int exec();
+    bool setSeries(QString series, int season); // Set series if existing and set table
+    bool changeEpisodeName(int index, QString episode); // Change an existing episode name
+    void updateView();
 
-    void setEpisode(int index, QString episode);
-    bool setSeries(QString series, int season);
+    // Getter
     QString getSeries();
     int getSeasons();
 
-
 private:
-    // Dont derive form QApplication
-    QApplication app;
-
-    // Create view after QApplication
-    MainWindow* view;
+    QApplication app; // Dont derive from QApplication
+    MainWindow* view; // Create view after QApplication
     JsonParser* jsonParser;
 
-    QString series;
-    QStringList episodes;
+    QString seriesText;
+    QString seasonText;
+    QString episodeText;
+    QStringList episodesList;
     int amountSeasons;
+    int selectedSeason;
+
+    QString getFilenameText(int episodeIndex);
 
 public slots:
 

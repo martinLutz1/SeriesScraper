@@ -5,10 +5,12 @@
 
 #include <QDebug>
 
-Application::Application(int &argc, char *argv[]) : app(argc, argv), amountSeasons(1)
+Application::Application(int &argc, char *argv[]) : app(argc, argv), amountSeasons(1), selectedSeason(0)
 {
     view = NULL;
     jsonParser = NULL;
+    seasonText = " - Staffel ";
+    episodeText = " Episode ";
 }
 
 Application::~Application()
@@ -34,41 +36,56 @@ int Application::exec()
     return app.exec();
 }
 
-void Application::setEpisode(int index, QString episode)
-{
-    while (episodes.length() <= index) // Make the list long enough for the requested index
-        episodes.push_back("");
-
-    if (episodes.at(index) != episode) {// Write only on change
-        episodes[index] = episode;
-        view->setRow(index, episodes.at(index), "Lost - Staffel 1 Episode " + QString::number(index+1) + " - " + episodes.at(index));
-    }
-}
-
 bool Application::setSeries(QString series, int season)
 {
     qDebug() << "Lädt";
 
     if (jsonParser->getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title")) {
         qDebug() << "Laden erfolgreich";
-        view->clearTable();
-        this->series = series;
-        episodes = jsonParser->getIDValue();
 
-        amountSeasons = jsonParser->getAmountSeasons();
-        view->setAmountSeasons(amountSeasons);
+        this->seriesText = series;
+        this->selectedSeason = season;
+        this->episodesList = jsonParser->getIDValue();
+        this->amountSeasons = jsonParser->getAmountSeasons();
+        updateView();
 
-        for (int i = 0; i < episodes.size(); i++)
-            view->setRow(i, episodes.at(i), series + " - Staffel " + QString::number(season) + " Episode " + QString::number(i+1) + " - " + episodes.at(i));
         return true;
     }
     qDebug() << "Laden fehlgeschlagen";
     return false;
 }
 
+bool Application::changeEpisodeName(int index, QString episode)
+{
+    if (index >= episodesList.length()) // Only write on existing items
+        return false;
+    else {
+        if (episodesList.at(index) != episode) { // Write only on change
+            episodesList[index] = episode;
+            QString fileName = getFilenameText(index);
+            view->setRow(index, episodesList.at(index), fileName);
+        }
+        return true;
+    }
+}
+
+void Application::updateView()
+{
+    QString episodeName;
+    QString fileName;
+    view->clearTable();
+    view->setAmountSeasons(amountSeasons);
+
+    for (int i = 0; i < episodesList.length(); i++) { // Create table items
+        episodeName = episodesList.at(i);
+        fileName = getFilenameText(i);
+        view->setRow(i, episodeName, fileName);
+    }
+}
+
 QString Application::getSeries()
 {
-    return series;
+    return seriesText;
 }
 
 int Application::getSeasons()
@@ -76,3 +93,10 @@ int Application::getSeasons()
     return amountSeasons;
 }
 
+QString Application::getFilenameText(int episodeIndex)
+{
+    QString episodeName = episodesList.at(episodeIndex);
+    QString fileName = seriesText + seasonText + QString::number(selectedSeason)
+            + episodeText + QString::number(episodeIndex + 1) + " - " + episodeName;
+    return fileName;
+}
