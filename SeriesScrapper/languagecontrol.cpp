@@ -23,10 +23,9 @@ bool LanguageControl::loadLanguage(QString language)
         return false;
 
     QByteArray languageByteArray = loadFile.readAll();
-
     QJsonParseError err;
     QJsonDocument doc = QJsonDocument::fromJson(languageByteArray, &err);
-    QStringList values;
+r
     if(doc.isObject())
     {
         QJsonObject obj = doc.object();
@@ -51,7 +50,11 @@ bool LanguageControl::loadLanguage(QString language)
         languageData.setSelection(translationList.at(6));
         languageData.setSeries(translationList.at(7));
         languageData.setSeriesSelection(translationList.at(8));
+
+        return true;
     }
+    return false;
+
 }
 
 QString LanguageControl::getEpisodeName()
