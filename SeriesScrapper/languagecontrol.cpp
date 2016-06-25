@@ -25,7 +25,7 @@ bool LanguageControl::loadLanguage(QString language)
     QByteArray languageByteArray = loadFile.readAll();
     QJsonParseError err;
     QJsonDocument doc = QJsonDocument::fromJson(languageByteArray, &err);
-r
+
     if(doc.isObject())
     {
         QJsonObject obj = doc.object();
