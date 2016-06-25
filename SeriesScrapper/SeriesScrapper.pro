@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     jsonparser.cpp \
     directoryparser.cpp \
-    application.cpp
+    application.cpp \
+    languagedata.cpp
 
 HEADERS  += mainwindow.h \
     jsonparser.h \
     directoryparser.h \
-    application.h
+    application.h \
+    languagedata.h
 
 FORMS    += mainwindow.ui
 
