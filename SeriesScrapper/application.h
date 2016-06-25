@@ -2,8 +2,10 @@
 #define APPLICATION_H
 
 #include <QApplication>
+
 class MainWindow;
 class JsonParser;
+class DirectoryParser;
 
 class Application
 {
@@ -27,6 +29,7 @@ private:
     QApplication app; // Dont derive from QApplication
     MainWindow* view; // Create view after QApplication
     JsonParser* jsonParser;
+    DirectoryParser* directoryParser;
 
     QString seriesText;
     QString seasonText;
