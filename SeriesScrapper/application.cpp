@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "jsonparser.h"
 #include "languagecontrol.h"
+#include "directoryparser.h"
 
 #include <QDebug>
 
@@ -11,6 +12,7 @@ Application::Application(int &argc, char *argv[]) : app(argc, argv), amountSeaso
     view = NULL;
     jsonParser = NULL;
     languageControl = NULL;
+    directoryParser = NULL;
     seasonText = " - Staffel ";
     episodeText = " Episode ";
 }
@@ -23,6 +25,8 @@ Application::~Application()
         delete jsonParser;
     if (languageControl != NULL)
         delete languageControl;
+    if (directoryParser != NULL)
+        delete directoryParser;
 }
 
 void Application::init()
@@ -33,6 +37,8 @@ void Application::init()
         jsonParser = new JsonParser();
     if (languageControl == NULL)
         languageControl = new LanguageControl();
+    if (directoryParser == NULL)
+        directoryParser = new DirectoryParser();
 
     view->show();
 }
@@ -40,6 +46,9 @@ void Application::init()
 int Application::exec()
 {
     //qDebug() << languageControl->getDirectorySelection();
+
+    //directoryParser->setDirectory(QDir("/Volumes/Serien/Andere Serien/Under the Dome/1 Under the Dome - Staffel 1"));
+    //qDebug() << directoryParser->getFiles();
     return app.exec();
 }
 
