@@ -16,7 +16,7 @@ LanguageControl::LanguageControl()
 
 bool LanguageControl::loadLanguage(QString language)
 {
-    QString fileName = language.append(".json");
+    QString fileName =  languageFileDirectory.absoluteFilePath(language.append(".json"));
     QFile loadFile(fileName);
 
     if (!loadFile.open(QIODevice::ReadOnly))

@@ -45,7 +45,7 @@ void Application::init()
 
 int Application::exec()
 {
-    //qDebug() << languageControl->getDirectorySelection();
+  //  qDebug() << languageControl->loadLanguage("EN");
 
     //directoryParser->setDirectory(QDir("/Volumes/Serien/Andere Serien/Under the Dome/1 Under the Dome - Staffel 1"));
     //qDebug() << directoryParser->getFiles();
