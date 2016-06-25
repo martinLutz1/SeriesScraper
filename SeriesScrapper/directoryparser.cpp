@@ -1,12 +1,18 @@
 #include "directoryparser.h"
 #include <QDebug>
 
+void DirectoryParser::setNameFilterToAll()
+{
+    directory.setNameFilters(QStringList() << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg"
+                             << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv");
+    episodeNumberExpression.setPattern("s[0-9]+e[0-9]+");
+}
+
 DirectoryParser::DirectoryParser()
 {
     directory.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     directory.setSorting(QDir::Name);
-    directory.setNameFilters(QStringList() << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg"
-                             << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv");
+    setNameFilterToAll();
 }
 
 bool DirectoryParser::setDirectory(QDir directory)
@@ -22,13 +28,25 @@ bool DirectoryParser::setDirectory(QDir directory)
 
 QStringList DirectoryParser::getFiles()
 {
-    QStringList fileNames;
+    loadedFiles.clear();
     QFileInfo fileInfo;
     QFileInfoList list = directory.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         fileInfo = list.at(i);
         if (fileInfo.isFile())
-        fileNames << fileInfo.fileName();
+        loadedFiles << fileInfo.fileName();
     }
-    return fileNames;
+
+   // QRegularExpressionMatch match = episodeNumberExpression.match(fileNames.at(8), 0, QRegularExpression::PartialPreferCompleteMatch);
+   // bool hasMatch = match.hasMatch(); // true
+   // qDebug() << "Match:" << match.hasMatch() << "" << "Partial:" << match.hasPartialMatch() << "" << match.captured();
+    return loadedFiles;
+}
+
+QStringList DirectoryParser::getFiles(QString extension)
+{
+    directory.setNameFilters(QStringList() << extension);
+    QStringList list = getFiles();
+    setNameFilterToAll();
+    return list;
 }
