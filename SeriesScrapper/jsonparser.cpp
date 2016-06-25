@@ -7,7 +7,6 @@ JsonParser::JsonParser(QObject *parent) : QObject(parent)
 {
     // Avoid SSL-Errors under OSX
     QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
-
 }
 
 bool JsonParser::getSeriesSeason(QString url, QString series, int season, QString id)

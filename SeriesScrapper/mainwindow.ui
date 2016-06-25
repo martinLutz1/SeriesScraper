@@ -181,11 +181,6 @@
       <string/>
      </property>
     </widget>
-    <zorder>pathLineEdit</zorder>
-    <zorder>groupBox</zorder>
-    <zorder>pushButton</zorder>
-    <zorder>label_3</zorder>
-    <zorder>correctPathLabel</zorder>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -195,7 +190,7 @@
      <x>0</x>
      <y>0</y>
      <width>810</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

@@ -12,18 +12,20 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SeriesScrapper
 TEMPLATE = app
 
-SOURCES += main.cpp\
+SOURCES += main.cpp \
         mainwindow.cpp \
     jsonparser.cpp \
     directoryparser.cpp \
     application.cpp \
-    languagedata.cpp
+    languagedata.cpp \
+    languagecontrol.cpp
 
 HEADERS  += mainwindow.h \
     jsonparser.h \
     directoryparser.h \
     application.h \
-    languagedata.h
+    languagedata.h \
+    languagecontrol.h
 
 FORMS    += mainwindow.ui
 

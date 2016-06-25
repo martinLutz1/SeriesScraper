@@ -4,6 +4,7 @@
 #include <QApplication>
 class MainWindow;
 class JsonParser;
+class LanguageControl;
 
 class Application
 {
@@ -27,6 +28,7 @@ private:
     QApplication app; // Dont derive from QApplication
     MainWindow* view; // Create view after QApplication
     JsonParser* jsonParser;
+    LanguageControl* languageControl;
 
     QString seriesText;
     QString seasonText;

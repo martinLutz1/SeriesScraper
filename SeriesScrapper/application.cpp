@@ -2,6 +2,7 @@
 
 #include "mainwindow.h"
 #include "jsonparser.h"
+#include "languagecontrol.h"
 
 #include <QDebug>
 
@@ -9,6 +10,7 @@ Application::Application(int &argc, char *argv[]) : app(argc, argv), amountSeaso
 {
     view = NULL;
     jsonParser = NULL;
+    languageControl = NULL;
     seasonText = " - Staffel ";
     episodeText = " Episode ";
 }
@@ -19,6 +21,8 @@ Application::~Application()
         delete view;
     if (jsonParser != NULL)
         delete jsonParser;
+    if (languageControl != NULL)
+        delete languageControl;
 }
 
 void Application::init()
@@ -27,12 +31,15 @@ void Application::init()
         view = new MainWindow(0, this);
     if (jsonParser == NULL)
         jsonParser = new JsonParser();
+    if (languageControl == NULL)
+        languageControl = new LanguageControl();
 
     view->show();
 }
 
 int Application::exec()
 {
+    //qDebug() << languageControl->getDirectorySelection();
     return app.exec();
 }
 
