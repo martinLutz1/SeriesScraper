@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>810</width>
+    <width>1000</width>
     <height>610</height>
    </rect>
   </property>
@@ -20,9 +20,9 @@
    <widget class="QTableWidget" name="episodeNameTable">
     <property name="geometry">
      <rect>
-      <x>5</x>
-      <y>5</y>
-      <width>800</width>
+      <x>10</x>
+      <y>10</y>
+      <width>980</width>
       <height>500</height>
      </rect>
     </property>
@@ -30,7 +30,7 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>619</x>
+      <x>525</x>
       <y>510</y>
       <width>185</width>
       <height>70</height>
@@ -117,7 +117,7 @@
      <rect>
       <x>10</x>
       <y>510</y>
-      <width>601</width>
+      <width>505</width>
       <height>70</height>
      </rect>
     </property>
@@ -132,7 +132,7 @@
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>491</width>
+       <width>400</width>
        <height>20</height>
       </rect>
      </property>
@@ -140,7 +140,7 @@
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>520</x>
+       <x>420</x>
        <y>35</y>
        <width>80</width>
        <height>30</height>
@@ -182,6 +182,51 @@
      </property>
     </widget>
    </widget>
+   <widget class="QPushButton" name="renameButton">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>530</y>
+      <width>113</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Umbenennen</string>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>510</y>
+      <width>120</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Namens-Schema</string>
+    </property>
+    <widget class="QComboBox" name="nameSchemeComboBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>35</y>
+       <width>104</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -189,8 +234,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>810</width>
-     <height>21</height>
+     <width>1000</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
