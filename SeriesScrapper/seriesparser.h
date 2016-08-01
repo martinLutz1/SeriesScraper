@@ -1,25 +1,22 @@
-#ifndef JSONPARSER_H
-#define JSONPARSER_H
+#ifndef SERIESPARSER_H
+#define SERIESPARSER_H
 
-#include <QObject>
+#include <QString>
+#include <QStringList>
 
-class JsonParser : public QObject
+class SeriesParser
 {
-     Q_OBJECT
 private:
     QStringList idList;
     int amountSeasons;
 
 public:
-    explicit JsonParser(QObject *parent = 0);
-
-signals:
-
-public slots:
+    SeriesParser();
     bool getSeriesSeason(QString url, QString series, int season, QString id);
+
     // Only execute if getIDfromURL returned true before, otherwise you will get an empty string
     QStringList getIDValue();
     int getAmountSeasons();
 };
 
-#endif // JSONPARSER_H
+#endif // SERIESPARSER_H

@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QDir>
+#include "message.h"
 
-class Application;
 namespace Ui {
 class MainWindow;
 }
@@ -12,28 +12,11 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-public:
-    explicit MainWindow(QWidget *parent = 0, Application* application = NULL);
-    ~MainWindow();
-    bool setRow(int row, QString episodeName, QString fileName);
-    void clearTable();
-    void setAmountSeasons(int amount);
-
-private slots:
-    void openDirectory();
-    void checkPath();
-    void startCheckPathTimer();
-    void startSeriesTextChangeTimer();
-    void onCellChange(int row, int coloumn);
-    void onSeriesTextChange();
-    void onSeasonChanged(int index);
-
 private:
     Ui::MainWindow *ui;
-    Application *app;
     QDir chosenPath;
     int tableRows;
-    QTimer *checkPathTimer;
+    QTimer *setPathTimer;
     QTimer *seriesTextChangeTimer;
     QPalette whiteBackground;
     QPalette backgroundImage;
@@ -45,6 +28,30 @@ private:
     QChar times = QChar(0x15, 0x27);
 
     void setUpTable();
+    void setSeriesAvailableStatus(bool status, bool isEmpty);
+
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+    bool setRow(int row, QString episodeName, QString newFileName, QString oldFileName);
+    void clearTable();
+    void setAmountSeasons(int amount);
+
+private slots:
+    void openDirectory();
+    void setPath();
+    void startSetPathTimer();
+    void startSeriesTextChangeTimer();
+    void onCellChange(int row, int coloumn);
+    void onSeriesTextChange();
+    void onSeasonChanged(int index);
+    void onRenameButtonPressed();
+
+public slots:
+    void notify(Message &msg);
+
+signals:
+    void sendMessage(Message &msg);
 };
 
 #endif // MAINWINDOW_H

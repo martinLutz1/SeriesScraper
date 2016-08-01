@@ -1,15 +1,15 @@
-#include "jsonparser.h"
+#include "seriesparser.h"
 #include <QCoreApplication>
 #include <QtNetwork>
 #include <QDebug>
 
-JsonParser::JsonParser(QObject *parent) : QObject(parent)
+SeriesParser::SeriesParser()
 {
     // Avoid SSL-Errors under OSX
     QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
 }
 
-bool JsonParser::getSeriesSeason(QString url, QString series, int season, QString id)
+bool SeriesParser::getSeriesSeason(QString url, QString series, int season, QString id)
 {
     // Create request string
     QString requestUrl = url  + "t=" + series + "&season=" + QString::number(season);
@@ -52,12 +52,12 @@ bool JsonParser::getSeriesSeason(QString url, QString series, int season, QStrin
     return false;
 }
 
-QStringList JsonParser::getIDValue()
+QStringList SeriesParser::getIDValue()
 {
     return idList;
 }
 
-int JsonParser::getAmountSeasons()
+int SeriesParser::getAmountSeasons()
 {
     return amountSeasons;
 }

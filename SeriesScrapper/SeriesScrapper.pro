@@ -14,18 +14,26 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
         mainwindow.cpp \
-    jsonparser.cpp \
     directoryparser.cpp \
     application.cpp \
     languagedata.cpp \
-    languagecontrol.cpp
+    languagecontrol.cpp \
+    controller.cpp \
+    seriesdata.cpp \
+    message.cpp \
+    seriesparser.cpp \
+    filerenamer.cpp
 
 HEADERS  += mainwindow.h \
-    jsonparser.h \
     directoryparser.h \
     application.h \
     languagedata.h \
-    languagecontrol.h
+    languagecontrol.h \
+    controller.h \
+    seriesdata.h \
+    message.h \
+    seriesparser.h \
+    filerenamer.h
 
 FORMS    += mainwindow.ui
 

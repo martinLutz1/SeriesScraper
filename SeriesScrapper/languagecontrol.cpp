@@ -54,7 +54,6 @@ bool LanguageControl::loadLanguage(QString language)
         return true;
     }
     return false;
-
 }
 
 QString LanguageControl::getEpisodeName()

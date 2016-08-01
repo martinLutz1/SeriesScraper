@@ -23,7 +23,6 @@ public:
     QString getSeriesSelection();
     QString getSeason();
     QString getEpisode();
-
 };
 
 #endif // LANGUAGECONTROL_H
