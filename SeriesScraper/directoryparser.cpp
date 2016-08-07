@@ -18,18 +18,20 @@ QStringList DirectoryParser::sortFiles(QStringList files)
 
 QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 {
+    QFileInfoList sortedFiles = files;
+    QStringList filesQs;
+    for (int i = 0; i < sortedFiles.length(); i++) { // Get strings to calculate positions
+        filesQs << sortedFiles.at(i).filePath();
+    }
+    std::vector<int> position = getEpisodePositions(filesQs);
 
-    QFileInfoList unsortedFiles = files;
-    QCollator collator;
-    collator.setNumericMode(true);
-
-    std::sort(unsortedFiles.begin(), unsortedFiles.end(),
-              [&collator](const QFileInfo &file1, QFileInfo &file2)
-    {
-        return collator.compare(file1.path(), file2.path()) < 0;
-    });
-
-    return unsortedFiles;
+    for (int i = 0; i < files.length(); i++) {
+        while (sortedFiles.length() <= position.at(i)) { // Prepare space
+            sortedFiles.push_back(QFileInfo(""));
+        }
+        sortedFiles[position.at(i)] = files.at(i);
+    }
+    return sortedFiles;
 }
 
 void DirectoryParser::setNameFilterToAll()
@@ -71,11 +73,13 @@ QStringList DirectoryParser::getFiles()
     QFileInfo fileInfo;
     QFileInfoList list = directory.entryInfoList();
     QStringList filesToReturn;
+
     for (int i = 0; i < list.size(); ++i) {
         fileInfo = list.at(i);
         if (fileInfo.isFile())
             filesToReturn << fileInfo.fileName();
     }
+
     filesToReturn = sortFiles(filesToReturn);
     return filesToReturn;
 }
