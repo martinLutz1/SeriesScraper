@@ -39,3 +39,5 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     resource.qrc
+
+CONFIG += c++11
