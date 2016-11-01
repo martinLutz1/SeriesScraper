@@ -19,13 +19,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Table
     setUpTable();
-    whiteBackground = QString("background-image: none; ") +
-            QString("background-color: rgb(255, 255, 255);");
-    imageBackground = QString("background-image: url(:/images/table_bg.png); ") +
-            QString("background-color: rgb(255, 255, 255);") +
-            QString("background-repeat: no-repeat; ") +
-            QString("background-attachment: fixed; ") +
-            QString("background-position: center;");
+    whiteBackground = ui->episodeNameTable->styleSheet();
+    imageBackground = QString("background-image: url(:/images/table_bg.png); ")
+            + QString("background-color: rgb(255, 255, 255);")
+            + QString("background-repeat: no-repeat; ")
+            + QString("background-attachment: fixed; ")
+            + QString("background-position: center;");
 
     ui->episodeNameTable->setStyleSheet(imageBackground);
 
@@ -168,9 +167,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     ui->renameButton->move(renameButtonX, renameButtonY);
 
     // Resize table coloumns
-    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.3);
+    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.28);
     ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.4);
-    ui->episodeNameTable->setColumnWidth(2, episodeTableWidth*0.3);
+    ui->episodeNameTable->setColumnWidth(2, episodeTableWidth*0.29);
 }
 
 void MainWindow::clearTable()

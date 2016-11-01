@@ -47,6 +47,9 @@
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
+    </property>
    </widget>
    <widget class="QGroupBox" name="seriesGroupBox">
     <property name="geometry">
