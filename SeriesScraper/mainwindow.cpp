@@ -143,7 +143,7 @@ void MainWindow::startSetPathTimer()
 
 void MainWindow::startSeriesTextChangeTimer()
 {
-    seriesTextChangeTimer->start(500);
+    seriesTextChangeTimer->start(1000);
 }
 
 void MainWindow::onSeriesTextChange()
