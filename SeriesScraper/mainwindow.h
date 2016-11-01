@@ -18,8 +18,8 @@ private:
     int tableRows;
     QTimer *setPathTimer;
     QTimer *seriesTextChangeTimer;
-    QPalette whiteBackground;
-    QPalette backgroundImage;
+    QString whiteBackground;
+    QString imageBackground;
 
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
     QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
@@ -29,6 +29,7 @@ private:
 
     void setUpTable();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
+    void resizeEvent(QResizeEvent *event);
 
 public:
     explicit MainWindow(QWidget *parent = 0);

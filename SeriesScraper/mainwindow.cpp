@@ -4,13 +4,14 @@
 #include <QFileInfo>
 #include <QTimer>
 #include <QDebug>
+#define UNIVERSAL_SPACER 10
+#define GROUPBOX_HEIGHT 70
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     chosenPath(QDir::current()),
-    tableRows(0),
-    backgroundImage(whiteBackground)
+    tableRows(0)
 {
     ui->setupUi(this);
     setPathTimer = new QTimer(this);
@@ -18,11 +19,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Table
     setUpTable();
-    whiteBackground = ui->episodeNameTable->palette();
-    backgroundImage = whiteBackground;
-    QPixmap px(":/images/table_bg.png");
-    backgroundImage.setBrush(QPalette::Base, QBrush(px));
-    ui->episodeNameTable->setPalette(backgroundImage);
+    whiteBackground = QString("background-image: none; ") +
+            QString("background-color: rgb(255, 255, 255);");
+    imageBackground = QString("background-image: url(:/images/table_bg.png); ") +
+            QString("background-color: rgb(255, 255, 255);") +
+            QString("background-repeat: no-repeat; ") +
+            QString("background-attachment: fixed; ") +
+            QString("background-position: center;");
+
+    ui->episodeNameTable->setStyleSheet(imageBackground);
 
     // Remove, when implemented!
     ui->nameSchemeComboBox->addItem("1: series - s*e* - ep.*");
@@ -76,10 +81,102 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
     }
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    int windowHeight = this->centralWidget()->height();
+    int windowWidth = this->centralWidget()->width();
+    int pathBoxWidth = ui->pathGroupBox->width();
+    int seriesBoxWidth = ui->seriesGroupBox->width();
+    int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
+    int buttonWidth = ui->renameButton->width();
+    int episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER;
+
+
+    if (windowWidth >= 1050) { // Representation for higher resolutions
+        int spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth
+                                      - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER) / 3;
+
+        // Resize table height
+        int episodeTableHeight = windowHeight - GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
+
+        // Move path selector
+        int pathBoxX = UNIVERSAL_SPACER;
+        int pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->pathGroupBox->move(pathBoxX, pathBoxY);
+
+        // Move series selector
+        int seriesBoxX = pathBoxWidth + UNIVERSAL_SPACER + spaceBetweenGroupboxes;
+        int seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
+
+        // Move name scheme selector
+        int nameSchemeBoxX = pathBoxWidth + seriesBoxWidth + UNIVERSAL_SPACER + 2 * spaceBetweenGroupboxes;
+        int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
+    }
+    else if (windowWidth > 720){ // Representation for lower resolutions (720 < resolution < 1050)
+        // Align the boxes relatively left and right
+        int spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth - nameSchemeBoxWidth) / 3;
+        if (spaceBetweenGroupboxes < UNIVERSAL_SPACER) // Make sure there is enough space bewteen the boxes
+            spaceBetweenGroupboxes = UNIVERSAL_SPACER;
+
+        // Resize table height
+        int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
+        ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
+
+        // Move path selector
+        int pathBoxX = spaceBetweenGroupboxes;
+        int pathBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        ui->pathGroupBox->move(pathBoxX, pathBoxY);
+
+        // Move series selector
+        int seriesBoxX = pathBoxWidth + 2 * spaceBetweenGroupboxes;
+        int seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
+
+        // Move name scheme selector
+        int nameSchemeBoxX = windowWidth - buttonWidth - nameSchemeBoxWidth - 2 * UNIVERSAL_SPACER;
+        int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
+    }
+    else { // Representation for lowest resolutions (540 >= resolution >= 720)
+        // Resize table height
+        int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
+        ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
+
+        // Move path selector
+        int pathBoxX = UNIVERSAL_SPACER;
+        int pathBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        ui->pathGroupBox->move(pathBoxX, pathBoxY);
+
+        // Move series selector
+        int seriesBoxX = windowWidth - seriesBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER;
+        int seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
+
+        // Move name scheme selector
+        int nameSchemeBoxX = windowWidth - nameSchemeBoxWidth - seriesBoxWidth - buttonWidth - 3 * UNIVERSAL_SPACER;
+        int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
+    }
+
+    // Move rename button
+    int renameButtonX = windowWidth - buttonWidth - UNIVERSAL_SPACER;
+    int renameButtonY = windowHeight - GROUPBOX_HEIGHT;
+    ui->renameButton->move(renameButtonX, renameButtonY);
+
+    // Resize table coloumns
+    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.3);
+    ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.4);
+    ui->episodeNameTable->setColumnWidth(2, episodeTableWidth*0.3);
+}
+
 void MainWindow::clearTable()
 {
-    ui->episodeNameTable->setPalette(backgroundImage);
-    for(int i = tableRows; i>=0; i--)
+    ui->episodeNameTable->setStyleSheet(imageBackground);
+    for (int i = tableRows; i>=0; i--)
         ui->episodeNameTable->removeRow(i);
     tableRows = 0;
 }
@@ -219,7 +316,7 @@ bool MainWindow::setRow(int row, QString episodeName, QString newFileName, QStri
     if (row > tableRows)
         return false;
     else
-        ui->episodeNameTable->setPalette(whiteBackground);
+        ui->episodeNameTable->setStyleSheet(whiteBackground);
 
     // Check if row items already exist to prevent multiple creations
     if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL) {
