@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Table
     setUpTable();
     whiteBackground = ui->episodeNameTable->styleSheet();
-    imageBackground = QString("background-image: url(:/images/table_bg.png); ")
+    imageBackground = QString("background-image: url(:/images/logo.png); ")
             + QString("background-color: rgb(255, 255, 255);")
             + QString("background-repeat: no-repeat; ")
             + QString("background-attachment: fixed; ")
@@ -116,22 +116,17 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
     }
     else if (windowWidth > 720){ // Representation for lower resolutions (720 < resolution < 1050)
-        // Align the boxes relatively left and right
-        int spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth - nameSchemeBoxWidth) / 3;
-        if (spaceBetweenGroupboxes < UNIVERSAL_SPACER) // Make sure there is enough space bewteen the boxes
-            spaceBetweenGroupboxes = UNIVERSAL_SPACER;
-
         // Resize table height
         int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
         ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
 
         // Move path selector
-        int pathBoxX = spaceBetweenGroupboxes;
+        int pathBoxX = UNIVERSAL_SPACER;
         int pathBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->pathGroupBox->move(pathBoxX, pathBoxY);
 
         // Move series selector
-        int seriesBoxX = pathBoxWidth + 2 * spaceBetweenGroupboxes;
+        int seriesBoxX = pathBoxWidth + 2 * UNIVERSAL_SPACER;
         int seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
 
@@ -151,12 +146,12 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         ui->pathGroupBox->move(pathBoxX, pathBoxY);
 
         // Move series selector
-        int seriesBoxX = windowWidth - seriesBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER;
+        int seriesBoxX = windowWidth - seriesBoxWidth - nameSchemeBoxWidth - buttonWidth - 3 * UNIVERSAL_SPACER;
         int seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
 
         // Move name scheme selector
-        int nameSchemeBoxX = windowWidth - nameSchemeBoxWidth - seriesBoxWidth - buttonWidth - 3 * UNIVERSAL_SPACER;
+        int nameSchemeBoxX = windowWidth - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER;
         int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
     }

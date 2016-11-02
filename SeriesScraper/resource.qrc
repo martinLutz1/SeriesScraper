@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/table_bg.png</file>
         <file>images/button_blue.png</file>
         <file>images/button_blue_pressed.png</file>
+        <file>images/logo.png</file>
     </qresource>
 </RCC>

@@ -215,6 +215,18 @@
       <height>60</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <weight>50</weight>
+      <bold>false</bold>
+      <underline>false</underline>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>true</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
@@ -224,8 +236,14 @@
     <property name="text">
      <string>Umbenennen</string>
     </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
     <property name="autoRepeat">
      <bool>false</bool>
+    </property>
+    <property name="autoRepeatDelay">
+     <number>300</number>
     </property>
     <property name="autoDefault">
      <bool>false</bool>
@@ -234,7 +252,7 @@
      <bool>false</bool>
     </property>
     <property name="flat">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QGroupBox" name="nameSchemeGroupBox">
