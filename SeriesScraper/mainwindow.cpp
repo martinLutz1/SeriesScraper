@@ -289,7 +289,6 @@ void MainWindow::startSeriesTextChangeTimer()
 
 void MainWindow::disableSeriesProgressbar()
 {
-    seriesProgressBar->setValue(100);
     disableSeriesProgressbarTimer->stop();
     ui->episodeNameTable->setEnabled(true);
     seriesProgressBar->setHidden(true);
@@ -378,6 +377,7 @@ void MainWindow::notify(Message &msg)
 
     case Message::controller_startSeriesLoading_view:
     {
+        seriesProgressBar->setValue(0);
         ui->episodeNameTable->setEnabled(false);
         blur->setEnabled(true);
         ui->episodeNameTable->repaint();
