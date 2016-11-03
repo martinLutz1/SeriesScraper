@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QTimer>
 #include <QDebug>
+
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
 
@@ -16,6 +17,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setPathTimer = new QTimer(this);
     seriesTextChangeTimer = new QTimer(this);
+    progressBarTimer = new QTimer(this);
+    disableSeriesProgressbarTimer = new QTimer(this);
+    seriesProgressBar = new QProgressBar(this);
+    seriesStatusLabel = new QLabel(this);
+    blur = new QGraphicsBlurEffect;
 
     // Table
     setUpTable();
@@ -25,8 +31,21 @@ MainWindow::MainWindow(QWidget *parent) :
             + QString("background-repeat: no-repeat; ")
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
-
     ui->episodeNameTable->setStyleSheet(imageBackground);
+
+    // Table progressbar
+    blur->setEnabled(false);
+    ui->episodeNameTable->setGraphicsEffect(blur);
+    seriesProgressBar->setHidden(true);
+
+    // Table failure message
+    seriesStatusLabel->setText("Nicht gefunden");
+    seriesStatusLabel->setMinimumWidth(200);
+    seriesStatusLabel->setAlignment(Qt::AlignHCenter);
+    seriesStatusLabel->setStyleSheet("color: rgb(255, 20, 20); "
+                                     "font-weight: bold; "
+                                     "font-size: 16px;");
+    seriesStatusLabel->setHidden(true);
 
     // Button
     ui->renameButton->setEnabled(false);
@@ -37,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Remove, when implemented!
     ui->nameSchemeComboBox->addItem("1: series - s*e* - ep.*");
 
-    QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
+    QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
     QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
     QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChange(int,int)));
@@ -45,6 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChange()));
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
     QObject::connect(ui->renameButton, SIGNAL(pressed()), this , SLOT(onRenameButtonPressed()));
+    QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
+    QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
 }
 
 
@@ -171,6 +192,24 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.28);
     ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.4);
     ui->episodeNameTable->setColumnWidth(2, episodeTableWidth*0.29);
+
+    // Resize series progressbar
+    int seriesProgressbarWidth = episodeTableWidth / 2;
+    seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
+
+    // Move series progressbar
+    int episodeTableHeight = ui->episodeNameTable->height();
+    int episodeTableX = ui->episodeNameTable->x();
+    int episodeTableY = ui->episodeNameTable->y();
+
+    int seriesProgressbarX = episodeTableX + episodeTableWidth / 2 - seriesProgressBar->width() / 2;
+    int seriesProgressbarY = episodeTableY + episodeTableHeight / 2 - seriesProgressBar->height() / 2;
+    seriesProgressBar->move(seriesProgressbarX, seriesProgressbarY);
+
+    // Move series failure text
+    int seriesStatusLabelX = episodeTableX + episodeTableWidth / 2 - seriesStatusLabel->width() / 2;
+    int seriesStatusLabelY = episodeTableY + episodeTableHeight / 2 + seriesProgressBar->height();
+    seriesStatusLabel->move(seriesStatusLabelX, seriesStatusLabelY);
 }
 
 void MainWindow::clearTable()
@@ -248,6 +287,26 @@ void MainWindow::startSeriesTextChangeTimer()
     seriesTextChangeTimer->start(1000);
 }
 
+void MainWindow::disableSeriesProgressbar()
+{
+    seriesProgressBar->setValue(100);
+    disableSeriesProgressbarTimer->stop();
+    ui->episodeNameTable->setEnabled(true);
+    seriesProgressBar->setHidden(true);
+    seriesProgressBar->setValue(0);
+    seriesStatusLabel->setHidden(true);
+    blur->setEnabled(false);
+}
+
+void MainWindow::updateProgressbar()
+{
+    int progress = seriesProgressBar->value();
+    progress += 2;
+    if (progress > 100)
+        progress = 100;
+    seriesProgressBar->setValue(progress);
+}
+
 void MainWindow::onSeriesTextChange()
 {
     seriesTextChangeTimer->stop();
@@ -314,6 +373,27 @@ void MainWindow::notify(Message &msg)
     {
         bool enableButton = msg.data[0].b;
         ui->renameButton->setEnabled(enableButton);
+        break;
+    }
+
+    case Message::controller_startSeriesLoading_view:
+    {
+        ui->episodeNameTable->setEnabled(false);
+        blur->setEnabled(true);
+        ui->episodeNameTable->repaint();
+        seriesProgressBar->setHidden(false);
+        progressBarTimer->start(5);
+    }
+
+    case Message::controller_successSeriesLoading_view:
+    {
+        disableSeriesProgressbarTimer->start(700);
+        break;
+    }
+    case Message::controller_failureSeriesLoading_view:
+    {
+        seriesStatusLabel->setHidden(false);
+        disableSeriesProgressbarTimer->start(1500);
         break;
     }
 

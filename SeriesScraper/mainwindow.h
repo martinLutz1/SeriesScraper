@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QDir>
+#include <QLabel>
+#include <QProgressBar>
+#include <QGraphicsBlurEffect>
 #include "message.h"
 
 namespace Ui {
@@ -14,13 +17,18 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     Ui::MainWindow *ui;
-    QDir chosenPath;
-    int tableRows;
     QTimer *setPathTimer;
     QTimer *seriesTextChangeTimer;
+    QTimer *progressBarTimer;
+    QTimer *disableSeriesProgressbarTimer;
+    QLabel *seriesStatusLabel;
+    QProgressBar *seriesProgressBar;
+    QGraphicsBlurEffect *blur;
+
+    QDir chosenPath;
+    int tableRows;
     QString whiteBackground;
     QString imageBackground;
-
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
     QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
     QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
@@ -43,6 +51,8 @@ private slots:
     void setPath();
     void startSetPathTimer();
     void startSeriesTextChangeTimer();
+    void disableSeriesProgressbar();
+    void updateProgressbar();
     void onCellChange(int row, int coloumn);
     void onSeriesTextChange();
     void onSeasonChanged(int index);

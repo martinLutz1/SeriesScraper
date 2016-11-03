@@ -8,11 +8,11 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
 bool Controller::setSeries(QString series, int season)
 {
-    qDebug() << "Lädt";
+    Message msgStartLoading;
+    msgStartLoading.type = Message::controller_startSeriesLoading_view;
+    emit(sendMessage(msgStartLoading));
 
     if (seriesParser.getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title")) {
-        qDebug() << "Laden erfolgreich";
-
         QStringList episodeList = seriesParser.getIDValue();
         int amountSeasons = seriesParser.getAmountSeasons();
         seriesData.setSeries(series);
@@ -21,16 +21,24 @@ bool Controller::setSeries(QString series, int season)
         seriesData.setAmountSeasons(amountSeasons);
         updateView();
 
+        Message msgSuccessLoading;
+        msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
+        emit(sendMessage(msgSuccessLoading));
+
         return true;
     }
-    else {
+    else { // Didnt find series
         seriesData.setSeries("");
         seriesData.setSelectedSeason(0);
         seriesData.setEpisodes(QStringList());
         seriesData.setAmountSeasons(0);
+
+        Message msgFailureLoading;
+        msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
+        emit(sendMessage(msgFailureLoading));
+
+        return false;
     }
-    qDebug() << "Laden fehlgeschlagen";
-    return false;
 }
 
 bool Controller::setDirectory(QDir directory)
@@ -75,7 +83,6 @@ bool Controller::renameFiles()
         // Output!
     }
 }
-
 
 void Controller::updateView()
 {

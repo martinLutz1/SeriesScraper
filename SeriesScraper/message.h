@@ -16,7 +16,10 @@ public:
         view_rename_controller,
         controller_updateView_view,
         controller_seriesSet_view,
-        controller_enableButton_view
+        controller_enableButton_view,
+        controller_startSeriesLoading_view,
+        controller_successSeriesLoading_view,
+        controller_failureSeriesLoading_view
     };
 
     union MessageData {
