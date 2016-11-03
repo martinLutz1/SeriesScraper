@@ -3,5 +3,6 @@
         <file>images/button_blue.png</file>
         <file>images/button_blue_pressed.png</file>
         <file>images/logo.png</file>
+        <file>images/button_grey.png</file>
     </qresource>
 </RCC>

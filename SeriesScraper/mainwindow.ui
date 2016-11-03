@@ -33,6 +33,11 @@
 
 #renameButton:pressed {
 	background-image: url(:/images/button_blue_pressed.png);
+}
+
+#renameButton:!enabled {
+	color: rgb(200, 200, 200);
+	background-image: url(:/images/button_grey.png);
 }</string>
    </property>
    <widget class="QTableWidget" name="episodeNameTable">

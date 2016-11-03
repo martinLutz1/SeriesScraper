@@ -23,6 +23,12 @@ bool Controller::setSeries(QString series, int season)
 
         return true;
     }
+    else {
+        seriesData.setSeries("");
+        seriesData.setSelectedSeason(0);
+        seriesData.setEpisodes(QStringList());
+        seriesData.setAmountSeasons(0);
+    }
     qDebug() << "Laden fehlgeschlagen";
     return false;
 }
@@ -40,8 +46,11 @@ bool Controller::setDirectory(QDir directory)
 
         return true;
     }
-    else
+    else {
+        QDir testDir("");
+        seriesData.setWorkingDirectory(testDir);
         return false;
+    }
 }
 
 bool Controller::renameFiles()
@@ -84,6 +93,20 @@ void Controller::updateView()
     emit(sendMessage(msgViewUpdate));
 }
 
+void Controller::updateRenameButton()
+{
+    // Check wether the directory is the root dir of the program (-> not changed)
+    QDir testDir("");
+    bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
+    bool seriesSet = !seriesData.getSeries().isEmpty();
+    bool enableButton = seriesSet & directorySet;
+
+    Message msgEnableButton;
+    msgEnableButton.type = Message::controller_enableButton_view;
+    msgEnableButton.data[0].b = enableButton;
+    emit(sendMessage(msgEnableButton));
+}
+
 void Controller::notify(Message &msg)
 {
     switch (msg.type) {
@@ -100,6 +123,8 @@ void Controller::notify(Message &msg)
         msgSeriesSet.data[0].b = seriesSet;
         msgSeriesSet.data[1].b = isEmpty;
         emit(sendMessage(msgSeriesSet));
+
+        updateRenameButton();
         break;
     }
     case Message::view_season_changed_controller:
@@ -114,6 +139,7 @@ void Controller::notify(Message &msg)
         QString directory = *msg.data[0].qsPointer;
         bool directorySet = setDirectory(QDir(directory));
         updateView();
+        updateRenameButton();
     }
     case Message::view_rename_controller:
         renameFiles(); // Bool, operate on Output!

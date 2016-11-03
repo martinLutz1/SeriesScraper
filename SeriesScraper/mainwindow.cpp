@@ -28,6 +28,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->episodeNameTable->setStyleSheet(imageBackground);
 
+    // Button
+    ui->renameButton->setEnabled(false);
+
+    // Season combobox
+    ui->seasonComboBox->setEnabled(false);
+
     // Remove, when implemented!
     ui->nameSchemeComboBox->addItem("1: series - s*e* - ep.*");
 
@@ -187,6 +193,10 @@ void MainWindow::setAmountSeasons(int amount)
         for (; recentAmount >= amount; recentAmount--)
             ui->seasonComboBox->removeItem(recentAmount);
     }
+
+    // Disable or enable season selection
+    bool enableSeasonComboBox = (amount != 0);
+    ui->seasonComboBox->setEnabled(enableSeasonComboBox);
 }
 
 void MainWindow::openDirectory()
@@ -207,6 +217,7 @@ void MainWindow::setPath()
     QDir dir;
     dir.setPath(ui->pathLineEdit->text());
 
+    // Set the status
     if (dir.path().isEmpty()) {
         ui->pathLineEdit->setStyleSheet(colorWhite);
         ui->correctPathLabel->setText("");
@@ -214,17 +225,17 @@ void MainWindow::setPath()
     else if (dir.exists()) {
         ui->pathLineEdit->setStyleSheet(colorGreen);
         ui->correctPathLabel->setText(checkmark);
-
-        QString directory = dir.path();
-        Message directoryChangedMsg;
-        directoryChangedMsg.type = Message::view_directory_changed_controller;
-        directoryChangedMsg.data[0].qsPointer = &directory;
-        emit(sendMessage(directoryChangedMsg));
     }
     else {
         ui->pathLineEdit->setStyleSheet(colorRed);
         ui->correctPathLabel->setText(times);
     }
+
+    QString directory = dir.path();
+    Message directoryChangedMsg;
+    directoryChangedMsg.type = Message::view_directory_changed_controller;
+    directoryChangedMsg.data[0].qsPointer = &directory;
+    emit(sendMessage(directoryChangedMsg));
 }
 
 void MainWindow::startSetPathTimer()
@@ -296,6 +307,13 @@ void MainWindow::notify(Message &msg)
         bool seriesSet = msg.data[0].b;
         bool isEmpty = msg.data[1].b;
         setSeriesAvailableStatus(seriesSet, isEmpty);
+        break;
+    }
+
+    case Message::controller_enableButton_view:
+    {
+        bool enableButton = msg.data[0].b;
+        ui->renameButton->setEnabled(enableButton);
         break;
     }
 

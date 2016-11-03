@@ -24,6 +24,7 @@ public:
     bool setDirectory(QDir directory);
     bool renameFiles();
     void updateView();
+    void updateRenameButton();
 
 public slots:
     void notify(Message &msg);

@@ -15,7 +15,8 @@ public:
         view_directory_changed_controller,
         view_rename_controller,
         controller_updateView_view,
-        controller_seriesSet_view
+        controller_seriesSet_view,
+        controller_enableButton_view
     };
 
     union MessageData {
