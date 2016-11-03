@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     chosenPath(QDir::current()),
-    tableRows(0)
+    tableRows(0),
+    progressIncrement(1)
 {
     ui->setupUi(this);
     setPathTimer = new QTimer(this);
@@ -92,18 +93,24 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->seriesLineEdit->setStyleSheet(colorGreen);
         ui->correctSeriesLabel->setText(checkmark);
         ui->seasonComboBox->setCurrentIndex(0);
+        progressIncrement = 10;
+        disableSeriesProgressbarTimer->start(200);
     }
     else if (isEmpty) {
         ui->seriesLineEdit->setStyleSheet(colorWhite);
         ui->correctSeriesLabel->setText("");
         setAmountSeasons(0);
         clearTable();
+        disableSeriesProgressbar();
     }
     else {
         ui->seriesLineEdit->setStyleSheet(colorRed);
         ui->correctSeriesLabel->setText(times);
-        clearTable();
         setAmountSeasons(0);
+        clearTable();
+        seriesStatusLabel->setHidden(false);
+        progressIncrement = 1;
+        disableSeriesProgressbarTimer->start(2000);
     }
 }
 
@@ -295,14 +302,17 @@ void MainWindow::disableSeriesProgressbar()
     seriesProgressBar->setValue(0);
     seriesStatusLabel->setHidden(true);
     blur->setEnabled(false);
+    progressIncrement = 1;
 }
 
 void MainWindow::updateProgressbar()
 {
     int progress = seriesProgressBar->value();
-    progress += 2;
-    if (progress > 100)
+    progress += progressIncrement;
+    if (progress > 100) {
         progress = 100;
+        progressBarTimer->stop();
+    }
     seriesProgressBar->setValue(progress);
 }
 
@@ -377,26 +387,14 @@ void MainWindow::notify(Message &msg)
 
     case Message::controller_startSeriesLoading_view:
     {
-        seriesProgressBar->setValue(0);
-        ui->episodeNameTable->setEnabled(false);
         blur->setEnabled(true);
+        ui->episodeNameTable->setEnabled(false);
         ui->episodeNameTable->repaint();
+        seriesProgressBar->setValue(0);
         seriesProgressBar->setHidden(false);
         progressBarTimer->start(5);
-    }
-
-    case Message::controller_successSeriesLoading_view:
-    {
-        disableSeriesProgressbarTimer->start(700);
         break;
     }
-    case Message::controller_failureSeriesLoading_view:
-    {
-        seriesStatusLabel->setHidden(false);
-        disableSeriesProgressbarTimer->start(1500);
-        break;
-    }
-
     default:
         break;
     }

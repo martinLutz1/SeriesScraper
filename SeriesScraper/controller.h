@@ -8,11 +8,13 @@
 #include "filerenamer.h"
 #include "seriesdata.h"
 #include "message.h"
+#include <QTimer>
 
 class Controller : public QObject
 {
     Q_OBJECT
 private:
+    QTimer *seriesLoadedTimer;
     SeriesParser seriesParser;
     DirectoryParser directoryParser;
     SeriesData seriesData;

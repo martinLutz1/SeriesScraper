@@ -4,6 +4,7 @@
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
+    seriesLoadedTimer = new QTimer(this);
 }
 
 bool Controller::setSeries(QString series, int season)
@@ -12,7 +13,8 @@ bool Controller::setSeries(QString series, int season)
     msgStartLoading.type = Message::controller_startSeriesLoading_view;
     emit(sendMessage(msgStartLoading));
 
-    if (seriesParser.getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title")) {
+    bool seriesFound = seriesParser.getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title");
+    if (seriesFound) {
         QStringList episodeList = seriesParser.getIDValue();
         int amountSeasons = seriesParser.getAmountSeasons();
         seriesData.setSeries(series);
@@ -24,7 +26,6 @@ bool Controller::setSeries(QString series, int season)
         Message msgSuccessLoading;
         msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
         emit(sendMessage(msgSuccessLoading));
-
         return true;
     }
     else { // Didnt find series
@@ -138,7 +139,16 @@ void Controller::notify(Message &msg)
     {
         int selectedSeason = msg.data[0].i;
         QString series = seriesData.getSeries();
-        setSeries(series, selectedSeason);
+        bool seriesSet = setSeries(series, selectedSeason);
+        bool isEmpty = series.isEmpty();
+
+        // Emit wether series was scraped succesfully
+        Message msgSeriesSet;
+        msgSeriesSet.type = Message::controller_seriesSet_view;
+        msgSeriesSet.data[0].b = seriesSet;
+        msgSeriesSet.data[1].b = isEmpty;
+        emit(sendMessage(msgSeriesSet));
+
         break;
     }
     case Message::view_directory_changed_controller:

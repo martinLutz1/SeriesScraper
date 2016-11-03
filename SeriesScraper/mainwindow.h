@@ -27,6 +27,7 @@ private:
 
     QDir chosenPath;
     int tableRows;
+    int progressIncrement;
     QString whiteBackground;
     QString imageBackground;
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
