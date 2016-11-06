@@ -7,18 +7,18 @@
 #include "seriesparser.h"
 #include "filerenamer.h"
 #include "seriesdata.h"
+#include "nameschemeparser.h"
 #include "message.h"
-#include <QTimer>
 
 class Controller : public QObject
 {
     Q_OBJECT
 private:
-    QTimer *seriesLoadedTimer;
     SeriesParser seriesParser;
     DirectoryParser directoryParser;
     SeriesData seriesData;
     FileRenamer fileRenamer;
+    NameSchemeParser nameSchemeParser;
 
 public:
     explicit Controller(QObject *parent = 0);

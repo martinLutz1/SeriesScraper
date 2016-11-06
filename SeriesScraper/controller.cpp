@@ -4,7 +4,6 @@
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
-    seriesLoadedTimer = new QTimer(this);
 }
 
 bool Controller::setSeries(QString series, int season)

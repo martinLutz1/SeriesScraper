@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     seriesdata.cpp \
     message.cpp \
     seriesparser.cpp \
-    filerenamer.cpp
+    filerenamer.cpp \
+    nameschemeparser.cpp \
+    nameschemedata.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -33,7 +35,20 @@ HEADERS  += mainwindow.h \
     seriesdata.h \
     message.h \
     seriesparser.h \
-    filerenamer.h
+    filerenamer.h \
+    nameschemeparser.h \
+    nameschemedata.h
+
+macx {
+    # Deploying
+    QMAKE_POST_LINK += ~/Qt/5.7/clang_64/bin/macdeployqt SeriesScraper.app;
+    # Copy namescheme list
+    QMAKE_POST_LINK += cp ./../namescheme.list ./SeriesScraper.app/Contents/MacOs;
+}
+unix:!macx {
+    QMAKE_POST_LINK += cp cp ./../namescheme.list ./;
+}
+
 
 FORMS    += mainwindow.ui
 

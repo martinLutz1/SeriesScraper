@@ -387,14 +387,20 @@ void MainWindow::notify(Message &msg)
 
     case Message::controller_startSeriesLoading_view:
     {
+        // Hide to avoid delay with blur
+        ui->episodeNameTable->setHidden(true);
         blur->setEnabled(true);
         ui->episodeNameTable->setEnabled(false);
         ui->episodeNameTable->repaint();
+        // Show after applying all effects and repainting
+        ui->episodeNameTable->setHidden(false);
         seriesProgressBar->setValue(0);
         seriesProgressBar->setHidden(false);
         progressBarTimer->start(5);
+
         break;
     }
+
     default:
         break;
     }
