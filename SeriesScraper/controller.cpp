@@ -2,8 +2,60 @@
 #include <QDebug>
 #include <vector>
 
+void Controller::initializeNameSchemes()
+{
+    bool fileRead = nameSchemeHandler.readNameSchemeFile();
+    // Add default entry if name scheme list not found
+    if (!fileRead) {
+        nameSchemeHandler.addNameScheme("%$series% s%$season%e%$episode(2)% - %$episodeName%");
+        nameSchemeHandler.setNameScheme(0);
+        QString nameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
+
+        Message msgAddNameScheme;
+        msgAddNameScheme.type = Message::controller_addNameScheme_view;
+        msgAddNameScheme.data[0].qsPointer = &nameSchemeRepresentation;
+        emit(sendMessage(msgAddNameScheme));
+        return;
+    }
+
+    int amountNameSchemes = nameSchemeHandler.getAmountNameSchemes();
+    // Read all name schemes
+    for (int i = 0; i < amountNameSchemes; i++) {
+        nameSchemeHandler.setNameScheme(i);
+        QString nameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
+
+        Message msgAddNameScheme;
+        msgAddNameScheme.type = Message::controller_addNameScheme_view;
+        msgAddNameScheme.data[0].qsPointer = &nameSchemeRepresentation;
+        emit(sendMessage(msgAddNameScheme));
+    }
+    nameSchemeHandler.setNameScheme(0);
+}
+
+void Controller::applyNameSchemes()
+{
+    int amountEpisodes = seriesData.getAmountEpisodes();
+    //seriesData.set
+}
+
+void Controller::updateNewFileNames()
+{
+    QString series = seriesData.getSeries();
+    int season = seriesData.getSelectedSeason();
+    int amountEpisodes = seriesData.getAmountEpisodes();
+    QStringList episodeList = seriesData.getEpisodes();
+
+    QStringList newFileNames = nameSchemeHandler.getFileNameList(series, season, amountEpisodes, episodeList);
+    seriesData.setNewFileNames(newFileNames);
+}
+
 Controller::Controller(QObject *parent) : QObject(parent)
 {
+}
+
+void Controller::initialize()
+{
+    initializeNameSchemes();
 }
 
 bool Controller::setSeries(QString series, int season)
@@ -16,10 +68,13 @@ bool Controller::setSeries(QString series, int season)
     if (seriesFound) {
         QStringList episodeList = seriesParser.getIDValue();
         int amountSeasons = seriesParser.getAmountSeasons();
+
         seriesData.setSeries(series);
         seriesData.setSelectedSeason(season);
         seriesData.setEpisodes(episodeList);
         seriesData.setAmountSeasons(amountSeasons);
+        updateNewFileNames();
+
         updateView();
 
         Message msgSuccessLoading;
@@ -48,6 +103,7 @@ bool Controller::setDirectory(QDir directory)
 
         QStringList suffixesList = directoryParser.getFilesSuffix();
         seriesData.setSuffixes(suffixesList);
+
         QStringList oldFileNames = directoryParser.getOldFileNameList();
         seriesData.setOldFileNames(oldFileNames);
         updateView();
@@ -64,11 +120,14 @@ bool Controller::setDirectory(QDir directory)
 bool Controller::renameFiles()
 {
     QDir directory = seriesData.getWorkingDirectory();
-    QStringList episodeNames = seriesData.getNewFileNamesForView();
-    QStringList fileNames = seriesData.getOldFileNamesForView();
+    QStringList newFileNameList = seriesData.getNewFileNames();
+    QStringList oldFileNameList = seriesData.getOldFileNames();
+    QStringList suffixesList = seriesData.getSuffixes();
+
     fileRenamer.setDirectory(directory);
-    fileRenamer.setEpisodeNames(episodeNames);
-    fileRenamer.setFiles(fileNames);
+    fileRenamer.setOldFileNames(oldFileNameList);
+    fileRenamer.setNewFileNames(newFileNameList);
+    fileRenamer.setSuffixes(suffixesList);
 
     if (fileRenamer.rename())
     {
@@ -86,17 +145,17 @@ bool Controller::renameFiles()
 
 void Controller::updateView()
 {
-    QStringList episodeNameList = seriesData.getEpisodes();
-    QStringList newFileNameList = seriesData.getNewFileNamesForView();
+    QStringList newFileNameList = seriesData.getNewFileNames();
     QStringList oldFileNameList = seriesData.getOldFileNamesForView();
+    // Operate on suffixes
     int amountSeasons = seriesData.getAmountSeasons();
 
     Message msgViewUpdate;
     msgViewUpdate.type = Message::controller_updateView_view;
     msgViewUpdate.data[0].i = amountSeasons;
-    msgViewUpdate.data[1].qsListPointer = &episodeNameList;
+    msgViewUpdate.data[1].qsListPointer = &oldFileNameList;
     msgViewUpdate.data[2].qsListPointer = &newFileNameList;
-    msgViewUpdate.data[3].qsListPointer = &oldFileNameList;
+
     emit(sendMessage(msgViewUpdate));
 }
 
@@ -156,9 +215,22 @@ void Controller::notify(Message &msg)
         bool directorySet = setDirectory(QDir(directory));
         updateView();
         updateRenameButton();
+
+        break;
     }
     case Message::view_rename_controller:
+    {
         renameFiles(); // Bool, operate on Output!
+        break;
+    }
+    case Message::view_changeNameScheme_controller:
+    {
+        int selectedNameScheme = msg.data[0].i;
+        nameSchemeHandler.setNameScheme(selectedNameScheme);
+        updateNewFileNames();
+        updateView();
+        break;
+    }
     default:
         break;
     }

@@ -1,1 +1,4 @@
-%series% - s%season(2)%e%episode%
+%$series% - S%$season%E%$episode(2)% - %$episodeName%
+[%$series%] S%$season%E%$episode(2)% - %$episodeName%
+%$series%.%$season%%$episode(2)%.%$episodeName%
+%$series%.%$season%%$episode(2)%

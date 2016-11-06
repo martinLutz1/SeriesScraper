@@ -9,14 +9,16 @@ class FileRenamer
 {
 public:
     FileRenamer();
-    void setFiles(QStringList sortedFilesWithSpaces);
-    void setEpisodeNames(QStringList episodes);
+    void setOldFileNames(QStringList oldfileNameList);
+    void setNewFileNames(QStringList newFileNameList);
     void setDirectory(QDir directory);
+    void setSuffixes(QStringList suffixList);
     bool rename();
 
 private:
-    QStringList fileList;
-    QStringList episodeList;
+    QStringList suffixes;
+    QStringList oldFileNameList;
+    QStringList newFileNameList;
     QDir workingDirectory;
 };
 

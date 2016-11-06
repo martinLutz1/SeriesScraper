@@ -7,7 +7,7 @@
 #include "seriesparser.h"
 #include "filerenamer.h"
 #include "seriesdata.h"
-#include "nameschemeparser.h"
+#include "nameschemehandler.h"
 #include "message.h"
 
 class Controller : public QObject
@@ -18,10 +18,15 @@ private:
     DirectoryParser directoryParser;
     SeriesData seriesData;
     FileRenamer fileRenamer;
-    NameSchemeParser nameSchemeParser;
+    NameSchemeHandler nameSchemeHandler;
+
+    void initializeNameSchemes();
+    void applyNameSchemes();
+    void updateNewFileNames();
 
 public:
     explicit Controller(QObject *parent = 0);
+    void initialize();
     bool setSeries(QString series, int season); // Set series if existing and set table
     bool setDirectory(QDir directory);
     bool renameFiles();

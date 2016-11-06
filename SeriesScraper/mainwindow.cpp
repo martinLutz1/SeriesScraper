@@ -26,6 +26,42 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Table
     setUpTable();
+
+    // Button
+    ui->renameButton->setEnabled(false);
+
+    // Season combobox
+    ui->seasonComboBox->setEnabled(false);
+
+    QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
+    QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
+    QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
+    QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChange(int,int)));
+    QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
+    QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChange()));
+    QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
+    QObject::connect(ui->renameButton, SIGNAL(pressed()), this , SLOT(onRenameButtonPressed()));
+    QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
+    QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
+    QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
+}
+
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::setUpTable()
+{
+    // Set table start size
+    ui->episodeNameTable->setColumnCount(2);
+
+    // Set Column width and name headers
+    ui->episodeNameTable->setHorizontalHeaderLabels(QString("Originale Namen;Neue Namen").split(";"));
+    ui->episodeNameTable->horizontalHeader()->setStretchLastSection(true);
+
+    // Set background
     whiteBackground = ui->episodeNameTable->styleSheet();
     imageBackground = QString("background-image: url(:/images/logo.png); ")
             + QString("background-color: rgb(255, 255, 255);")
@@ -47,44 +83,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                      "font-weight: bold; "
                                      "font-size: 16px;");
     seriesStatusLabel->setHidden(true);
-
-    // Button
-    ui->renameButton->setEnabled(false);
-
-    // Season combobox
-    ui->seasonComboBox->setEnabled(false);
-
-    // Remove, when implemented!
-    ui->nameSchemeComboBox->addItem("1: series - s*e* - ep.*");
-
-    QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
-    QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
-    QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
-    QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChange(int,int)));
-    QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
-    QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChange()));
-    QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
-    QObject::connect(ui->renameButton, SIGNAL(pressed()), this , SLOT(onRenameButtonPressed()));
-    QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
-    QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
-}
-
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::setUpTable()
-{
-    // Set table start size
-    ui->episodeNameTable->setColumnCount(3);
-
-    // Set Column width and name headers
-    ui->episodeNameTable->setHorizontalHeaderLabels(QString("Episoden-Name;Datei-Name(neu);Datei-Name(alt)").split(";"));
-    ui->episodeNameTable->setColumnWidth(0,250);
-    ui->episodeNameTable->setColumnWidth(1,400);
-    ui->episodeNameTable->horizontalHeader()->setStretchLastSection(true);
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -196,9 +194,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     ui->renameButton->move(renameButtonX, renameButtonY);
 
     // Resize table coloumns
-    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.28);
-    ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.4);
-    ui->episodeNameTable->setColumnWidth(2, episodeTableWidth*0.29);
+    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.45);
+    ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.47);
 
     // Resize series progressbar
     int seriesProgressbarWidth = episodeTableWidth / 2;
@@ -243,6 +240,34 @@ void MainWindow::setAmountSeasons(int amount)
     // Disable or enable season selection
     bool enableSeasonComboBox = (amount != 0);
     ui->seasonComboBox->setEnabled(enableSeasonComboBox);
+}
+
+void MainWindow::addNameSchemeItem(QString nameScheme)
+{
+    int recentAmount = ui->nameSchemeComboBox->count();
+
+    if (!nameScheme.isEmpty()) {
+        nameSchemeItemList << nameScheme;
+        QString nameSchemeEntry = QString::number(++recentAmount) + ": " + nameScheme;
+        ui->nameSchemeComboBox->addItem(nameSchemeEntry);
+    }
+}
+
+void MainWindow::removeNameSchemeItem(int itemIndex)
+{
+    int recentAmount = ui->nameSchemeComboBox->count();
+
+    // Discard impossible indexes
+    if (itemIndex >= 0 && itemIndex < recentAmount) {
+        nameSchemeItemList.removeAt(itemIndex);
+        ui->nameSchemeComboBox->clear();
+
+        // Add all remaining items again
+        for (int i = 0; i < nameSchemeItemList.size(); i++) {
+             QString nameSchemeEntry = QString::number(i + 1) + ": " + nameSchemeItemList.at(i);
+             ui->nameSchemeComboBox->addItem(nameSchemeEntry);
+        }
+    }
 }
 
 void MainWindow::openDirectory()
@@ -340,9 +365,18 @@ void MainWindow::onSeasonChanged(int index)
 
 void MainWindow::onRenameButtonPressed()
 {
+    qDebug() << "-";
     Message renameMsg;
     renameMsg.type = Message::view_rename_controller;
     emit(sendMessage(renameMsg));
+}
+
+void MainWindow::onNameSchemeChanged(int index)
+{
+    Message msgNameSchemeChanged;
+    msgNameSchemeChanged.type = Message::view_changeNameScheme_controller;
+    msgNameSchemeChanged.data[0].i = index;
+    emit(sendMessage(msgNameSchemeChanged));
 }
 
 void MainWindow::onCellChange(int row, int coloumn)
@@ -359,14 +393,13 @@ void MainWindow::notify(Message &msg)
     case Message::controller_updateView_view:
     {
         int amountSeasons = msg.data[0].i;
-        QStringList episodeNameList = *msg.data[1].qsListPointer;
+        QStringList oldFileNameList = *msg.data[1].qsListPointer;
         QStringList newFileNameList = *msg.data[2].qsListPointer;
-        QStringList oldFileNameList = *msg.data[3].qsListPointer;
 
         setAmountSeasons(amountSeasons);
         clearTable();
-        for (int i = 0; i < episodeNameList.length(); i++)
-            setRow(i, episodeNameList.at(i), newFileNameList.at(i), oldFileNameList.at(i));
+        for (int i = 0; i < newFileNameList.length(); i++)
+            setRow(i, oldFileNameList.at(i), newFileNameList.at(i));
         break;
     }
 
@@ -392,6 +425,7 @@ void MainWindow::notify(Message &msg)
         blur->setEnabled(true);
         ui->episodeNameTable->setEnabled(false);
         ui->episodeNameTable->repaint();
+
         // Show after applying all effects and repainting
         ui->episodeNameTable->setHidden(false);
         seriesProgressBar->setValue(0);
@@ -400,13 +434,18 @@ void MainWindow::notify(Message &msg)
 
         break;
     }
+    case Message::controller_addNameScheme_view: {
+        QString nameScheme = *msg.data[0].qsPointer;
+        addNameSchemeItem(nameScheme);
+        break;
+    }
 
     default:
         break;
     }
 }
 
-bool MainWindow::setRow(int row, QString episodeName, QString newFileName, QString oldFileName)
+bool MainWindow::setRow(int row, QString oldFileName, QString newFileName)
 {
     // Check if trying to access rows, that are not existent and not the next possible new row
     if (row > tableRows)
@@ -416,22 +455,18 @@ bool MainWindow::setRow(int row, QString episodeName, QString newFileName, QStri
 
     // Check if row items already exist to prevent multiple creations
     if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL) {
-        ui->episodeNameTable->item(row, 0)->setText(episodeName);
+        ui->episodeNameTable->item(row, 0)->setText(oldFileName);
         ui->episodeNameTable->item(row, 1)->setText(newFileName);
-        ui->episodeNameTable->item(row, 2)->setText(oldFileName);
     }
     else { // Not existing
         tableRows++;
-        QTableWidgetItem *episode = new QTableWidgetItem(episodeName);
-        QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
         QTableWidgetItem *oldFile = new QTableWidgetItem(oldFileName);
-        newFile->setFlags(newFile->flags() & ~Qt::ItemIsEditable);
+        QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
         oldFile->setFlags(oldFile->flags() & ~Qt::ItemIsEditable);
 
         ui->episodeNameTable->setRowCount(tableRows);
-        ui->episodeNameTable->setItem(row, 0, episode);
+        ui->episodeNameTable->setItem(row, 0, oldFile);
         ui->episodeNameTable->setItem(row, 1, newFile);
-        ui->episodeNameTable->setItem(row, 2, oldFile);
     }
     return true;
 }

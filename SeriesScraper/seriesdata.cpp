@@ -3,8 +3,6 @@
 #include <QDebug>
 
 SeriesData::SeriesData() :
-    seasonFileNameText(" - s"),
-    episodeFileNameText("e"),
     amountEpisodes(0),
     amountSeasons(0),
     selectedSeason(1)
@@ -13,20 +11,6 @@ SeriesData::SeriesData() :
 }
 
 //----------------------- Setter -----------------------//
-void SeriesData::setSeriesFileNameText(QString newSeriesText)
-{
-    seriesFileNameText = newSeriesText;
-}
-
-void SeriesData::setSeasonFileNameText(QString newSeasonText)
-{
-    seasonFileNameText = newSeasonText;
-}
-
-void SeriesData::setEpisodeFileNameText(QString newEpisodeText)
-{
-    episodeFileNameText = newEpisodeText;
-}
 
 void SeriesData::setSeries(QString newSeries)
 {
@@ -81,21 +65,12 @@ void SeriesData::setWorkingDirectory(QDir directory)
         workingDirectory = directory;
 }
 
+void SeriesData::setNewFileNames(QStringList newFileNames)
+{
+    this->newFileNames = newFileNames;
+}
+
 //----------------------- Getter -----------------------//
-QString SeriesData::getSeriesFileNameText()
-{
-    return seriesFileNameText;
-}
-
-QString SeriesData::getSeasonFileNameText()
-{
-    return seasonFileNameText;
-}
-
-QString SeriesData::getEpisodeFileNameText()
-{
-    return episodeFileNameText;
-}
 
 QString SeriesData::getSeries()
 {
@@ -108,6 +83,11 @@ QString SeriesData::getSuffix(int index)
         return suffixesList.at(index);
     else
         return QString("No suffix available at index " + QString::number(index));
+}
+
+QStringList SeriesData::getSuffixes()
+{
+    return suffixesList;
 }
 
 QString SeriesData::getEpisode(int index)
@@ -138,23 +118,8 @@ int SeriesData::getSelectedSeason()
     return selectedSeason;
 }
 
-QString SeriesData::getFileNameText(int index)
+QStringList SeriesData::getNewFileNames()
 {
-    if (index >= episodesList.length() || index >= suffixesList.length() || suffixesList.at(index) == "") // geht schöner
-        return "";
-
-    QString episodeName = episodesList.at(index);
-    QString suffix = suffixesList.at(index);
-    QString fileName = series + seriesFileNameText + seasonFileNameText + QString::number(selectedSeason)
-            + episodeFileNameText + QString::number(index + 1) + " - " + episodeName + "." + suffix;
-    return fileName;
-}
-
-QStringList SeriesData::getNewFileNamesForView()
-{
-    QStringList newFileNames;
-    for (int i = 0; i < amountEpisodes; i++)
-        newFileNames << getFileNameText(i);
     return newFileNames;
 }
 
@@ -168,6 +133,11 @@ QStringList SeriesData::getOldFileNamesForView()
             oldFileNamesCropped << "";
     }
     return oldFileNamesCropped;
+}
+
+QStringList SeriesData::getOldFileNames()
+{
+    return oldFileNamesSortedWithSpaces;
 }
 
 QDir SeriesData::getWorkingDirectory()

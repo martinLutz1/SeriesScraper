@@ -9,6 +9,7 @@ public:
     NameSchemeParser();
     void parseNameScheme(QString nameScheme);
     QString getFileName(QString series, QString season, QString episode, QString episodeName);
+    QString getNameSchemeRepresentation();
 
 private:
     QRegExp seriesNameExpression;

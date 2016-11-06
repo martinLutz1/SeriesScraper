@@ -10,9 +10,6 @@ class SeriesData
 {
 public:
     SeriesData();
-    void setSeriesFileNameText(QString newSeriesText);
-    void setSeasonFileNameText(QString newSeasonText);
-    void setEpisodeFileNameText(QString newEpisodeText);
     void setSeries(QString newSeries);
     void setSuffix(int index, QString newSuffix);
     void setSuffixes(QStringList newSuffixList);
@@ -22,30 +19,27 @@ public:
     void setSelectedSeason(int newSelectedSeason);
     void setOldFileNames(QStringList oldFileNamesSortedWithSpaces);
     void setWorkingDirectory(QDir directory);
+    void setNewFileNames(QStringList newFileNames);
 
-    QString getSeriesFileNameText();
-    QString getSeasonFileNameText();
-    QString getEpisodeFileNameText();
     QString getSeries();
     QString getSuffix(int index);
+    QStringList getSuffixes();
     QString getEpisode(int index);
     QStringList getEpisodes();
     int getAmountEpisodes();
     int getAmountSeasons();
     int getSelectedSeason();
-    QString getFileNameText(int index);
-    QStringList getNewFileNamesForView();
+    QStringList getNewFileNames();
     QStringList getOldFileNamesForView();
+    QStringList getOldFileNames();
     QDir getWorkingDirectory();
 
 private:
-    QString seriesFileNameText;
-    QString seasonFileNameText;
-    QString episodeFileNameText;
     QString series;
     QStringList suffixesList;
     QStringList episodesList;
     QStringList oldFileNamesSortedWithSpaces;
+    QStringList newFileNames;
     QDir workingDirectory;
     int amountEpisodes;
     int amountSeasons;

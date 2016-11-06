@@ -20,6 +20,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 {
     QFileInfoList sortedFiles = files;
     QStringList filesQs;
+
     for (int i = 0; i < sortedFiles.length(); i++) { // Get strings to calculate positions
         filesQs << sortedFiles.at(i).filePath();
     }
@@ -47,7 +48,7 @@ DirectoryParser::DirectoryParser()
     directory.setPath("");
     setNameFilterToAll();
 
-    episodeNumberExpression.setPattern("s[0-9]+e[0-9]+");
+    episodeNumberExpression.setPattern("\\w+[0-9]+\\w+[0-9]+");
     numberFromEpisodeNumberExpression.setPattern("[0-9]*$");
 }
 

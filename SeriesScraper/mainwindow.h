@@ -30,6 +30,7 @@ private:
     int progressIncrement;
     QString whiteBackground;
     QString imageBackground;
+    QStringList nameSchemeItemList;
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
     QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
     QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
@@ -38,14 +39,16 @@ private:
 
     void setUpTable();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
+    void setAmountSeasons(int amount);
+    void addNameSchemeItem(QString nameScheme);
+    void removeNameSchemeItem(int itemIndex);
     void resizeEvent(QResizeEvent *event);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    bool setRow(int row, QString episodeName, QString newFileName, QString oldFileName);
+    bool setRow(int row, QString oldFileName, QString newFileName);
     void clearTable();
-    void setAmountSeasons(int amount);
 
 private slots:
     void openDirectory();
@@ -58,6 +61,7 @@ private slots:
     void onSeriesTextChange();
     void onSeasonChanged(int index);
     void onRenameButtonPressed();
+    void onNameSchemeChanged(int index);
 
 public slots:
     void notify(Message &msg);

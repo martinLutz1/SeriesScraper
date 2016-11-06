@@ -3,16 +3,13 @@
 
 NameSchemeParser::NameSchemeParser()
 {
-    seriesNameExpression.setPattern("series");
-    seasonNumberExpression.setPattern("season");
-    episodeNumberAdvancedExpression.setPattern("episode\\((\\d+)\\)");
-    episodeNumberExpression.setPattern("episode");
-    episodeNameExpression.setPattern("episodeName");
+    seriesNameExpression.setPattern("\\$series");
+    seasonNumberExpression.setPattern("\\$season");
+    episodeNumberAdvancedExpression.setPattern("\\$episode\\((\\d+)\\)");
+    episodeNumberExpression.setPattern("\\$episode");
+    episodeNameExpression.setPattern("\\$episodeName");
     numberExpression.setPattern("\\d+");
     nextVariableExpression.setPattern("%");
-
-    parseNameScheme("%season% %series% - s%season%e%episode% - %episodeName% [NIC]");
-    qDebug() << getFileName("Supernatural", "2", "9", "My way");
 }
 
 void NameSchemeParser::parseNameScheme(QString nameScheme)
@@ -55,6 +52,36 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
         }
     }
     return fileName;
+}
+
+QString NameSchemeParser::getNameSchemeRepresentation()
+{
+    QStringList variables = {"<series>", "<s>", "<ep", "<episode name>"};
+    QString nameSchemeRepresentation;
+    for (int i = 0; i < parsedNameSchemeList.size(); i++) {
+        QString currentString = parsedNameSchemeList.at(i);
+        int variableType = getVariableType(currentString);
+
+        if (variableType == episodeNumber) {
+            nameSchemeRepresentation += variables[variableType];
+            // Simple format
+            if (numberExpression.cap(0).isEmpty()) {
+                 + "(1)>";
+            }
+            // Advanced format (leading zeros)
+            else {
+                int numberLenght = numberExpression.cap(0).toInt();
+                nameSchemeRepresentation += "(" + QString::number(numberLenght) + ")>";
+            }
+        }
+        else if (variableType != none) {
+            nameSchemeRepresentation += variables[variableType];
+        }
+        else {
+            nameSchemeRepresentation += currentString;
+        }
+    }
+    return nameSchemeRepresentation;
 }
 
 int NameSchemeParser::getVariableType(QString toCheck)
