@@ -10,6 +10,7 @@ NameSchemeParser::NameSchemeParser()
     episodeNameExpression.setPattern("\\$episodeName");
     numberExpression.setPattern("\\d+");
     nextVariableExpression.setPattern("%");
+    replaceExpression.setPattern("\\$replace\\((.+)=(.+)\\)");
 }
 
 void NameSchemeParser::parseNameScheme(QString nameScheme)
@@ -26,6 +27,7 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
 {
     QStringList variables = {series, season, episode, episodeName};
     QString fileName;
+    QStringList replaceFrom, replaceTo;
 
     for (int i = 0; i < parsedNameSchemeList.size(); i++) {
         QString currentString = parsedNameSchemeList.at(i);
@@ -44,6 +46,20 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
                 fileName += number;
             }
         }
+        // Doesnt operate on RegExp, change me if you change replace operation
+        else if (variableType == replace) {
+            // Remove everything thats not inside the brackets
+            QString replaceTerm = currentString.remove(0, 9).remove(currentString.size() - 1 , 1);
+            QStringList replaceTermSplitted = replaceTerm.split("=");
+
+            if (replaceTermSplitted.size() != 2) // Error message
+                continue;
+            else { // Two terms found
+                replaceFrom << replaceTermSplitted.at(0);
+                replaceTo << replaceTermSplitted.at(1);
+            }
+
+        }
         else if (variableType != none) {
             fileName += variables[variableType];
         }
@@ -51,22 +67,32 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
             fileName += currentString;
         }
     }
+
+    int replaceCount = replaceFrom.size();
+    for (int i = 0; i < replaceCount; i++) {
+        QString from = replaceFrom.at(i);
+        QString to = replaceTo.at(i);
+        fileName.replace(from, to);
+    }
     return fileName;
 }
 
 QString NameSchemeParser::getNameSchemeRepresentation()
 {
-    QStringList variables = {"<series>", "<s>", "<ep", "<episode name>"};
+    QStringList variables = {"<series>", "<s>", "<ep", "<episode name>", "$replace("};
     QString nameSchemeRepresentation;
+    QStringList replaceOperationList;
+
     for (int i = 0; i < parsedNameSchemeList.size(); i++) {
         QString currentString = parsedNameSchemeList.at(i);
         int variableType = getVariableType(currentString);
-
         if (variableType == episodeNumber) {
-            nameSchemeRepresentation += variables[variableType];
+            numberExpression.indexIn(currentString, 0);
+            nameSchemeRepresentation += variables.at(variableType);
+
             // Simple format
             if (numberExpression.cap(0).isEmpty()) {
-                 + "(1)>";
+                nameSchemeRepresentation.append(">");
             }
             // Advanced format (leading zeros)
             else {
@@ -74,13 +100,28 @@ QString NameSchemeParser::getNameSchemeRepresentation()
                 nameSchemeRepresentation += "(" + QString::number(numberLenght) + ")>";
             }
         }
+        else if (variableType == replace) {
+            QString replaceOperationWithoutDollar = currentString.remove(0, 1);
+            replaceOperationList << replaceOperationWithoutDollar;
+        }
         else if (variableType != none) {
-            nameSchemeRepresentation += variables[variableType];
+            nameSchemeRepresentation += variables.at(variableType);
         }
         else {
             nameSchemeRepresentation += currentString;
         }
     }
+
+    int replaceCount = replaceOperationList.size();
+    // Add counted replace operations to representation
+    if (replaceCount == 1) { // Show replace string if only one replace operation
+        nameSchemeRepresentation += "$" + replaceOperationList.at(0) + "$";
+    }
+    else if (replaceCount > 1) {
+        nameSchemeRepresentation += variables.at(replace) + QString::number(replaceCount) + ")$";
+    }
+
+
     return nameSchemeRepresentation;
 }
 
@@ -98,6 +139,9 @@ int NameSchemeParser::getVariableType(QString toCheck)
     }
     else if (episodeNameExpression.exactMatch(toCheck)) {
         return episodeName;
+    }
+    else if (replaceExpression.exactMatch(toCheck)) {
+        return replace;
     }
     else {
         return none;

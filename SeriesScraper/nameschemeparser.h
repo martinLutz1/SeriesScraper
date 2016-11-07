@@ -19,6 +19,7 @@ private:
     QRegExp episodeNameExpression;
     QRegExp numberExpression;
     QRegExp nextVariableExpression;
+    QRegExp replaceExpression;
 
     QStringList parsedNameSchemeList;
     enum VariableType {
@@ -26,6 +27,7 @@ private:
         seasonNumber,
         episodeNumber,
         episodeName,
+        replace,
         none
     };
 
