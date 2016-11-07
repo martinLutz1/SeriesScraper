@@ -7,6 +7,10 @@ QStringList DirectoryParser::sortFiles(QStringList files)
     QStringList sortedFiles;
     std::vector<int> position = getEpisodePositions(files);
 
+    if (position.size() !=files.size()) { // Name scheme not found, let QT sort
+        return files;
+    }
+
     for (int i = 0; i < files.length(); i++) {
         while (sortedFiles.length() <= position.at(i)) { // Prepare space
             sortedFiles.push_back("");
@@ -26,7 +30,11 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     }
     std::vector<int> position = getEpisodePositions(filesQs);
 
-    for (int i = 0; i < files.length(); i++) {
+    if (position.size() < files.size()) { // Name scheme not found, let QT sort
+        return files;
+    }
+
+    for (int i = 0; i < files.size(); i++) {
         while (sortedFiles.length() <= position.at(i)) { // Prepare space
             sortedFiles.push_back(QFileInfo(""));
         }
@@ -80,7 +88,6 @@ QStringList DirectoryParser::getFiles()
         if (fileInfo.isFile())
             filesToReturn << fileInfo.fileName();
     }
-
     filesToReturn = sortFiles(filesToReturn);
     return filesToReturn;
 }

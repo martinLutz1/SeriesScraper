@@ -28,19 +28,26 @@ void FileRenamer::setSuffixes(QStringList suffixList)
 
 bool FileRenamer::rename()
 {
-    if (suffixes.size() != oldFileNameList.size()) {
+    int amountOldFiles = oldFileNameList.size();
+    int amountNewNames = newFileNameList.size();
+    int amountSuffixes = suffixes.size();
+
+    if (amountSuffixes!= amountOldFiles) {
         return false;
     }
+
     if (workingDirectory.exists())
     {
-        for (int i = 0; i < oldFileNameList.length(); i++)
+        int amountToRename = std::min(amountNewNames, amountOldFiles);
+        for (int i = 0; i < amountToRename; i++)
         {
-            if (oldFileNameList.at(i).isEmpty()) // Do not rename empty files
+            QString fileToRename = oldFileNameList.at(i);
+            if (fileToRename.isEmpty()) // Do not rename empty files
                 continue;
 
             //try catch!
             QString newFileName = newFileNameList.at(i) + "." + suffixes.at(i);
-            workingDirectory.rename(oldFileNameList.at(i), newFileName);
+            workingDirectory.rename(fileToRename, newFileName);
         }
         return true;
     } else

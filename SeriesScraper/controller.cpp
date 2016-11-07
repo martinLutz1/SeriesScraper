@@ -98,7 +98,8 @@ bool Controller::setSeries(QString series, int season)
 
 bool Controller::setDirectory(QDir directory)
 {
-    if (directoryParser.initializeDirectory(directory)) {
+    bool directoryExists = directoryParser.initializeDirectory(directory);
+    if (directoryExists) {
         seriesData.setWorkingDirectory(directory);
 
         QStringList suffixesList = directoryParser.getFilesSuffix();

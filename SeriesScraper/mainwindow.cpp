@@ -365,7 +365,6 @@ void MainWindow::onSeasonChanged(int index)
 
 void MainWindow::onRenameButtonPressed()
 {
-    qDebug() << "-";
     Message renameMsg;
     renameMsg.type = Message::view_rename_controller;
     emit(sendMessage(renameMsg));
