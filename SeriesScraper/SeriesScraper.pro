@@ -46,7 +46,7 @@ macx {
     QMAKE_POST_LINK += cp -Rf ./../namescheme.list ./SeriesScraper.app/Contents/MacOs;
 }
 unix:!macx {
-    QMAKE_POST_LINK += cp -Rf./../namescheme.list ./;
+    QMAKE_POST_LINK += cp -Rf ./../namescheme.list ./;
 }
 
 

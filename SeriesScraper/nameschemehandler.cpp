@@ -6,7 +6,7 @@
 NameSchemeHandler::NameSchemeHandler() : successReading(false)
 {
     applicationDirectory = QCoreApplication::applicationDirPath();
-    nameSchemeFile.setFileName(applicationDirectory.absoluteFilePath("nameScheme.list"));
+    nameSchemeFile.setFileName(applicationDirectory.absoluteFilePath("namescheme.list"));
 }
 
 bool NameSchemeHandler::readNameSchemeFile()

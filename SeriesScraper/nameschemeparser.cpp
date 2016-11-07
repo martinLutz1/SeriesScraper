@@ -49,9 +49,10 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
         // Doesnt operate on RegExp, change me if you change replace operation
         else if (variableType == replace) {
             // Remove everything thats not inside the brackets
-            QString replaceTerm = currentString.remove(0, 9).remove(currentString.size() - 1 , 1);
-            QStringList replaceTermSplitted = replaceTerm.split("=");
+            QString replaceTerm = currentString.remove(0, 9);
+            replaceTerm = replaceTerm.left(replaceTerm.size() - 1);
 
+            QStringList replaceTermSplitted = replaceTerm.split("=");
             if (replaceTermSplitted.size() != 2) // Error message
                 continue;
             else { // Two terms found
