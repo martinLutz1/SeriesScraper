@@ -9,6 +9,7 @@
 #include "seriesdata.h"
 #include "nameschemehandler.h"
 #include "message.h"
+#include "languagecontrol.h"
 
 class Controller : public QObject
 {
@@ -19,6 +20,7 @@ private:
     SeriesData seriesData;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
+    LanguageControl languageControl;
 
     void initializeNameSchemes();
     void applyNameSchemes();

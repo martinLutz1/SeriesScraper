@@ -11,7 +11,7 @@ LanguageControl::LanguageControl()
 {
     languageFileDirectory.setPath(QCoreApplication::applicationDirPath());
     if (!languageFileDirectory.cd("language"))
-        qWarning("Language directory not found");
+        qWarning("Language directory not found"); // output on statuslabel
 }
 
 bool LanguageControl::loadLanguage(QString language)
@@ -30,73 +30,35 @@ bool LanguageControl::loadLanguage(QString language)
     {
         QJsonObject obj = doc.object();
         QStringList translationList;
-        translationList << obj.value("DirectorySelection").toString()
-                        << obj.value("Episode").toString()
-                        << obj.value("EpisodeName").toString()
-                        << obj.value("FileName").toString()
-                        << obj.value("Path").toString()
-                        << obj.value("Season").toString()
+        translationList << obj.value("OldNames").toString()
+                        << obj.value("NewNames").toString()
+                        << obj.value("DirectorySelection").toString()
                         << obj.value("Selection").toString()
+                        << obj.value("Path").toString()
+                        << obj.value("SeriesSelection").toString()
                         << obj.value("Series").toString()
-                        << obj.value("SeriesSelection").toString();
+                        << obj.value("Season").toString()
+                        << obj.value("NameScheme").toString()
+                        << obj.value("Rename").toString()
+                        << obj.value("Settings").toString()
+                        << obj.value("Language").toString()
+                        << obj.value("NotFound").toString();
 
-
-        languageData.setDirectorySelection(translationList.at(0));
-        languageData.setEpisode(translationList.at(1));
-        languageData.setEpisodeName(translationList.at(2));
-        languageData.setFileName(translationList.at(3));
-        languageData.setPath(translationList.at(4));
-        languageData.setSeason(translationList.at(5));
-        languageData.setSelection(translationList.at(6));
-        languageData.setSeries(translationList.at(7));
-        languageData.setSeriesSelection(translationList.at(8));
+        languageData.setTranslationSet(translationList);
+        languageData.setLanguage(language);
 
         return true;
     }
     return false;
 }
 
-QString LanguageControl::getEpisodeName()
+QString LanguageControl::getTranslation(int translateThis)
 {
-    return languageData.getEpisodeName();
+    languageData.getTranslation(translateThis);
 }
 
-QString LanguageControl::getFileName()
+QStringList LanguageControl::getTranslationList()
 {
-    return languageData.getFileName();
+    return languageData.getTranslationList();
 }
 
-QString LanguageControl::getDirectorySelection()
-{
-    return languageData.getDirectorySelection();
-}
-
-QString LanguageControl::getPath()
-{
-    return languageData.getPath();
-}
-
-QString LanguageControl::getSelection()
-{
-    return languageData.getSelection();
-}
-
-QString LanguageControl::getSeries()
-{
-    return languageData.getSeries();
-}
-
-QString LanguageControl::getSeriesSelection()
-{
-    return languageData.getSeriesSelection();
-}
-
-QString LanguageControl::getSeason()
-{
-    return languageData.getSeriesSelection();
-}
-
-QString LanguageControl::getEpisode()
-{
-    return languageData.getEpisode();
-}

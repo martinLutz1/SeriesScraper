@@ -1,41 +1,38 @@
 #ifndef LANGUAGEDATA_H
 #define LANGUAGEDATA_H
-#include <QString>
+#include <QStringList>
 
 class LanguageData
 {
 public:
     LanguageData();
-    QString getEpisodeName();
-    QString getFileName();
-    QString getDirectorySelection();
-    QString getPath();
-    QString getSelection();
-    QString getSeries();
-    QString getSeriesSelection();
-    QString getSeason();
-    QString getEpisode();
+    QString getLanguage();
+    QString getTranslation(int toTranslate);
+    QStringList getTranslationList();
+    void setLanguage(QString language);
+    void setTranslation(int toTranslate, QString translation);
+    void setTranslationSet(QStringList translationList);
 
-    void setEpisodeName(QString newEpisodeName);
-    void setFileName(QString newFileName);
-    void setDirectorySelection(QString newDirectorySelection);
-    void setPath(QString newPath);
-    void setSelection(QString newSelection);
-    void setSeries(QString newSeries);
-    void setSeriesSelection (QString newSeriesSelection);
-    void setSeason(QString newSeason);
-    void setEpisode(QString newEpisode);
+    enum translate {
+        oldName,
+        newName,
+        directorySelection,
+        selection,
+        path,
+        seriesSelection,
+        series,
+        season,
+        nameScheme,
+        rename,
+        settings,
+        language,
+        // Errors
+        notFound
+    };
 
 private:
-    QString episodeName;
-    QString fileName;
-    QString directorySelection;
-    QString path;
-    QString selection;
-    QString series;
-    QString seriesSelection;
-    QString season;
-    QString episode;
+    QStringList translations;
+    QString selectedLanguage;
 };
 
 #endif // LANGUAGEDATA_H

@@ -25,6 +25,9 @@ private:
     QProgressBar *seriesProgressBar;
     QGraphicsBlurEffect *blur;
 
+    QMenu *settingsMenu;
+    QMenu *languageMenu;
+
     QDir chosenPath;
     int tableRows;
     int progressIncrement;
@@ -38,10 +41,12 @@ private:
     QChar times = QChar(0x15, 0x27);
 
     void setUpTable();
+    void setUpMenuBar();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
     void removeNameSchemeItem(int itemIndex);
+    void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
 
 public:
@@ -62,6 +67,7 @@ private slots:
     void onSeasonChanged(int index);
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
+    void changeLanguage(QAction *selectedLanguage);
 
 public slots:
     void notify(Message &msg);

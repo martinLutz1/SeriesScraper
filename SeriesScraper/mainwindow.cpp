@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "languagedata.h"
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QTimer>
@@ -26,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Table
     setUpTable();
+
+    // Menubar
+    setUpMenuBar();
 
     // Button
     ui->renameButton->setEnabled(false);
@@ -58,7 +62,7 @@ void MainWindow::setUpTable()
     ui->episodeNameTable->setColumnCount(2);
 
     // Set Column width and name headers
-    ui->episodeNameTable->setHorizontalHeaderLabels(QString("Originale Namen;Neue Namen").split(";"));
+    ui->episodeNameTable->setHorizontalHeaderLabels(QString("Original names;New names").split(";"));
     ui->episodeNameTable->horizontalHeader()->setStretchLastSection(true);
 
     // Set background
@@ -76,13 +80,27 @@ void MainWindow::setUpTable()
     seriesProgressBar->setHidden(true);
 
     // Table failure message
-    seriesStatusLabel->setText("Nicht gefunden");
+    seriesStatusLabel->setText("Not found");
     seriesStatusLabel->setMinimumWidth(200);
     seriesStatusLabel->setAlignment(Qt::AlignHCenter);
     seriesStatusLabel->setStyleSheet("color: rgb(255, 20, 20); "
                                      "font-weight: bold; "
                                      "font-size: 16px;");
     seriesStatusLabel->setHidden(true);
+}
+
+void MainWindow::setUpMenuBar()
+{
+    settingsMenu = new QMenu("Settings");
+    languageMenu = new QMenu("Language");
+
+    languageMenu->addAction("English");
+    languageMenu->addAction("German");
+    settingsMenu->addMenu(languageMenu);
+    ui->menuBar->addMenu(settingsMenu);
+
+    // To get text of clicked language
+    QObject::connect(languageMenu, SIGNAL(triggered(QAction *)), this, SLOT(changeLanguage(QAction *)));
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -264,10 +282,30 @@ void MainWindow::removeNameSchemeItem(int itemIndex)
 
         // Add all remaining items again
         for (int i = 0; i < nameSchemeItemList.size(); i++) {
-             QString nameSchemeEntry = QString::number(i + 1) + ": " + nameSchemeItemList.at(i);
-             ui->nameSchemeComboBox->addItem(nameSchemeEntry);
+            QString nameSchemeEntry = QString::number(i + 1) + ": " + nameSchemeItemList.at(i);
+            ui->nameSchemeComboBox->addItem(nameSchemeEntry);
         }
     }
+}
+
+void MainWindow::changeLocalization(QStringList translationList)
+{
+    QStringList tableHeader;
+    tableHeader << translationList.at(LanguageData::oldName)
+                << translationList.at(LanguageData::newName);
+
+    ui->episodeNameTable->setHorizontalHeaderLabels(tableHeader);
+    ui->pathGroupBox->setTitle(translationList.at(LanguageData::directorySelection));
+    ui->selectionButton->setText(translationList.at(LanguageData::selection));
+    ui->pathLabel->setText(translationList.at(LanguageData::path));
+    ui->seriesGroupBox->setTitle(translationList.at(LanguageData::seriesSelection));
+    ui->seriesLabel->setText(translationList.at(LanguageData::series));
+    ui->seasonLabel->setText(translationList.at(LanguageData::season));
+    ui->nameSchemeGroupBox->setTitle(translationList.at(LanguageData::nameScheme));
+    ui->renameButton->setText(translationList.at(LanguageData::rename));
+    settingsMenu->setTitle(translationList.at(LanguageData::settings));
+    languageMenu->setTitle(translationList.at(LanguageData::language));
+    seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
 }
 
 void MainWindow::openDirectory()
@@ -378,6 +416,16 @@ void MainWindow::onNameSchemeChanged(int index)
     emit(sendMessage(msgNameSchemeChanged));
 }
 
+void MainWindow::changeLanguage(QAction *selectedLanguage)
+{
+    QString language = selectedLanguage->text();
+
+    Message msgChangeLanguage;
+    msgChangeLanguage.type = Message::view_changeLanguage_controller;
+    msgChangeLanguage.data[0].qsPointer = &language;
+    emit(sendMessage(msgChangeLanguage));
+}
+
 void MainWindow::onCellChange(int row, int coloumn)
 {
     if (coloumn == 0) { // Only Episode names
@@ -437,6 +485,10 @@ void MainWindow::notify(Message &msg)
         QString nameScheme = *msg.data[0].qsPointer;
         addNameSchemeItem(nameScheme);
         break;
+    }
+    case Message::controller_changeLocalization_view: {
+        QStringList translationList = *msg.data[0].qsListPointer;
+        changeLocalization(translationList);
     }
 
     default:

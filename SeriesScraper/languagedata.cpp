@@ -1,106 +1,41 @@
 #include "languagedata.h"
 
-LanguageData::LanguageData() :
-    episodeName("Episode name"),
-    fileName("File name"),
-    directorySelection("Directory selection"),
-    path("Path"),
-    selection("Selection"),
-    series("Series"),
-    seriesSelection("Series selection"),
-    season("Season"),
-    episode("Episode")
+LanguageData::LanguageData()
 {
 }
 
-QString LanguageData::getEpisodeName()
+QString LanguageData::getLanguage()
 {
-    return episodeName;
+    return selectedLanguage;
 }
 
-QString LanguageData::getFileName()
+QString LanguageData::getTranslation(int toTranslate)
 {
-    return fileName;
+    return translations.at(toTranslate);
 }
 
-QString LanguageData::getDirectorySelection()
+QStringList LanguageData::getTranslationList()
 {
-    return directorySelection;
+    return translations;
 }
 
-QString LanguageData::getPath()
+void LanguageData::setLanguage(QString language)
 {
-    return path;
+    selectedLanguage = language;
 }
 
-QString LanguageData::getSelection()
+void LanguageData::setTranslation(int toTranslate, QString translation)
 {
-    return selection;
+    // Prepare space
+    while (translations.size() <= toTranslate) {
+        translations.push_back(QString(""));
+    }
+
+    translations[toTranslate] = translation;
 }
 
-QString LanguageData::getSeries()
+void LanguageData::setTranslationSet(QStringList translationList)
 {
-    return series;
+    translations = translationList;
 }
 
-QString LanguageData::getSeriesSelection()
-{
-    return seriesSelection;
-}
-
-QString LanguageData::getSeason()
-{
-    return season;
-}
-
-QString LanguageData::getEpisode()
-{
-    return episode;
-}
-
-
-
-void LanguageData::setEpisodeName(QString newEpisodeName)
-{
-    this->episodeName = newEpisodeName;
-}
-
-void LanguageData::setFileName(QString newFileName)
-{
-    this->fileName = newFileName;
-}
-
-void LanguageData::setDirectorySelection(QString newDirectorySelection)
-{
-    this->directorySelection = newDirectorySelection;
-}
-
-void LanguageData::setPath(QString newPath)
-{
-    this->path = newPath;
-}
-
-void LanguageData::setSelection(QString newSelection)
-{
-    this->selection = newSelection;
-}
-
-void LanguageData::setSeries(QString newSeries)
-{
-    this->series = newSeries;
-}
-
-void LanguageData::setSeriesSelection(QString newSeriesSelection)
-{
-    this->seriesSelection = newSeriesSelection;
-}
-
-void LanguageData::setSeason(QString newSeason)
-{
-    this->season = newSeason;
-}
-
-void LanguageData::setEpisode(QString newEpisode)
-{
-    this->episode = newEpisode;
-}

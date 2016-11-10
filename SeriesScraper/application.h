@@ -4,7 +4,6 @@
 #include <QApplication>
 
 class MainWindow;
-class LanguageControl;
 class Controller;
 
 class Application
@@ -19,7 +18,6 @@ public:
 private:
     QApplication app; // Dont derive from QApplication
     MainWindow* view; // Create view after QApplication
-    LanguageControl* languageControl;
     Controller* controller;
 
 public slots:

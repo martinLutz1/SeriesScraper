@@ -66,7 +66,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Serienauswahl</string>
+     <string>Series selection</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -96,7 +96,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Serie</string>
+      <string>Series</string>
      </property>
     </widget>
     <widget class="QComboBox" name="seasonComboBox">
@@ -109,7 +109,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="seriesSelectionLabel">
+    <widget class="QLabel" name="seasonLabel">
      <property name="geometry">
       <rect>
        <x>140</x>
@@ -124,7 +124,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Staffel</string>
+      <string>Season</string>
      </property>
     </widget>
     <widget class="QLabel" name="correctSeriesLabel">
@@ -151,7 +151,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Ordnerauswahl</string>
+     <string>Directory selection</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -176,7 +176,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Auswahl</string>
+      <string>Selection</string>
      </property>
     </widget>
     <widget class="QLabel" name="pathLabel">
@@ -194,7 +194,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Pfad</string>
+      <string>Path</string>
      </property>
     </widget>
     <widget class="QLabel" name="correctPathLabel">
@@ -239,7 +239,7 @@
      <string notr="true"/>
     </property>
     <property name="text">
-     <string>Umbenennen</string>
+     <string>Rename</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -270,7 +270,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Namens-Schema</string>
+     <string>Name scheme</string>
     </property>
     <widget class="QComboBox" name="nameSchemeComboBox">
      <property name="geometry">

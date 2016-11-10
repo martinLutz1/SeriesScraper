@@ -156,7 +156,6 @@ void Controller::updateView()
     msgViewUpdate.data[0].i = amountSeasons;
     msgViewUpdate.data[1].qsListPointer = &oldFileNameList;
     msgViewUpdate.data[2].qsListPointer = &newFileNameList;
-
     emit(sendMessage(msgViewUpdate));
 }
 
@@ -230,6 +229,25 @@ void Controller::notify(Message &msg)
         nameSchemeHandler.setNameScheme(selectedNameScheme);
         updateNewFileNames();
         updateView();
+        break;
+    }
+    case Message::view_changeLanguage_controller:
+    {
+        QString language = *msg.data[0].qsPointer;
+        bool loadingSuccessful = languageControl.loadLanguage(language);
+
+        if (loadingSuccessful) {
+            QStringList translationList = languageControl.getTranslationList();
+
+            // Send translations to view
+            Message msgChangeLocalization;
+            msgChangeLocalization.type = Message::controller_changeLocalization_view;
+            msgChangeLocalization.data[0].qsListPointer = &translationList;
+            emit(sendMessage(msgChangeLocalization));
+        }
+        else {
+            // Give output
+        }
         break;
     }
     default:

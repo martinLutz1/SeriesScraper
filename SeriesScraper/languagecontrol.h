@@ -14,15 +14,8 @@ private:
 public:
     LanguageControl();
     bool loadLanguage(QString language);
-    QString getEpisodeName();
-    QString getFileName();
-    QString getDirectorySelection();
-    QString getPath();
-    QString getSelection();
-    QString getSeries();
-    QString getSeriesSelection();
-    QString getSeason();
-    QString getEpisode();
+    QString getTranslation(int translateThis);
+    QStringList getTranslationList();
 };
 
 #endif // LANGUAGECONTROL_H
