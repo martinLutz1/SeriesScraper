@@ -7,7 +7,7 @@ QStringList DirectoryParser::sortFiles(QStringList files)
     QStringList sortedFiles;
     std::vector<int> position = getEpisodePositions(files);
 
-    if (position.size() !=files.size()) { // Name scheme not found, let QT sort
+    if (int(position.size()) != files.size()) { // Name scheme not found, let QT sort
         return files;
     }
 
@@ -30,7 +30,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     }
     std::vector<int> position = getEpisodePositions(filesQs);
 
-    if (position.size() < files.size()) { // Name scheme not found, let QT sort
+    if (int(position.size()) < files.size()) { // Name scheme not found, let QT sort
         return files;
     }
 

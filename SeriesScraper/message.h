@@ -23,7 +23,8 @@ public:
         controller_successSeriesLoading_view,
         controller_failureSeriesLoading_view,
         controller_addNameScheme_view,
-        controller_changeLocalization_view
+        controller_changeLocalization_view,
+        controller_addSeriesLanguage_view
     };
 
     union MessageData {

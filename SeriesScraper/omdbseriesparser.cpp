@@ -1,15 +1,15 @@
-#include "seriesparser.h"
+#include "omdbseriesparser.h"
 #include <QCoreApplication>
 #include <QtNetwork>
 #include <QDebug>
 
-SeriesParser::SeriesParser()
+OMDbSeriesParser::OMDbSeriesParser()
 {
     // Avoid SSL-Errors under OSX
     QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
 }
 
-bool SeriesParser::getSeriesSeason(QString url, QString series, int season, QString id)
+bool OMDbSeriesParser::getSeriesSeason(QString url, QString series, int season, QString id)
 {
     // Create request string
     QString requestUrl = url  + "t=" + series + "&season=" + QString::number(season);
@@ -52,12 +52,12 @@ bool SeriesParser::getSeriesSeason(QString url, QString series, int season, QStr
     return false;
 }
 
-QStringList SeriesParser::getIDValue()
+QStringList OMDbSeriesParser::getIDValue()
 {
     return idList;
 }
 
-int SeriesParser::getAmountSeasons()
+int OMDbSeriesParser::getAmountSeasons()
 {
     return amountSeasons;
 }

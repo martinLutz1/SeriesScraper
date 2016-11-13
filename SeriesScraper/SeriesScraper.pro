@@ -21,10 +21,13 @@ SOURCES += main.cpp \
     controller.cpp \
     seriesdata.cpp \
     message.cpp \
-    seriesparser.cpp \
     filerenamer.cpp \
     nameschemeparser.cpp \
-    nameschemehandler.cpp
+    nameschemehandler.cpp \
+    omdbseriesparser.cpp \
+    tmdbseriesparser.cpp \
+    jsonscraper.cpp \
+    serieslanguage.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -34,22 +37,22 @@ HEADERS  += mainwindow.h \
     controller.h \
     seriesdata.h \
     message.h \
-    seriesparser.h \
     filerenamer.h \
     nameschemeparser.h \
-    nameschemehandler.h
+    nameschemehandler.h \
+    omdbseriesparser.h \
+    tmdbseriesparser.h \
+    jsonscraper.h \
+    serieslanguage.h
 
 macx {
     # Deploying
     QMAKE_POST_LINK += ~/Qt/5.7/clang_64/bin/macdeployqt SeriesScraper.app;
-    # Copy namescheme list
-    QMAKE_POST_LINK += cp -Rf ./../namescheme.list ./SeriesScraper.app/Contents/MacOs;
-    # Copy language folder
-    QMAKE_POST_LINK += cp -Rf ./../language ./SeriesScraper.app/Contents/MacOs;
+    # Copy namescheme list, language folder and series language list
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/* ./SeriesScraper.app/Contents/MacOs;
 }
 unix:!macx {
-    QMAKE_POST_LINK += cp -Rf ./../namescheme.list ./;
-    QMAKE_POST_LINK += cp -Rf ./../language ./;
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/* ./;
 }
 
 

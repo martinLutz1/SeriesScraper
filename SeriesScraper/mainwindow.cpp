@@ -25,6 +25,17 @@ MainWindow::MainWindow(QWidget *parent) :
     seriesStatusLabel = new QLabel(this);
     blur = new QGraphicsBlurEffect;
 
+    // Define minimum of the window size to display everything correctly
+    int pathBoxWidth = ui->pathGroupBox->width();
+    int seriesBoxWidth = ui->seriesGroupBox->width();
+    int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
+    int buttonWidth = ui->renameButton->width();
+
+    int upperWidth = seriesBoxWidth + nameSchemeBoxWidth + buttonWidth + 4 * UNIVERSAL_SPACER;
+    int lowerWidth = pathBoxWidth + 2 * UNIVERSAL_SPACER;
+    this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
+
+
     // Table
     setUpTable();
 
@@ -141,8 +152,11 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int buttonWidth = ui->renameButton->width();
     int episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER;
 
+    // Define sizes to differentiate bewteen layouts
+    int bigSize = pathBoxWidth + seriesBoxWidth +  nameSchemeBoxWidth + buttonWidth + 5 * UNIVERSAL_SPACER;
+    int mediumSize = pathBoxWidth + seriesBoxWidth + 3 * UNIVERSAL_SPACER;
 
-    if (windowWidth >= 1050) { // Representation for higher resolutions
+    if (windowWidth >= bigSize) { // Representation for higher resolutions
         int spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth
                                       - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER) / 3;
 
@@ -165,7 +179,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
     }
-    else if (windowWidth > 720){ // Representation for lower resolutions (720 < resolution < 1050)
+    else if (windowWidth > mediumSize){ // Representation for lower resolutions (720 < resolution < 1050)
         // Resize table height
         int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
         ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
@@ -489,6 +503,12 @@ void MainWindow::notify(Message &msg)
     case Message::controller_changeLocalization_view: {
         QStringList translationList = *msg.data[0].qsListPointer;
         changeLocalization(translationList);
+        break;
+    }
+    case Message::controller_addSeriesLanguage_view: {
+        QString seriesLanguage = *msg.data[0].qsPointer;
+        ui->seriesLanguageComboBox->addItem(seriesLanguage);
+        break;
     }
 
     default:

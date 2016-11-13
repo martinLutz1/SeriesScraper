@@ -1,17 +1,16 @@
-#ifndef SERIESPARSER_H
-#define SERIESPARSER_H
+#ifndef OMDBSERIESPARSER_H
+#define OMDBSERIESPARSER_H
 
-#include <QString>
 #include <QStringList>
 
-class SeriesParser
+class OMDbSeriesParser
 {
 private:
     QStringList idList;
     int amountSeasons;
 
 public:
-    SeriesParser();
+    OMDbSeriesParser();
     bool getSeriesSeason(QString url, QString series, int season, QString id);
 
     // Only execute if getIDfromURL returned true before, otherwise you will get an empty string
@@ -19,4 +18,4 @@ public:
     int getAmountSeasons();
 };
 
-#endif // SERIESPARSER_H
+#endif // OMDBSERIESPARSER_H

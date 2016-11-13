@@ -4,26 +4,30 @@
 #include <QObject>
 #include <QString>
 #include "directoryparser.h"
-#include "seriesparser.h"
+#include "omdbseriesparser.h"
+#include "tmdbseriesparser.h"
 #include "filerenamer.h"
 #include "seriesdata.h"
 #include "nameschemehandler.h"
 #include "message.h"
 #include "languagecontrol.h"
+#include "serieslanguage.h"
 
 class Controller : public QObject
 {
     Q_OBJECT
 private:
-    SeriesParser seriesParser;
+    OMDbSeriesParser seriesParser;
+    TMDbSeriesParser tmdbSeriesParser;
     DirectoryParser directoryParser;
     SeriesData seriesData;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
     LanguageControl languageControl;
+    SeriesLanguage seriesLanguage;
 
     void initializeNameSchemes();
-    void applyNameSchemes();
+    void initializeSeriesLanguages();
     void updateNewFileNames();
 
 public:

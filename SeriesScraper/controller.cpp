@@ -32,10 +32,29 @@ void Controller::initializeNameSchemes()
     nameSchemeHandler.setNameScheme(0);
 }
 
-void Controller::applyNameSchemes()
+void Controller::initializeSeriesLanguages()
 {
-    int amountEpisodes = seriesData.getAmountEpisodes();
-    //seriesData.set
+    bool fileRead = seriesLanguage.loadSeriesLanguageFile();
+
+    // Add default entry if series language file not found
+    if (!fileRead) {
+        QString *english = new QString("English");
+        Message msgAddSeriesLanguage;
+        msgAddSeriesLanguage.type = Message::controller_addSeriesLanguage_view;
+        msgAddSeriesLanguage.data[0].qsPointer = english;
+        emit(sendMessage(msgAddSeriesLanguage));
+        delete english;
+        return;
+    }
+
+    QStringList seriesLanguages = seriesLanguage.getLanguageList();
+    for (int i = 0; i < seriesLanguages.size(); i++) {
+        QString language = seriesLanguages.at(i);
+        Message msgAddSeriesLanguage;
+        msgAddSeriesLanguage.type = Message::controller_addSeriesLanguage_view;
+        msgAddSeriesLanguage.data[0].qsPointer = &language;
+        emit(sendMessage(msgAddSeriesLanguage));
+    }
 }
 
 void Controller::updateNewFileNames()
@@ -51,11 +70,13 @@ void Controller::updateNewFileNames()
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
+
 }
 
 void Controller::initialize()
 {
     initializeNameSchemes();
+    initializeSeriesLanguages();
 }
 
 bool Controller::setSeries(QString series, int season)
@@ -64,11 +85,13 @@ bool Controller::setSeries(QString series, int season)
     msgStartLoading.type = Message::controller_startSeriesLoading_view;
     emit(sendMessage(msgStartLoading));
 
-    bool seriesFound = seriesParser.getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title");
+    // bool seriesFound = seriesParser.getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title");
+    bool seriesFound = tmdbSeriesParser.scrapeSeries(series);
     if (seriesFound) {
-        QStringList episodeList = seriesParser.getIDValue();
-        int amountSeasons = seriesParser.getAmountSeasons();
-
+        int amountSeasons = tmdbSeriesParser.getAmountSeasons();
+        QStringList episodeList = tmdbSeriesParser.getSeason(season, "en"); // Make language selection available
+        // QStringList episodeList = seriesParser.getIDValue();
+        // int amountSeasons = seriesParser.getAmountSeasons();
         seriesData.setSeries(series);
         seriesData.setSelectedSeason(season);
         seriesData.setEpisodes(episodeList);
@@ -139,7 +162,7 @@ bool Controller::renameFiles()
         // Output!
     } else
     {
-        false;
+        return false;
         // Output!
     }
 }
@@ -213,8 +236,10 @@ void Controller::notify(Message &msg)
     {
         QString directory = *msg.data[0].qsPointer;
         bool directorySet = setDirectory(QDir(directory));
-        updateView();
-        updateRenameButton();
+        if (directorySet) {
+            updateView();
+            updateRenameButton();
+        }
 
         break;
     }

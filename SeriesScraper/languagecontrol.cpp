@@ -54,7 +54,7 @@ bool LanguageControl::loadLanguage(QString language)
 
 QString LanguageControl::getTranslation(int translateThis)
 {
-    languageData.getTranslation(translateThis);
+    return languageData.getTranslation(translateThis);
 }
 
 QStringList LanguageControl::getTranslationList()
