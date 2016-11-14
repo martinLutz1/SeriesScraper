@@ -1,4 +1,0 @@
-$series% - S%$season%E%$episode(2)% - %$episodeName
-[%$series%] S%$season%E%$episode(2)% - %$episodeName
-$series%.%$season%$episode(2)%.%$episodeName%$replace( =.)
-$series%.%$season%$episode(2)%
