@@ -12,6 +12,7 @@ TMDbSeriesParser::TMDbSeriesParser()
 bool TMDbSeriesParser::scrapeSeries(QString seriesName)
 {
     seriesID.clear();
+    seriesFullName.clear();
     amountSeasons = 0;
     if (seriesName.isEmpty()) {
         return false;
@@ -27,7 +28,7 @@ bool TMDbSeriesParser::scrapeSeries(QString seriesName)
         QJsonArray jsonArray = parsedObject.value("results").toArray();
         if (jsonArray.size() > 0) {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());
-            bool seriesInformationSet = setSeriesInformation();
+            bool seriesInformationSet = setSeriesInformation("en-EN");
             if (seriesInformationSet) {
                 return true;
             }
@@ -39,15 +40,18 @@ bool TMDbSeriesParser::scrapeSeries(QString seriesName)
 QStringList TMDbSeriesParser::getSeason(int season, QString language)
 {
     QStringList episodeList;
-    QString requestUrl = tmdbUrl  + "tv/" + seriesID + "/season/" + QString::number(season) + "?api_key=" + authentificationKey + "&language="
-            + language;
-    qDebug() << requestUrl;
+    QString seasonNumberText = QString("season/").append(QString::number(season));
+    QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language="
+            + language + "&append_to_response=" + seasonNumberText;
+
     bool scrapingSuccessful = scrapeJsonObject(requestUrl);
     if (scrapingSuccessful) {
-        QJsonArray jsonArray = parsedObject.value("episodes").toArray();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            episodeList << jsonArray[i].toObject().value("name").toString();
+        QJsonArray episodeJsonArray = parsedObject.value(seasonNumberText).toObject().value("episodes").toArray();
+        for (int i = 0; i < episodeJsonArray.size(); i++) {
+            episodeList << episodeJsonArray[i].toObject().value("name").toString();
         }
+        // Update series name (language may be changed)
+        seriesFullName = parsedObject.value("name").toString();
     }
     return episodeList;
 }
@@ -57,19 +61,26 @@ int TMDbSeriesParser::getAmountSeasons()
     return amountSeasons;
 }
 
-
-bool TMDbSeriesParser::setSeriesInformation()
+QString TMDbSeriesParser::getSeriesName()
 {
-    QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey;
+    return seriesFullName;
+}
+
+
+bool TMDbSeriesParser::setSeriesInformation(QString language)
+{
+    QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language=" + language;
     bool scrapingSuccessful = scrapeJsonObject(requestUrl);
     if (scrapingSuccessful) {
         QJsonValue numberOfSeasons = parsedObject.value("number_of_seasons");
+        QJsonValue seriesName = parsedObject.value("name");
 
-        if (numberOfSeasons.isUndefined()) {
+        if (numberOfSeasons.isUndefined() || seriesName.isUndefined()) {
             return false;
         }
         else {
             amountSeasons = numberOfSeasons.toInt();
+            seriesFullName = seriesName.toString();
             return true;
         }
     }

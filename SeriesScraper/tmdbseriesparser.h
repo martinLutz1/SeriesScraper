@@ -12,15 +12,17 @@ public:
     bool scrapeSeries(QString seriesName);
     QStringList getSeason(int season, QString language);
     int getAmountSeasons();
+    QString getSeriesName();
 
 private:
     using JsonScraper::parsedObject;
     const QString authentificationKey = "020a07e5192867b0bbae8ffb841498e5";
     const QString tmdbUrl = "https://api.themoviedb.org/3/";
     QString seriesID;
+    QString seriesFullName;
     int amountSeasons;
 
-    bool setSeriesInformation();
+    bool setSeriesInformation(QString language);
 };
 
 #endif // TMDBSERIESPARSER_H
