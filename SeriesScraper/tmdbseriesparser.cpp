@@ -13,6 +13,9 @@ bool TMDbSeriesParser::scrapeSeries(QString seriesName)
 {
     seriesID.clear();
     amountSeasons = 0;
+    if (seriesName.isEmpty()) {
+        return false;
+    }
 
     QString searchFor = seriesName.replace(" ", "+");
     // Create request string
@@ -38,6 +41,7 @@ QStringList TMDbSeriesParser::getSeason(int season, QString language)
     QStringList episodeList;
     QString requestUrl = tmdbUrl  + "tv/" + seriesID + "/season/" + QString::number(season) + "?api_key=" + authentificationKey + "&language="
             + language;
+    qDebug() << requestUrl;
     bool scrapingSuccessful = scrapeJsonObject(requestUrl);
     if (scrapingSuccessful) {
         QJsonArray jsonArray = parsedObject.value("episodes").toArray();

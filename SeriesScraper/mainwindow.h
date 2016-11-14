@@ -65,9 +65,10 @@ private slots:
     void onCellChange(int row, int coloumn);
     void onSeriesTextChange();
     void onSeasonChanged(int index);
+    void onSeriesLanguageChanged(int index);
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
-    void changeLanguage(QAction *selectedLanguage);
+    void changeGUILanguage(QAction *selectedLanguage);
 
 public slots:
     void notify(Message &msg);

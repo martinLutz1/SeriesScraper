@@ -34,6 +34,7 @@ public:
     explicit Controller(QObject *parent = 0);
     void initialize();
     bool setSeries(QString series, int season); // Set series if existing and set table
+    bool changeSeason(int season, QString language);
     bool setDirectory(QDir directory);
     bool renameFiles();
     void updateView();

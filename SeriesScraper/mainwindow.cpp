@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
     QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChange()));
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
+    QObject::connect(ui->seriesLanguageComboBox, SIGNAL(activated(int)), this, SLOT(onSeriesLanguageChanged(int)));
     QObject::connect(ui->renameButton, SIGNAL(pressed()), this , SLOT(onRenameButtonPressed()));
     QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
     QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
@@ -111,7 +112,7 @@ void MainWindow::setUpMenuBar()
     ui->menuBar->addMenu(settingsMenu);
 
     // To get text of clicked language
-    QObject::connect(languageMenu, SIGNAL(triggered(QAction *)), this, SLOT(changeLanguage(QAction *)));
+    QObject::connect(languageMenu, SIGNAL(triggered(QAction *)), this, SLOT(changeGUILanguage(QAction *)));
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -120,8 +121,6 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->seriesLineEdit->setStyleSheet(colorGreen);
         ui->correctSeriesLabel->setText(checkmark);
         ui->seasonComboBox->setCurrentIndex(0);
-        progressIncrement = 10;
-        disableSeriesProgressbarTimer->start(200);
     }
     else if (isEmpty) {
         ui->seriesLineEdit->setStyleSheet(colorWhite);
@@ -134,10 +133,6 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->seriesLineEdit->setStyleSheet(colorRed);
         ui->correctSeriesLabel->setText(times);
         setAmountSeasons(0);
-        clearTable();
-        seriesStatusLabel->setHidden(false);
-        progressIncrement = 1;
-        disableSeriesProgressbarTimer->start(2000);
     }
 }
 
@@ -315,6 +310,7 @@ void MainWindow::changeLocalization(QStringList translationList)
     ui->seriesGroupBox->setTitle(translationList.at(LanguageData::seriesSelection));
     ui->seriesLabel->setText(translationList.at(LanguageData::series));
     ui->seasonLabel->setText(translationList.at(LanguageData::season));
+    ui->seriesLanguageLabel->setText(translationList.at(LanguageData::language));
     ui->nameSchemeGroupBox->setTitle(translationList.at(LanguageData::nameScheme));
     ui->renameButton->setText(translationList.at(LanguageData::rename));
     settingsMenu->setTitle(translationList.at(LanguageData::settings));
@@ -430,14 +426,22 @@ void MainWindow::onNameSchemeChanged(int index)
     emit(sendMessage(msgNameSchemeChanged));
 }
 
-void MainWindow::changeLanguage(QAction *selectedLanguage)
+void MainWindow::changeGUILanguage(QAction *selectedLanguage)
 {
     QString language = selectedLanguage->text();
 
-    Message msgChangeLanguage;
-    msgChangeLanguage.type = Message::view_changeLanguage_controller;
-    msgChangeLanguage.data[0].qsPointer = &language;
-    emit(sendMessage(msgChangeLanguage));
+    Message msgChangeGUILanguage;
+    msgChangeGUILanguage.type = Message::view_changeGUILanguage_controller;
+    msgChangeGUILanguage.data[0].qsPointer = &language;
+    emit(sendMessage(msgChangeGUILanguage));
+}
+
+void MainWindow::onSeriesLanguageChanged(int index)
+{
+    Message msgChangeSeriesLanguage;
+    msgChangeSeriesLanguage.type = Message::view_changeSeriesLanguage_controller;
+    msgChangeSeriesLanguage.data[0].i = index;
+    emit(sendMessage(msgChangeSeriesLanguage));
 }
 
 void MainWindow::onCellChange(int row, int coloumn)
@@ -495,19 +499,36 @@ void MainWindow::notify(Message &msg)
 
         break;
     }
-    case Message::controller_addNameScheme_view: {
+    case Message::controller_addNameScheme_view:
+    {
         QString nameScheme = *msg.data[0].qsPointer;
         addNameSchemeItem(nameScheme);
         break;
     }
-    case Message::controller_changeLocalization_view: {
+    case Message::controller_changeLocalization_view:
+    {
         QStringList translationList = *msg.data[0].qsListPointer;
         changeLocalization(translationList);
         break;
     }
-    case Message::controller_addSeriesLanguage_view: {
+    case Message::controller_addSeriesLanguage_view:
+    {
         QString seriesLanguage = *msg.data[0].qsPointer;
         ui->seriesLanguageComboBox->addItem(seriesLanguage);
+        break;
+    }
+    case Message::controller_successSeriesLoading_view:
+    {
+        progressIncrement = 10;
+        disableSeriesProgressbarTimer->start(200);
+        break;
+    }
+    case Message::controller_failureSeriesLoading_view:
+    {
+        clearTable();
+        seriesStatusLabel->setHidden(false);
+        progressIncrement = 1;
+        disableSeriesProgressbarTimer->start(2000);
         break;
     }
 

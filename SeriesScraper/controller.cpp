@@ -35,26 +35,29 @@ void Controller::initializeNameSchemes()
 void Controller::initializeSeriesLanguages()
 {
     bool fileRead = seriesLanguage.loadSeriesLanguageFile();
+    QString *english = new QString("English");
 
     // Add default entry if series language file not found
     if (!fileRead) {
-        QString *english = new QString("English");
         Message msgAddSeriesLanguage;
         msgAddSeriesLanguage.type = Message::controller_addSeriesLanguage_view;
         msgAddSeriesLanguage.data[0].qsPointer = english;
         emit(sendMessage(msgAddSeriesLanguage));
-        delete english;
-        return;
     }
+    else {
+        QStringList seriesLanguages = seriesLanguage.getLanguageList();
 
-    QStringList seriesLanguages = seriesLanguage.getLanguageList();
-    for (int i = 0; i < seriesLanguages.size(); i++) {
-        QString language = seriesLanguages.at(i);
-        Message msgAddSeriesLanguage;
-        msgAddSeriesLanguage.type = Message::controller_addSeriesLanguage_view;
-        msgAddSeriesLanguage.data[0].qsPointer = &language;
-        emit(sendMessage(msgAddSeriesLanguage));
+        for (int i = 0; i < seriesLanguages.size(); i++) {
+            QString language = seriesLanguages.at(i);
+            Message msgAddSeriesLanguage;
+            msgAddSeriesLanguage.type = Message::controller_addSeriesLanguage_view;
+            msgAddSeriesLanguage.data[0].qsPointer = &language;
+            emit(sendMessage(msgAddSeriesLanguage));
+        }
     }
+    QString languageShortName = seriesLanguage.getShortName(*english);
+    seriesData.setLanguage(languageShortName);
+    delete english;
 }
 
 void Controller::updateNewFileNames()
@@ -70,7 +73,6 @@ void Controller::updateNewFileNames()
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
-
 }
 
 void Controller::initialize()
@@ -89,7 +91,8 @@ bool Controller::setSeries(QString series, int season)
     bool seriesFound = tmdbSeriesParser.scrapeSeries(series);
     if (seriesFound) {
         int amountSeasons = tmdbSeriesParser.getAmountSeasons();
-        QStringList episodeList = tmdbSeriesParser.getSeason(season, "en"); // Make language selection available
+        QString language = seriesData.getLanguage();
+        QStringList episodeList = tmdbSeriesParser.getSeason(season, language); // Make language selection available
         // QStringList episodeList = seriesParser.getIDValue();
         // int amountSeasons = seriesParser.getAmountSeasons();
         seriesData.setSeries(series);
@@ -116,6 +119,34 @@ bool Controller::setSeries(QString series, int season)
         emit(sendMessage(msgFailureLoading));
 
         return false;
+    }
+}
+
+bool Controller::changeSeason(int season, QString language)
+{
+    Message msgStartLoading;
+    msgStartLoading.type = Message::controller_startSeriesLoading_view;
+    emit(sendMessage(msgStartLoading));
+
+    QStringList episodeList = tmdbSeriesParser.getSeason(season, language);
+
+    seriesData.setSelectedSeason(season);
+    seriesData.setEpisodes(episodeList);
+    updateNewFileNames();
+    updateView();
+
+    if (episodeList.isEmpty()) {
+        Message msgFailureLoading;
+        msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
+        emit(sendMessage(msgFailureLoading));
+        return false;
+    }
+    else {
+        qDebug() << "worked";
+        Message msgSuccessLoading;
+        msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
+        emit(sendMessage(msgSuccessLoading));
+        return true;
     }
 }
 
@@ -256,7 +287,7 @@ void Controller::notify(Message &msg)
         updateView();
         break;
     }
-    case Message::view_changeLanguage_controller:
+    case Message::view_changeGUILanguage_controller:
     {
         QString language = *msg.data[0].qsPointer;
         bool loadingSuccessful = languageControl.loadLanguage(language);
@@ -272,6 +303,19 @@ void Controller::notify(Message &msg)
         }
         else {
             // Give output
+        }
+        break;
+    }
+    case Message::view_changeSeriesLanguage_controller:
+    {
+        int languageIndex = msg.data[0].i;
+        QString language = seriesLanguage.getShortName(languageIndex + 1);
+        seriesData.setLanguage(language);
+
+        // Only load season if series set
+        if (!seriesData.getSeries().isEmpty()) {
+            int season = seriesData.getSelectedSeason();
+            changeSeason(season, language);
         }
         break;
     }

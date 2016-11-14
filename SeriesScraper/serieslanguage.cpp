@@ -53,6 +53,18 @@ QString SeriesLanguage::getShortName(QString language)
             return languageShortNameList.at(i);
         }
     }
-    // Not found
-    return QString("");
+    // Not found, return default
+    return defaulEntry;
+}
+
+QString SeriesLanguage::getShortName(int language)
+{
+    if (language >= 1) {
+        return languageShortNameList.at(language - 1);
+    }
+    // Not found, return default
+    else {
+        return defaulEntry;
+    }
+
 }

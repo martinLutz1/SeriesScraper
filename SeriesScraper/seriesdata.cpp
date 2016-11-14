@@ -43,6 +43,11 @@ void SeriesData::setEpisodes(QStringList newEpisodeList)
     amountEpisodes = episodesList.length();
 }
 
+void SeriesData::setLanguage(QString languageShortName)
+{
+    language = languageShortName;
+}
+
 void SeriesData::setAmountSeasons(int newAmount)
 {
     amountSeasons = newAmount;
@@ -101,6 +106,11 @@ QString SeriesData::getEpisode(int index)
 QStringList SeriesData::getEpisodes()
 {
     return episodesList;
+}
+
+QString SeriesData::getLanguage()
+{
+    return language;
 }
 
 int SeriesData::getAmountEpisodes()

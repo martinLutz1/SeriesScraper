@@ -12,12 +12,14 @@ public:
     bool loadSeriesLanguageFile();
     QStringList getLanguageList();
     QString getShortName(QString language);
+    QString getShortName(int language);
 
 private:
     bool successReading;
     QDir applicationDirectory;
     QFile seriesLanguageFile;
 
+    QString defaulEntry = "en-EN";
     QStringList seriesLanguageList;
     QStringList languageShortNameList;
 };

@@ -15,6 +15,7 @@ public:
     void setSuffixes(QStringList newSuffixList);
     void setEpisode(int index, QString newEpisode);
     void setEpisodes(QStringList newEpisodeList);
+    void setLanguage(QString languageShortName);
     void setAmountSeasons(int newAmount);
     void setSelectedSeason(int newSelectedSeason);
     void setOldFileNames(QStringList oldFileNamesSortedWithSpaces);
@@ -26,6 +27,7 @@ public:
     QStringList getSuffixes();
     QString getEpisode(int index);
     QStringList getEpisodes();
+    QString getLanguage();
     int getAmountEpisodes();
     int getAmountSeasons();
     int getSelectedSeason();
@@ -44,6 +46,7 @@ private:
     int amountEpisodes;
     int amountSeasons;
     int selectedSeason;
+    QString language;
 };
 
 #endif // SERIESDATA_H
