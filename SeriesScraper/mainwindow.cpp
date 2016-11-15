@@ -105,14 +105,19 @@ void MainWindow::setUpMenuBar()
 {
     settingsMenu = new QMenu("Settings");
     languageMenu = new QMenu("Language");
+    aboutMenu = new QMenu("About");
 
+    aboutMenu->addAction("About SeriesScraper");
     languageMenu->addAction("English");
     languageMenu->addAction("German");
+
     settingsMenu->addMenu(languageMenu);
     ui->menuBar->addMenu(settingsMenu);
+    ui->menuBar->addMenu(aboutMenu);
 
     // To get text of clicked language
     QObject::connect(languageMenu, SIGNAL(triggered(QAction *)), this, SLOT(changeGUILanguage(QAction *)));
+    QObject::connect(aboutMenu, SIGNAL(triggered(QAction*)), this, SLOT(showAboutDialog()));
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -434,6 +439,11 @@ void MainWindow::changeGUILanguage(QAction *selectedLanguage)
     msgChangeGUILanguage.type = Message::view_changeGUILanguage_controller;
     msgChangeGUILanguage.data[0].qsPointer = &language;
     emit(sendMessage(msgChangeGUILanguage));
+}
+
+void MainWindow::showAboutDialog()
+{
+    aboutDialog.show();
 }
 
 void MainWindow::onSeriesLanguageChanged(int index)

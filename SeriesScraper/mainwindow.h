@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QGraphicsBlurEffect>
+#include "aboutdialog.h"
 #include "message.h"
 
 namespace Ui {
@@ -25,8 +26,10 @@ private:
     QProgressBar *seriesProgressBar;
     QGraphicsBlurEffect *blur;
 
+    QMenu *aboutMenu;
     QMenu *settingsMenu;
     QMenu *languageMenu;
+    AboutDialog aboutDialog;
 
     QDir chosenPath;
     int tableRows;
@@ -69,6 +72,7 @@ private slots:
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
     void changeGUILanguage(QAction *selectedLanguage);
+    void showAboutDialog();
 
 public slots:
     void notify(Message &msg);
