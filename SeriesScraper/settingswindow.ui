@@ -6,18 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>410</width>
     <height>300</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>410</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>410</width>
+    <height>300</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Settings</string>
   </property>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
+     <x>5</x>
+     <y>5</y>
      <width>400</width>
      <height>260</height>
     </rect>
@@ -29,7 +41,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideRight</enum>
@@ -44,7 +56,7 @@
     <attribute name="title">
      <string>General</string>
     </attribute>
-    <widget class="QPushButton" name="resetGeneral">
+    <widget class="QPushButton" name="generalResetButton">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -61,7 +73,7 @@
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>0</y>
+       <y>90</y>
        <width>385</width>
        <height>65</height>
       </rect>
@@ -70,6 +82,9 @@
       <string>Series database</string>
      </property>
      <widget class="QRadioButton" name="tmdbRadioButton">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>5</x>
@@ -80,6 +95,9 @@
       </property>
       <property name="text">
        <string>TMDb</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QRadioButton" name="omdbRadioButton">
@@ -114,13 +132,13 @@
       </property>
      </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="saveOnExitGroupBox">
      <property name="geometry">
       <rect>
-       <x>5</x>
-       <y>70</y>
-       <width>100</width>
-       <height>100</height>
+       <x>240</x>
+       <y>0</y>
+       <width>150</width>
+       <height>90</height>
       </rect>
      </property>
      <property name="title">
@@ -153,55 +171,29 @@
       </property>
      </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="interfaceGroupBox">
      <property name="geometry">
       <rect>
-       <x>115</x>
-       <y>70</y>
-       <width>160</width>
-       <height>100</height>
+       <x>5</x>
+       <y>0</y>
+       <width>230</width>
+       <height>90</height>
       </rect>
      </property>
      <property name="title">
-      <string>Show series information</string>
+      <string>Interface</string>
      </property>
-     <widget class="QCheckBox" name="posterCheckBox">
+     <widget class="QCheckBox" name="showSeriesInformationCheckBox">
       <property name="geometry">
        <rect>
         <x>5</x>
-        <y>25</y>
-        <width>131</width>
+        <y>30</y>
+        <width>220</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>Poster</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="yearCheckBox">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>45</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Year</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="amountSeasonsCheckBox">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>65</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Total seasons</string>
+       <string>Show series information</string>
       </property>
      </widget>
     </widget>
@@ -213,10 +205,10 @@
     <widget class="QListWidget" name="videoFomatsListWidget">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>5</x>
        <y>0</y>
-       <width>391</width>
-       <height>141</height>
+       <width>385</width>
+       <height>140</height>
       </rect>
      </property>
      <property name="layoutMode">
@@ -262,7 +254,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="formatDeleteButton">
+    <widget class="QPushButton" name="formatRemoveButton">
      <property name="geometry">
       <rect>
        <x>280</x>
@@ -272,10 +264,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Delete</string>
+      <string>Remove</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="resetVideoButton">
+    <widget class="QPushButton" name="videoResetButton">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -291,7 +283,7 @@
    </widget>
    <widget class="QWidget" name="nameScheme">
     <attribute name="title">
-     <string>Name schemes</string>
+     <string>Name scheme</string>
     </attribute>
     <widget class="QGroupBox" name="newNameSchemeGroupBox">
      <property name="geometry">
@@ -329,7 +321,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="deleteNameSchemeButton">
+    <widget class="QPushButton" name="nameSchemeRemoveButton">
      <property name="geometry">
       <rect>
        <x>280</x>
@@ -339,16 +331,16 @@
       </rect>
      </property>
      <property name="text">
-      <string>Delete</string>
+      <string>Remove</string>
      </property>
     </widget>
     <widget class="QListWidget" name="nameSchemeListWidget">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>5</x>
        <y>0</y>
-       <width>395</width>
-       <height>141</height>
+       <width>385</width>
+       <height>140</height>
       </rect>
      </property>
      <property name="layoutMode">
@@ -358,7 +350,7 @@
       <enum>QListView::IconMode</enum>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_6">
+    <widget class="QPushButton" name="nameSchemeResetButton">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -376,9 +368,9 @@
   <widget class="QPushButton" name="resetAllButton">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>265</y>
-     <width>131</width>
+     <x>5</x>
+     <y>270</y>
+     <width>160</width>
      <height>32</height>
     </rect>
    </property>
@@ -392,8 +384,8 @@
   <widget class="QPushButton" name="doneButton">
    <property name="geometry">
     <rect>
-     <x>322</x>
-     <y>265</y>
+     <x>325</x>
+     <y>270</y>
      <width>71</width>
      <height>32</height>
     </rect>

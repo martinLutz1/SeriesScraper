@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define APPLICATIONNAME "SeriesScraper"
+
 #include <QMainWindow>
 #include <QDir>
 #include <QLabel>
@@ -26,10 +28,11 @@ private:
     QProgressBar *seriesProgressBar;
     QGraphicsBlurEffect *blur;
 
-    QMenu *aboutMenu;
-    QMenu *settingsMenu;
+    QMenu *helpMenu;
+    QMenu *viewMenu;
     QMenu *languageMenu;
-    AboutDialog aboutDialog;
+    QAction *aboutAction;
+    QAction *settingsAction;
 
     QDir chosenPath;
     int tableRows;
@@ -73,6 +76,7 @@ private slots:
     void onNameSchemeChanged(int index);
     void changeGUILanguage(QAction *selectedLanguage);
     void showAboutDialog();
+    void showSettingsWindow();
 
 public slots:
     void notify(Message &msg);

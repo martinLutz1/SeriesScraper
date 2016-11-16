@@ -2,6 +2,7 @@
 #define ABOUTDIALOG_H
 
 #include <QDialog>
+#include "message.h"
 
 namespace Ui {
 class AboutDialog;
@@ -15,12 +16,12 @@ public:
     explicit AboutDialog(QWidget *parent = 0);
     ~AboutDialog();
 
+public slots:
+    void notify(Message &msg);
+
 private:
     Ui::AboutDialog *ui;
      void resizeEvent(QResizeEvent *event);
-
-private slots:
-    void closeWindow();
 };
 
 #endif // ABOUTDIALOG_H

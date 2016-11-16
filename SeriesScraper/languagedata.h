@@ -14,6 +14,7 @@ public:
     void setTranslationSet(QStringList translationList);
 
     enum translate {
+        // View
         oldName,
         newName,
         directorySelection,
@@ -24,8 +25,28 @@ public:
         season,
         nameScheme,
         rename,
+        about,
         settings,
         language,
+        display,
+        help,
+        // About dialg
+        close,
+        // Settings window
+        done,
+        general,
+        interface,
+        showSeriesInformation,
+        saveOnExit,
+        seriesDatabase,
+        recommended,
+        newFormat,
+        add,
+        remove,
+        video,
+        newNameScheme,
+        reset,
+        resetAll,
         // Errors
         notFound
     };

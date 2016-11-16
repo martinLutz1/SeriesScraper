@@ -317,13 +317,14 @@ void Controller::notify(Message &msg)
         if (loadingSuccessful) {
             QStringList translationList = languageControl.getTranslationList();
 
-            // Send translations to view
+            // Send translations to view, about and settings
             Message msgChangeLocalization;
             msgChangeLocalization.type = Message::controller_changeLocalization_view;
             msgChangeLocalization.data[0].qsListPointer = &translationList;
             emit(sendMessage(msgChangeLocalization));
         }
         else {
+            qDebug() << "Couldnt read language file" << language;
             // Give output
         }
         break;
@@ -338,10 +339,23 @@ void Controller::notify(Message &msg)
             seriesData.setLanguage(language);
             // Only load season if series set
             if (!seriesData.getSeries().isEmpty()) {
-                int season = seriesData.getSelectedSeason();
                 changeLanguage(language);
             }
         }
+        break;
+    }
+    case Message::view_showAboutDialog_controller:
+    {
+        Message msgShowAboutDialog;
+        msgShowAboutDialog.type = Message::controller_showAboutDialog_about;
+        emit(sendMessage(msgShowAboutDialog));
+        break;
+    }
+    case Message::view_showSettingsWindow_controller:
+    {
+        Message msgShowSettingsDialog;
+        msgShowSettingsDialog.type = Message::controller_showSettingsWindow_settings;
+        emit(sendMessage(msgShowSettingsDialog));
         break;
     }
     default:

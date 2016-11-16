@@ -4,6 +4,8 @@
 #include <QApplication>
 
 class MainWindow;
+class AboutDialog;
+class SettingsWindow;
 class Controller;
 
 class Application
@@ -18,6 +20,8 @@ public:
 private:
     QApplication app; // Dont derive from QApplication
     MainWindow* view; // Create view after QApplication
+    AboutDialog *about;
+    SettingsWindow *settings;
     Controller* controller;
 
 public slots:

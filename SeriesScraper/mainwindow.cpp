@@ -103,21 +103,31 @@ void MainWindow::setUpTable()
 
 void MainWindow::setUpMenuBar()
 {
-    settingsMenu = new QMenu("Settings");
-    languageMenu = new QMenu("Language");
-    aboutMenu = new QMenu("About");
+    QString aboutText = "About " APPLICATIONNAME;
 
-    aboutMenu->addAction("About SeriesScraper");
+    viewMenu = new QMenu("Display");
+    languageMenu = new QMenu("Language");
+    helpMenu = new QMenu("Help");
+    aboutAction = new QAction(aboutText);
+    settingsAction = new QAction("Settings");
+
+    aboutAction->setMenuRole(QAction::ApplicationSpecificRole);
+    settingsAction->setMenuRole(QAction::ApplicationSpecificRole);
+
+    helpMenu->addAction(aboutAction);
+    viewMenu->addAction(settingsAction);
     languageMenu->addAction("English");
     languageMenu->addAction("German");
 
-    settingsMenu->addMenu(languageMenu);
-    ui->menuBar->addMenu(settingsMenu);
-    ui->menuBar->addMenu(aboutMenu);
+    viewMenu->addMenu(languageMenu);
+    ui->menuBar->addMenu(viewMenu);
+    ui->menuBar->addMenu(helpMenu);
 
     // To get text of clicked language
     QObject::connect(languageMenu, SIGNAL(triggered(QAction *)), this, SLOT(changeGUILanguage(QAction *)));
-    QObject::connect(aboutMenu, SIGNAL(triggered(QAction*)), this, SLOT(showAboutDialog()));
+    // Connect settings and about
+    QObject::connect(helpMenu, SIGNAL(triggered(QAction*)), this, SLOT(showAboutDialog()));
+    QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -318,9 +328,11 @@ void MainWindow::changeLocalization(QStringList translationList)
     ui->seriesLanguageLabel->setText(translationList.at(LanguageData::language));
     ui->nameSchemeGroupBox->setTitle(translationList.at(LanguageData::nameScheme));
     ui->renameButton->setText(translationList.at(LanguageData::rename));
-    settingsMenu->setTitle(translationList.at(LanguageData::settings));
-    languageMenu->setTitle(translationList.at(LanguageData::language));
     seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
+    viewMenu->setTitle(translationList.at(LanguageData::display));
+    languageMenu->setTitle(translationList.at(LanguageData::language));
+    aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
+    settingsAction->setText(translationList.at(LanguageData::settings));
 }
 
 void MainWindow::openDirectory()
@@ -443,7 +455,16 @@ void MainWindow::changeGUILanguage(QAction *selectedLanguage)
 
 void MainWindow::showAboutDialog()
 {
-    aboutDialog.show();
+    Message msgShowAbout;
+    msgShowAbout.type = Message::view_showAboutDialog_controller;
+    emit(sendMessage(msgShowAbout));
+}
+
+void MainWindow::showSettingsWindow()
+{
+    Message msgShowSettings;
+    msgShowSettings.type = Message::view_showSettingsWindow_controller;
+    emit(sendMessage(msgShowSettings));
 }
 
 void MainWindow::onSeriesLanguageChanged(int index)

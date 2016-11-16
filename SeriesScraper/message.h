@@ -17,6 +17,9 @@ public:
         view_changeNameScheme_controller,
         view_changeGUILanguage_controller,
         view_changeSeriesLanguage_controller,
+        view_showAboutDialog_controller,
+        view_showSettingsWindow_controller,
+
         controller_updateView_view,
         controller_seriesSet_view,
         controller_enableButton_view,
@@ -25,7 +28,9 @@ public:
         controller_failureSeriesLoading_view,
         controller_addNameScheme_view,
         controller_changeLocalization_view,
-        controller_addSeriesLanguage_view
+        controller_addSeriesLanguage_view,
+        controller_showAboutDialog_about,
+        controller_showSettingsWindow_settings
     };
 
     union MessageData {
