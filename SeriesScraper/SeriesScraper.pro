@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     tmdbseriesparser.cpp \
     jsonscraper.cpp \
     serieslanguage.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    settingswindow.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -45,7 +46,8 @@ HEADERS  += mainwindow.h \
     tmdbseriesparser.h \
     jsonscraper.h \
     serieslanguage.h \
-    aboutdialog.h
+    aboutdialog.h \
+    settingswindow.h
 
 macx {
     # Deploying
@@ -59,7 +61,8 @@ unix:!macx {
 
 
 FORMS    += mainwindow.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    settingswindow.ui
 
 RESOURCES += \
     resource.qrc
