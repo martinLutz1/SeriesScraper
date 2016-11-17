@@ -51,7 +51,11 @@ HEADERS  += mainwindow.h \
     settingswindow.h \
     error.h
 
+win32 {
+    RC_FILE = images/icon/winIcon.rc
+}
 macx {
+    ICON = images/icon/macIcon.icns
     # Deploying
     QMAKE_POST_LINK += ~/Qt/5.7/clang_64/bin/macdeployqt SeriesScraper.app;
     # Copy namescheme list, language folder and series language list

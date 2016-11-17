@@ -107,7 +107,7 @@ QStringList DirectoryParser::getFilesWithoutExtension()
 
 QStringList DirectoryParser::getFiles(QString extension)
 {
-    filter = (QStringList() << extension);
+    filter = QStringList(extension);
     QStringList fileList = getFiles();
     setNameFilterToAll();
     return fileList;
