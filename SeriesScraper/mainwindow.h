@@ -54,6 +54,7 @@ private:
     void removeNameSchemeItem(int itemIndex);
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
+    void updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons);
 
 public:
     explicit MainWindow(QWidget *parent = 0);

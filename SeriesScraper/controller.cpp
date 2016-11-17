@@ -122,14 +122,10 @@ bool Controller::setSeries(QString series, int season)
         seriesData.setSelectedSeason(season);
         seriesData.setEpisodes(episodeList);
         seriesData.setAmountSeasons(amountSeasons);
-        updateNewFileNames();
-
-        updateView();
 
         Message msgSuccessLoading;
         msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
         emit(sendMessage(msgSuccessLoading));
-        return true;
     }
     else { // Didnt find series
         seriesData.setSeries("");
@@ -140,9 +136,10 @@ bool Controller::setSeries(QString series, int season)
         Message msgFailureLoading;
         msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
         emit(sendMessage(msgFailureLoading));
-
-        return false;
     }
+    updateNewFileNames();
+    updateView();
+    return seriesFound;
 }
 
 bool Controller::changeSeason(int season)
@@ -205,20 +202,19 @@ bool Controller::setDirectory(QDir directory)
 {
     bool directoryExists = directoryParser.initializeDirectory(directory);
     if (directoryExists) {
-        seriesData.setWorkingDirectory(directory);
-
         QStringList suffixesList = directoryParser.getFilesSuffix();
+        QStringList oldFileList = directoryParser.getFiles();
+        seriesData.setWorkingDirectory(directory);
+        seriesData.setOldFileNames(oldFileList);
         seriesData.setSuffixes(suffixesList);
-
-        QStringList oldFileNames = directoryParser.getOldFileNameList();
-        seriesData.setOldFileNames(oldFileNames);
-        updateView();
 
         return true;
     }
     else {
         QDir testDir("");
         seriesData.setWorkingDirectory(testDir);
+        seriesData.setOldFileNames(QStringList());
+        seriesData.setSuffixes(QStringList());
         return false;
     }
 }
@@ -259,7 +255,7 @@ bool Controller::renameFiles()
 void Controller::updateView()
 {
     QStringList newFileNameList = seriesData.getNewFileNames();
-    QStringList oldFileNameList = seriesData.getOldFileNamesForView();
+    QStringList oldFileNameList = seriesData.getOldFileNames();
     // Operate on suffixes
     int amountSeasons = seriesData.getAmountSeasons();
 
@@ -318,11 +314,9 @@ void Controller::notify(Message &msg)
     case Message::view_directory_changed_controller:
     {
         QString directory = *msg.data[0].qsPointer;
-        bool directorySet = setDirectory(QDir(directory));
-        if (directorySet) {
-            updateView();
-            updateRenameButton();
-        }
+        setDirectory(QDir(directory));
+        updateView();
+        updateRenameButton();
 
         break;
     }

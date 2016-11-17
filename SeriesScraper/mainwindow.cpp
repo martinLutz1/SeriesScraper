@@ -152,7 +152,6 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->seriesLineEdit->setStyleSheet(colorWhite);
         ui->correctSeriesLabel->setText("");
         setAmountSeasons(0);
-        clearTable();
         disableSeriesProgressbar();
     }
     else {
@@ -253,6 +252,22 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int seriesStatusLabelX = episodeTableX + episodeTableWidth / 2 - seriesStatusLabel->width() / 2;
     int seriesStatusLabelY = episodeTableY + episodeTableHeight / 2 + seriesProgressBar->height();
     seriesStatusLabel->move(seriesStatusLabelX, seriesStatusLabelY);
+}
+
+void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
+{
+    setAmountSeasons(amountSeasons);
+    clearTable();
+
+    int tableSize = std::max(newFileNames.size(), oldFileNames.size());
+    // Fill up missing items
+    while (newFileNames.size() < tableSize)
+        newFileNames << "";
+    while (oldFileNames.size() < tableSize)
+        oldFileNames << "";
+    // Fill table
+    for (int i = 0; i < tableSize; i++)
+        setRow(i, oldFileNames.at(i), newFileNames.at(i));
 }
 
 void MainWindow::clearTable()
@@ -488,11 +503,7 @@ void MainWindow::notify(Message &msg)
         int amountSeasons = msg.data[0].i;
         QStringList oldFileNameList = *msg.data[1].qsListPointer;
         QStringList newFileNameList = *msg.data[2].qsListPointer;
-
-        setAmountSeasons(amountSeasons);
-        clearTable();
-        for (int i = 0; i < newFileNameList.length(); i++)
-            setRow(i, oldFileNameList.at(i), newFileNameList.at(i));
+        updateView(oldFileNameList, newFileNameList, amountSeasons);
         break;
     }
 
@@ -553,7 +564,6 @@ void MainWindow::notify(Message &msg)
     }
     case Message::controller_failureSeriesLoading_view:
     {
-        clearTable();
         seriesStatusLabel->setHidden(false);
         progressIncrement = 1;
         disableSeriesProgressbarTimer->start(2000);
