@@ -47,8 +47,12 @@ public:
         newNameScheme,
         reset,
         resetAll,
-        // Errors
-        notFound
+        // Feedback
+        notFound,
+        seriesLanguageNotFound,
+        nameSchemeNotFound,
+        renameFailed,
+        renameSuccess,
     };
 
 private:

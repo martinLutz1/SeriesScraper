@@ -9,7 +9,6 @@
     "Season":"Staffel",
     "NameScheme":"Namenschema",
     "Rename":"Umbenennen",
-    "NotFound":"Nicht gefunden",
     "Settings":"Einstellungen",
     "Display":"Anzeige",
     "Language":"Sprache",
@@ -29,5 +28,7 @@
     "Video":"Video",
     "NewNameScheme":"Neues Namenschema",
     "Reset":"Zurücksetzen",
-    "ResetAll":"Alles zurücksetzen"
+    "ResetAll":"Alles zurücksetzen",
+    "NotFound":"Nicht gefunden",
+    "SeriesLanguageNotFound":"Seriensprachdatei konnte nicht geladen werden"
 }

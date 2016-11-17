@@ -7,7 +7,7 @@ void Controller::initializeNameSchemes()
     bool fileRead = nameSchemeHandler.readNameSchemeFile();
     // Add default entry if name scheme list not found
     if (!fileRead) {
-        nameSchemeHandler.addNameScheme("%$series% s%$season%e%$episode(2)% - %$episodeName%");
+        nameSchemeHandler.addNameScheme("%$series% - S%$season%E%$episode(2)% - %$episodeName%");
         nameSchemeHandler.setNameScheme(0);
         QString nameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
 
@@ -15,6 +15,10 @@ void Controller::initializeNameSchemes()
         msgAddNameScheme.type = Message::controller_addNameScheme_view;
         msgAddNameScheme.data[0].qsPointer = &nameSchemeRepresentation;
         emit(sendMessage(msgAddNameScheme));
+
+        QString nameSchemeNotFound = languageControl.getTranslation(LanguageData::nameSchemeNotFound);
+        qDebug() << nameSchemeNotFound;
+        setStatusMessage(nameSchemeNotFound);
         return;
     }
 
@@ -39,6 +43,9 @@ void Controller::initializeSeriesLanguages()
 
     // Add default entry if series language file not found
     if (!fileRead) {
+        QString languageFileReadingFailure = languageControl.getTranslation(LanguageData::seriesLanguageNotFound);
+        setStatusMessage(languageFileReadingFailure);
+
         Message msgAddSeriesLanguage;
         msgAddSeriesLanguage.type = Message::controller_addSeriesLanguage_view;
         msgAddSeriesLanguage.data[0].qsPointer = english;
@@ -71,12 +78,28 @@ void Controller::updateNewFileNames()
     seriesData.setNewFileNames(newFileNames);
 }
 
+void Controller::setStatusMessage(QString status)
+{
+    Message msgSetStatus;
+    msgSetStatus.type = Message::controller_setStatus_view;
+    msgSetStatus.data[0].qsPointer =  &status;
+    emit(sendMessage(msgSetStatus));
+}
+
 Controller::Controller(QObject *parent) : QObject(parent)
 {
 }
 
 void Controller::initialize()
 {
+    bool languageInitSuccess = languageControl.initialize();
+    if (languageInitSuccess) {
+        languageControl.loadLanguage("English");
+    }
+    else {
+        setStatusMessage("No language files found");
+        // Disable language selection
+    }
     initializeNameSchemes();
     initializeSeriesLanguages();
 }
@@ -217,12 +240,19 @@ bool Controller::renameFiles()
         QStringList renamedFiles = directoryParser.getOldFileNameList();
         seriesData.setOldFileNames(renamedFiles);
         updateView();
+
+        // Feedback
+        QString renameSuccessful = languageControl.getTranslation(LanguageData::renameSuccess);
+        setStatusMessage(renameSuccessful);
         return true;
-        // Output!
+
     } else
     {
+        // Feedback
+        QString renameFailure = languageControl.getTranslation(LanguageData::renameFailed);
+        setStatusMessage(renameFailure);
         return false;
-        // Output!
+
     }
 }
 
@@ -298,7 +328,7 @@ void Controller::notify(Message &msg)
     }
     case Message::view_rename_controller:
     {
-        renameFiles(); // Bool, operate on Output!
+        renameFiles();
         break;
     }
     case Message::view_changeNameScheme_controller:
@@ -324,8 +354,7 @@ void Controller::notify(Message &msg)
             emit(sendMessage(msgChangeLocalization));
         }
         else {
-            qDebug() << "Couldnt read language file" << language;
-            // Give output
+            setStatusMessage("Could not read language file " + language + ".json");
         }
         break;
     }

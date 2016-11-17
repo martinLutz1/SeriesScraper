@@ -13,6 +13,7 @@ private:
 
 public:
     LanguageControl();
+    bool initialize();
     bool loadLanguage(QString language);
     QString getTranslation(int translateThis);
     QStringList getTranslationList();

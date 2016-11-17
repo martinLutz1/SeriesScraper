@@ -9,9 +9,19 @@
 
 LanguageControl::LanguageControl()
 {
+}
+
+bool LanguageControl::initialize()
+{
     languageFileDirectory.setPath(QCoreApplication::applicationDirPath());
-    if (!languageFileDirectory.cd("language"))
-        qWarning("Language directory not found"); // output on statuslabel
+    QStringList fileType("*.json");
+    if (!languageFileDirectory.cd("language")
+            || languageFileDirectory.entryList(fileType, QDir::Files).isEmpty())    {
+        return false;
+    }
+    else { // Language files exist
+        return true;
+    }
 }
 
 bool LanguageControl::loadLanguage(QString language)
@@ -60,11 +70,14 @@ bool LanguageControl::loadLanguage(QString language)
                         << obj.value("NewNameScheme").toString()
                         << obj.value("Reset").toString()
                         << obj.value("ResetAll").toString()
-                        << obj.value("NotFound").toString();
+                        << obj.value("NotFound").toString()
+                        << obj.value("SeriesLanguageNotFound").toString()
+                        << obj.value("NameSchemeNotFound").toString()
+                        << obj.value("RenameFailed").toString()
+                        << obj.value("RenameSuccess").toString();
 
         languageData.setTranslationSet(translationList);
         languageData.setLanguage(language);
-
         return true;
     }
     return false;
@@ -72,7 +85,10 @@ bool LanguageControl::loadLanguage(QString language)
 
 QString LanguageControl::getTranslation(int translateThis)
 {
-    return languageData.getTranslation(translateThis);
+    if (translateThis < languageData.getTranslationList().size())
+        return languageData.getTranslation(translateThis);
+    else
+        return QString("");
 }
 
 QStringList LanguageControl::getTranslationList()

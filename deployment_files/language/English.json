@@ -9,7 +9,6 @@
     "Season":"Season",
     "NameScheme":"Name scheme",
     "Rename":"Rename",
-    "NotFound":"Not found",
     "Settings":"Settings",
     "Language":"Language",
     "Display":"Display",
@@ -29,5 +28,10 @@
     "Video":"Video",
     "NewNameScheme":"New name scheme",
     "Reset":"Reset",
-    "ResetAll":"Reset everything"
+    "ResetAll":"Reset everything",
+    "NotFound":"Not found",
+    "SeriesLanguageNotFound":"Series language file could not be loaded",
+    "NameSchemeNotFound":"Name scheme file not found. Creating new one.",
+    "RenameFailed":"Renaming failed",
+    "RenameSuccess":"Files successfully renamed!"
 }

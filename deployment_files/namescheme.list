@@ -2,5 +2,5 @@ $series% - S%$season%E%$episode(2)% - %$episodeName
 [%$series%] - S%$season%E%$episode(2)% - %$episodeName
 [%$series%] S%$season%E%$episode(2)% <%$episodeName%>
 $series% s%$season%e%$episode(2)% %$episodeName%$replace( =.)
-$series% - s%$season%e%$episode(2)% - %$episodeName%$replace(ö=oe)%$replace(ü=ue)%$replace(ä=ae)%$replace(ß=ss)
+$series% - s%$season%e%$episode(2)% - %$episodeName%$replace(ö=oe)%$replace(Ö=Oe)%$replace(ü=ue)%$replace(Ü=Ue)%$replace(ä=ae)%$replace(Ä=Ae)%$replace(ß=ss)
 $series%.%$season%$episode(2)%

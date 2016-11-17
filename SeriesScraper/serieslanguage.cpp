@@ -59,7 +59,7 @@ QString SeriesLanguage::getShortName(QString language)
 
 QString SeriesLanguage::getShortName(int language)
 {
-    if (language >= 1) {
+    if (language >= 1 && language <= languageShortNameList.size()) {
         return languageShortNameList.at(language - 1);
     }
     // Not found, return default

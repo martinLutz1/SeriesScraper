@@ -29,6 +29,7 @@ public:
         controller_addNameScheme_view,
         controller_changeLocalization_view,
         controller_addSeriesLanguage_view,
+        controller_setStatus_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings
     };

@@ -382,6 +382,9 @@
    </property>
   </widget>
   <widget class="QPushButton" name="doneButton">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>325</x>
@@ -400,10 +403,13 @@
     <string>Done</string>
    </property>
    <property name="autoDefault">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="default">
     <bool>true</bool>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

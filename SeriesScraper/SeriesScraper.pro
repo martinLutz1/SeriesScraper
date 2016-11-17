@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     jsonscraper.cpp \
     serieslanguage.cpp \
     aboutdialog.cpp \
-    settingswindow.cpp
+    settingswindow.cpp \
+    error.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -47,7 +48,8 @@ HEADERS  += mainwindow.h \
     jsonscraper.h \
     serieslanguage.h \
     aboutdialog.h \
-    settingswindow.h
+    settingswindow.h \
+    error.h
 
 macx {
     # Deploying

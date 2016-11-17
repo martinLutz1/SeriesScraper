@@ -31,8 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
     int buttonWidth = ui->renameButton->width();
 
-    int upperWidth = seriesBoxWidth + nameSchemeBoxWidth + buttonWidth + 4 * UNIVERSAL_SPACER;
-    int lowerWidth = pathBoxWidth + 2 * UNIVERSAL_SPACER;
+    int upperWidth = seriesBoxWidth + nameSchemeBoxWidth + 3 * UNIVERSAL_SPACER;
+    int lowerWidth = pathBoxWidth + buttonWidth + 3 * UNIVERSAL_SPACER;
     this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
 
 
@@ -66,6 +66,17 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete setPathTimer;
+    delete seriesTextChangeTimer;
+    delete progressBarTimer;
+    delete disableSeriesProgressbarTimer;
+    delete seriesStatusLabel;
+    delete seriesProgressBar;
+    delete blur;
+    delete helpMenu;
+    delete languageMenu;
+    delete aboutAction;
+    delete settingsAction;
 }
 
 void MainWindow::setUpTable()
@@ -162,9 +173,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int buttonWidth = ui->renameButton->width();
     int episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER;
 
-    // Define sizes to differentiate bewteen layouts
+    // Define size to differentiate bewteen layouts
     int bigSize = pathBoxWidth + seriesBoxWidth +  nameSchemeBoxWidth + buttonWidth + 5 * UNIVERSAL_SPACER;
-    int mediumSize = pathBoxWidth + seriesBoxWidth + 3 * UNIVERSAL_SPACER;
 
     if (windowWidth >= bigSize) { // Representation for higher resolutions
         int spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth
@@ -174,66 +184,53 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         int episodeTableHeight = windowHeight - GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
 
-        // Move path selector
-        int pathBoxX = UNIVERSAL_SPACER;
-        int pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->pathGroupBox->move(pathBoxX, pathBoxY);
-
         // Move series selector
-        int seriesBoxX = pathBoxWidth + UNIVERSAL_SPACER + spaceBetweenGroupboxes;
+        int seriesBoxX = UNIVERSAL_SPACER;
         int seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
 
         // Move name scheme selector
-        int nameSchemeBoxX = pathBoxWidth + seriesBoxWidth + UNIVERSAL_SPACER + 2 * spaceBetweenGroupboxes;
+        int nameSchemeBoxX = UNIVERSAL_SPACER + seriesBoxWidth + spaceBetweenGroupboxes;
         int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
+
+        // Move path selector
+        int pathBoxX = seriesBoxWidth + nameSchemeBoxWidth + UNIVERSAL_SPACER + 2 * spaceBetweenGroupboxes;
+        int pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        ui->pathGroupBox->move(pathBoxX, pathBoxY);
+
+        // Move rename button
+        int renameButtonX = windowWidth - buttonWidth - UNIVERSAL_SPACER;
+        int renameButtonY = windowHeight - GROUPBOX_HEIGHT;
+        ui->renameButton->move(renameButtonX, renameButtonY);
     }
-    else if (windowWidth > mediumSize){ // Representation for lower resolutions (720 < resolution < 1050)
+    else { // Standard representation
+        int spaceBetweenUpperGroupboxes = (windowWidth - seriesBoxWidth
+                                      - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
         // Resize table height
         int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
         ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
 
-        // Move path selector
-        int pathBoxX = UNIVERSAL_SPACER;
-        int pathBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
-        ui->pathGroupBox->move(pathBoxX, pathBoxY);
-
         // Move series selector
-        int seriesBoxX = pathBoxWidth + 2 * UNIVERSAL_SPACER;
+        int seriesBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
         int seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
 
         // Move name scheme selector
-        int nameSchemeBoxX = windowWidth - buttonWidth - nameSchemeBoxWidth - 2 * UNIVERSAL_SPACER;
-        int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        int nameSchemeBoxX = seriesBoxX + seriesBoxWidth + UNIVERSAL_SPACER;
+        int nameSchemeBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
-    }
-    else { // Representation for lowest resolutions (540 >= resolution >= 720)
-        // Resize table height
-        int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
-        ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
 
         // Move path selector
-        int pathBoxX = UNIVERSAL_SPACER;
-        int pathBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        int pathBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
+        int pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->pathGroupBox->move(pathBoxX, pathBoxY);
 
-        // Move series selector
-        int seriesBoxX = windowWidth - seriesBoxWidth - nameSchemeBoxWidth - buttonWidth - 3 * UNIVERSAL_SPACER;
-        int seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
-
-        // Move name scheme selector
-        int nameSchemeBoxX = windowWidth - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER;
-        int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
+        // Move rename button
+        int renameButtonX = nameSchemeBoxX + nameSchemeBoxWidth - buttonWidth;
+        int renameButtonY = windowHeight - GROUPBOX_HEIGHT;
+        ui->renameButton->move(renameButtonX, renameButtonY);
     }
-
-    // Move rename button
-    int renameButtonX = windowWidth - buttonWidth - UNIVERSAL_SPACER;
-    int renameButtonY = windowHeight - GROUPBOX_HEIGHT;
-    ui->renameButton->move(renameButtonX, renameButtonY);
 
     // Resize table coloumns
     ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.45);
@@ -560,6 +557,12 @@ void MainWindow::notify(Message &msg)
         seriesStatusLabel->setHidden(false);
         progressIncrement = 1;
         disableSeriesProgressbarTimer->start(2000);
+        break;
+    }
+    case Message::controller_setStatus_view:
+    {
+        QString status = *msg.data[0].qsPointer;
+        ui->statusBar->showMessage(status, 10000);
         break;
     }
 

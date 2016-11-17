@@ -36,6 +36,7 @@ void SettingsWindow::notify(Message &msg)
 
 void SettingsWindow::changeLocalization(QStringList translationList)
 {
+    this->setWindowTitle(translationList.at(LanguageData::settings));
     ui->tabWidget->setTabText(0, translationList.at(LanguageData::general));
     ui->tabWidget->setTabText(1, translationList.at(LanguageData::video));
     ui->tabWidget->setTabText(2, translationList.at(LanguageData::nameScheme));

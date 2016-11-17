@@ -29,6 +29,7 @@ private:
     void initializeNameSchemes();
     void initializeSeriesLanguages();
     void updateNewFileNames();
+    void setStatusMessage(QString status);
 
 public:
     explicit Controller(QObject *parent = 0);
