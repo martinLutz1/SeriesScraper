@@ -64,6 +64,11 @@ void SeriesData::setOldFileNames(QStringList oldFileNamesSortedWithSpaces)
     this->oldFileNamesSortedWithSpaces = oldFileNamesSortedWithSpaces;
 }
 
+void SeriesData::setOldFileNamesWithoutExtionsions(QStringList oldFileNameListWithoutExtensions)
+{
+    this->oldFileNamesWithoutExtensions = oldFileNameListWithoutExtensions;
+}
+
 void SeriesData::setWorkingDirectory(QDir directory)
 {
     if (directory.exists())
@@ -133,21 +138,14 @@ QStringList SeriesData::getNewFileNames()
     return newFileNames;
 }
 
-QStringList SeriesData::getOldFileNamesForView()
-{
-    QStringList oldFileNamesCropped;
-    for (int i = 0; i < amountEpisodes; i++) {
-        if (i < oldFileNamesSortedWithSpaces.length())
-            oldFileNamesCropped << oldFileNamesSortedWithSpaces.at(i);
-        else
-            oldFileNamesCropped << "";
-    }
-    return oldFileNamesCropped;
-}
-
 QStringList SeriesData::getOldFileNames()
 {
     return oldFileNamesSortedWithSpaces;
+}
+
+QStringList SeriesData::getOldFileNamesWithoutExtensions()
+{
+    return oldFileNamesWithoutExtensions;
 }
 
 QDir SeriesData::getWorkingDirectory()

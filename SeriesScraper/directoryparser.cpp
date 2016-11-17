@@ -92,6 +92,19 @@ QStringList DirectoryParser::getFiles()
     return filesToReturn;
 }
 
+QStringList DirectoryParser::getFilesWithoutExtension()
+{
+    QFileInfo fileInfo;
+    QStringList fileList = getFiles();
+    QStringList fileWithoutExtension;
+
+    for (int i = 0; i < getFiles().size(); i++) {
+        fileInfo.setFile(fileList.at(i));
+        fileWithoutExtension << fileInfo.completeBaseName();
+    }
+    return fileWithoutExtension;
+}
+
 QStringList DirectoryParser::getFiles(QString extension)
 {
     filter = (QStringList() << extension);
@@ -139,17 +152,5 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
         }
     }
     return episodePosition;
-}
-
-QStringList DirectoryParser::getOldFileNameList()
-{
-    QStringList oldFileNameList;
-    if (directory.exists()) {
-        oldFileNameList = getFiles();
-    }
-    else {
-        oldFileNameList << "";
-    }
-    return oldFileNameList;
 }
 

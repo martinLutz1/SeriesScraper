@@ -204,7 +204,10 @@ bool Controller::setDirectory(QDir directory)
     if (directoryExists) {
         QStringList suffixesList = directoryParser.getFilesSuffix();
         QStringList oldFileList = directoryParser.getFiles();
+        QStringList oldFileWithoutExtensionList = directoryParser.getFilesWithoutExtension();
+
         seriesData.setWorkingDirectory(directory);
+        seriesData.setOldFileNamesWithoutExtionsions(oldFileWithoutExtensionList);
         seriesData.setOldFileNames(oldFileList);
         seriesData.setSuffixes(suffixesList);
 
@@ -233,8 +236,10 @@ bool Controller::renameFiles()
 
     if (fileRenamer.rename())
     {
-        QStringList renamedFiles = directoryParser.getOldFileNameList();
+        QStringList renamedFiles = directoryParser.getFiles();
+        QStringList renamedFilesWithoutExtionsion = directoryParser.getFilesWithoutExtension();
         seriesData.setOldFileNames(renamedFiles);
+        seriesData.setOldFileNamesWithoutExtionsions(renamedFilesWithoutExtionsion);
         updateView();
 
         // Feedback
@@ -255,7 +260,7 @@ bool Controller::renameFiles()
 void Controller::updateView()
 {
     QStringList newFileNameList = seriesData.getNewFileNames();
-    QStringList oldFileNameList = seriesData.getOldFileNames();
+    QStringList oldFileNameList = seriesData.getOldFileNamesWithoutExtensions();
     // Operate on suffixes
     int amountSeasons = seriesData.getAmountSeasons();
 

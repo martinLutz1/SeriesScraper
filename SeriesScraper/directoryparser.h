@@ -23,10 +23,10 @@ public:
     bool initializeDirectory(QDir directory);
     bool directoryExists();
     QStringList getFiles();
+    QStringList getFilesWithoutExtension();
     QStringList getFiles(QString extension);
     QStringList getFilesSuffix();
     std::vector<int> getEpisodePositions(QStringList episodeList);
-    QStringList getOldFileNameList();
 };
 
 #endif // DIRECTORYPARSER_H
