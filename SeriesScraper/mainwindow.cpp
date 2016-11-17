@@ -207,17 +207,17 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         int spaceBetweenUpperGroupboxes = (windowWidth - seriesBoxWidth
                                       - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
         // Resize table height
-        int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 3 * UNIVERSAL_SPACER;
+        int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
 
         // Move series selector
         int seriesBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
-        int seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        int seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
 
         // Move name scheme selector
         int nameSchemeBoxX = seriesBoxX + seriesBoxWidth + UNIVERSAL_SPACER;
-        int nameSchemeBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        int nameSchemeBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
         ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
 
         // Move path selector
