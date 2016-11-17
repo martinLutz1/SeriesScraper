@@ -59,10 +59,12 @@ macx {
     # Deploying
     QMAKE_POST_LINK += ~/Qt/5.7/clang_64/bin/macdeployqt SeriesScraper.app;
     # Copy namescheme list, language folder and series language list
-    QMAKE_POST_LINK += cp -Rf ./../deployment_files/* ./SeriesScraper.app/Contents/MacOs;
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./SeriesScraper.app/Contents/MacOs;
+    # Copy info.plist
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/mac/Info.plist ./SeriesScraper.app/Contents;
 }
 unix:!macx {
-    QMAKE_POST_LINK += cp -Rf ./../deployment_files/* ./;
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./;
 }
 
 
