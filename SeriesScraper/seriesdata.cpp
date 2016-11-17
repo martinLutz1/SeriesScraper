@@ -8,6 +8,7 @@ SeriesData::SeriesData() :
     selectedSeason(1)
 {
     workingDirectory = QDir("");
+    specialCharacterList << "<" << ">" << ":" << "\"" << "/" << "|" << "?" << "*";
 }
 
 //----------------------- Setter -----------------------//
@@ -33,13 +34,21 @@ void SeriesData::setSuffixes(QStringList newSuffixList)
 
 void SeriesData::setEpisode(int index, QString newEpisode)
 {
-    if (episodesList.length() > index)
-        episodesList[index] = newEpisode;
+    if (episodesList.length() > index) {
+        QString newEpisodeWithoutSpecialCharacters = removeSpecialCharacters(newEpisode);
+        episodesList[index] = newEpisodeWithoutSpecialCharacters;
+    }
 }
 
 void SeriesData::setEpisodes(QStringList newEpisodeList)
 {
-    episodesList = newEpisodeList;
+    int numberEpisodes = newEpisodeList.size();
+    QStringList epiosodeListWithoutSpecialCharacters;
+    for (int i = 0; i < numberEpisodes; i++) {
+        epiosodeListWithoutSpecialCharacters << removeSpecialCharacters(newEpisodeList.at(i));
+    }
+
+    episodesList = epiosodeListWithoutSpecialCharacters;
     amountEpisodes = episodesList.length();
 }
 
@@ -151,4 +160,13 @@ QStringList SeriesData::getOldFileNamesWithoutExtensions()
 QDir SeriesData::getWorkingDirectory()
 {
     return workingDirectory;
+}
+
+QString SeriesData::removeSpecialCharacters(QString string)
+{
+    QString stringWithoutSpecialCharacters = string;
+    for (int i = 0; i < specialCharacterList.size(); i++) {
+        stringWithoutSpecialCharacters.replace(specialCharacterList.at(i), "");
+    }
+    return stringWithoutSpecialCharacters;
 }

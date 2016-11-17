@@ -1,6 +1,6 @@
 #include "error.h"
 
-Error::Error(std::__1::string msg) : msg(msg)
+Error::Error(std::string msg) : msg(msg)
 {
 
 }

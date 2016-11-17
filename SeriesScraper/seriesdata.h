@@ -49,6 +49,9 @@ private:
     int amountSeasons;
     int selectedSeason;
     QString language;
+
+    QStringList specialCharacterList;
+    QString removeSpecialCharacters(QString string);
 };
 
 #endif // SERIESDATA_H

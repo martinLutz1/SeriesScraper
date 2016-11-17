@@ -17,7 +17,7 @@ public:
 private:
     using JsonScraper::parsedObject;
     const QString authentificationKey = "020a07e5192867b0bbae8ffb841498e5";
-    const QString tmdbUrl = "https://api.themoviedb.org/3/";
+    const QString tmdbUrl = "http://api.themoviedb.org/3/";
     QString seriesID;
     QString seriesFullName;
     int amountSeasons;
