@@ -343,6 +343,7 @@ void MainWindow::changeLocalization(QStringList translationList)
     seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
     viewMenu->setTitle(translationList.at(LanguageData::display));
     languageMenu->setTitle(translationList.at(LanguageData::language));
+    helpMenu->setTitle(translationList.at(LanguageData::help));
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
 }
