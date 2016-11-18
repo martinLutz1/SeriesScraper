@@ -101,6 +101,9 @@ void Controller::setStatusMessage(QString status)
 
 bool Controller::loadSeries(int season, QString language)
 {
+    if (seriesData.getSeries().isEmpty())
+        return false;
+
     // Start loading animation
     Message msgStartLoading;
     msgStartLoading.type = Message::controller_startSeriesLoading_view;
@@ -208,7 +211,8 @@ bool Controller::setDirectory(QDir directory)
     QStringList newSuffixes;
 
     // Update directory and file infos
-    if (directoryExists) {
+    if (directoryExists)
+    {
         newDirectory = directory;
         newSuffixes = directoryParser.getFilesSuffix();
         newOldFileNames = directoryParser.getFiles();
@@ -233,8 +237,9 @@ bool Controller::renameFiles()
     fileRenamer.setOldFileNames(oldFileNameList);
     fileRenamer.setNewFileNames(newFileNameList);
     fileRenamer.setSuffixes(suffixesList);
+    bool renameSuccess = fileRenamer.rename();
 
-    if (fileRenamer.rename())
+    if (renameSuccess)
     {
         QStringList renamedFiles = directoryParser.getFiles();
         QStringList renamedFilesWithoutExtionsion = directoryParser.getFilesWithoutExtension();
@@ -242,26 +247,22 @@ bool Controller::renameFiles()
         seriesData.setOldFileNamesWithoutExtionsions(renamedFilesWithoutExtionsion);
         updateView();
 
-        // Feedback
+        // Success Message
         QString renameSuccessful = languageControl.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful);
-        return true;
-
     } else
     {
-        // Feedback
+        // Failure Message
         QString renameFailure = languageControl.getTranslation(LanguageData::renameFailed);
         setStatusMessage(renameFailure);
-        return false;
-
     }
+    return renameSuccess;
 }
 
 void Controller::updateView()
 {
     QStringList newFileNameList = seriesData.getNewFileNames();
-    QStringList oldFileNameList = seriesData.getOldFileNamesWithoutExtensions();
-    // Operate on suffixes
+    QStringList oldFileNameList = seriesData.getOldFileNamesWithoutSuffix();
     int amountSeasons = seriesData.getAmountSeasons();
 
     Message msgViewUpdate;
@@ -274,7 +275,6 @@ void Controller::updateView()
 
 void Controller::updateRenameButton()
 {
-    // Check wether the directory is the root dir of the program (-> not changed)
     QDir testDir("");
     bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
     bool seriesSet = !seriesData.getSeries().isEmpty();
@@ -288,41 +288,49 @@ void Controller::updateRenameButton()
 
 void Controller::notify(Message &msg)
 {
-    switch (msg.type) {
-    case Message::view_seriesText_changed_controller:
+    switch (msg.type)
+    {
+    case Message::view_changeSeriesText_controller:
     {
         QString seriesText = *msg.data[0].qsPointer;
         int season = msg.data[1].i;
-        bool seriesSet = setSeries(seriesText, season);
         bool isEmpty = seriesText.isEmpty();
+        bool seriesSet = setSeries(seriesText, season);
 
-        // Emit wether series was scraped succesfully
+        // Send scraping status to view
         Message msgSeriesSet;
         msgSeriesSet.type = Message::controller_seriesSet_view;
         msgSeriesSet.data[0].b = seriesSet;
         msgSeriesSet.data[1].b = isEmpty;
         emit(sendMessage(msgSeriesSet));
-
         updateRenameButton();
         break;
     }
-    case Message::view_season_changed_controller:
+    case Message::view_changeSeason_controller:
     {
         int selectedSeason = msg.data[0].i;
         int oldSelectedSeason = seriesData.getSelectedSeason();
         // Only write on change
-        if (selectedSeason != oldSelectedSeason) {
+        if (selectedSeason != oldSelectedSeason)
             changeSeason(selectedSeason);
-        }
         break;
     }
-    case Message::view_directory_changed_controller:
+    case Message::view_changeSeriesLanguage_controller:
+    {
+        int languageIndex = msg.data[0].i;
+        QString language = seriesLanguage.getShortName(languageIndex + 1);
+        QString oldLanguage = seriesData.getSelectedLanguage();
+        // Only write on change
+        if (oldLanguage != language)
+            changeLanguage(language);
+        break;
+    }
+    case Message::view_changeDirectory_controller:
     {
         QString directory = *msg.data[0].qsPointer;
         setDirectory(QDir(directory));
         updateView();
         updateRenameButton();
-
         break;
     }
     case Message::view_rename_controller:
@@ -343,32 +351,18 @@ void Controller::notify(Message &msg)
         QString language = *msg.data[0].qsPointer;
         bool loadingSuccessful = languageControl.loadLanguage(language);
 
-        if (loadingSuccessful) {
+        if (loadingSuccessful)
+        {
             QStringList translationList = languageControl.getTranslationList();
-
             // Send translations to view, about and settings
             Message msgChangeLocalization;
             msgChangeLocalization.type = Message::controller_changeLocalization_view;
             msgChangeLocalization.data[0].qsListPointer = &translationList;
             emit(sendMessage(msgChangeLocalization));
-        }
-        else {
+        } else
+        {
+            // Error message
             setStatusMessage("Could not read language file " + language + ".json");
-        }
-        break;
-    }
-    case Message::view_changeSeriesLanguage_controller:
-    {
-        int languageIndex = msg.data[0].i;
-        QString language = seriesLanguage.getShortName(languageIndex + 1);
-        QString oldLanguage = seriesData.getSelectedLanguage();
-        // Only write on change
-        if (oldLanguage != language)  {
-            seriesData.setSelectedLanguage(language);
-            // Only load season if series set
-            if (!seriesData.getSeries().isEmpty()) {
-                changeLanguage(language);
-            }
         }
         break;
     }

@@ -9,10 +9,10 @@ class Message
 public:
     enum MessageType
     {
-        view_seriesText_changed_controller,
-        view_season_changed_controller,
-        view_episodeName_changed_controller,
-        view_directory_changed_controller,
+        view_changeSeriesText_controller,
+        view_changeSeason_controller,
+        view_changeEpisodeName_controller,
+        view_changeDirectory_controller,
         view_rename_controller,
         view_changeNameScheme_controller,
         view_changeSeriesLanguage_controller,

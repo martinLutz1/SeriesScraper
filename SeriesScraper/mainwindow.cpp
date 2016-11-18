@@ -383,7 +383,7 @@ void MainWindow::setPath()
     }
     QString directory = dir.path();
     Message directoryChangedMsg;
-    directoryChangedMsg.type = Message::view_directory_changed_controller;
+    directoryChangedMsg.type = Message::view_changeDirectory_controller;
     directoryChangedMsg.data[0].qsPointer = &directory;
     emit(sendMessage(directoryChangedMsg));
 }
@@ -426,7 +426,7 @@ void MainWindow::onSeriesTextChange()
     QString seriesText = ui->seriesLineEdit->text();
 
     Message msg;
-    msg.type = Message::view_seriesText_changed_controller;
+    msg.type = Message::view_changeSeriesText_controller;
     msg.data[0].qsPointer = &seriesText;
     msg.data[1].i = 1;
     emit sendMessage(msg);
@@ -435,7 +435,7 @@ void MainWindow::onSeriesTextChange()
 void MainWindow::onSeasonChanged(int index)
 {
     Message seasonChangedMsg;
-    seasonChangedMsg.type = Message::view_season_changed_controller;
+    seasonChangedMsg.type = Message::view_changeSeason_controller;
     seasonChangedMsg.data[0].i = index + 1;
     emit(sendMessage(seasonChangedMsg));
 

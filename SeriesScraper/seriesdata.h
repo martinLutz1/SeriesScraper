@@ -19,7 +19,7 @@ public:
     void setAmountSeasons(int newAmount);
     void setSelectedSeason(int newSelectedSeason);
     void setOldFileNames(QStringList oldFileNamesSortedWithSpaces);
-    void setOldFileNamesWithoutExtionsions(QStringList oldFileNameListWithoutExtensions);
+    void setOldFileNamesWithoutExtionsions(QStringList oldFileNameListWithoutSuffix);
     void setWorkingDirectory(QDir directory);
     void setNewFileNames(QStringList newFileNames);
 
@@ -34,7 +34,7 @@ public:
     int getSelectedSeason();
     QStringList getNewFileNames();
     QStringList getOldFileNames();
-    QStringList getOldFileNamesWithoutExtensions();
+    QStringList getOldFileNamesWithoutSuffix();
     QDir getWorkingDirectory();
 
 private:
@@ -42,7 +42,7 @@ private:
     QStringList suffixesList;
     QStringList episodesList;
     QStringList oldFileNamesSortedWithSpaces;
-    QStringList oldFileNamesWithoutExtensions;
+    QStringList oldFileNamesWithoutSuffix;
     QStringList newFileNames;
     QDir workingDirectory;
     int amountEpisodes;

@@ -73,9 +73,9 @@ void SeriesData::setOldFileNames(QStringList oldFileNamesSortedWithSpaces)
     this->oldFileNamesSortedWithSpaces = oldFileNamesSortedWithSpaces;
 }
 
-void SeriesData::setOldFileNamesWithoutExtionsions(QStringList oldFileNameListWithoutExtensions)
+void SeriesData::setOldFileNamesWithoutExtionsions(QStringList oldFileNameListWithoutSuffix)
 {
-    this->oldFileNamesWithoutExtensions = oldFileNameListWithoutExtensions;
+    this->oldFileNamesWithoutSuffix = oldFileNameListWithoutSuffix;
 }
 
 void SeriesData::setWorkingDirectory(QDir directory)
@@ -152,9 +152,9 @@ QStringList SeriesData::getOldFileNames()
     return oldFileNamesSortedWithSpaces;
 }
 
-QStringList SeriesData::getOldFileNamesWithoutExtensions()
+QStringList SeriesData::getOldFileNamesWithoutSuffix()
 {
-    return oldFileNamesWithoutExtensions;
+    return oldFileNamesWithoutSuffix;
 }
 
 QDir SeriesData::getWorkingDirectory()
