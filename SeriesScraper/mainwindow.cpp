@@ -205,7 +205,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     }
     else { // Standard representation
         int spaceBetweenUpperGroupboxes = (windowWidth - seriesBoxWidth
-                                      - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
+                                           - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
         // Resize table height
         int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
         ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
@@ -256,6 +256,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
 {
+    bool filesAvaiable = !oldFileNames.empty();
     setAmountSeasons(amountSeasons);
     clearTable();
 
@@ -266,8 +267,17 @@ void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, 
     while (oldFileNames.size() < tableSize)
         oldFileNames << "";
     // Fill table
-    for (int i = 0; i < tableSize; i++)
+    for (int i = 0; i < tableSize; i++) {
         setRow(i, oldFileNames.at(i), newFileNames.at(i));
+    }
+    if (filesAvaiable) {
+        for (int i = 0; i < tableSize; i++) {
+            // Disable where no file exists
+            if (oldFileNames.at(i).isEmpty()) {
+                ui->episodeNameTable->item(i,1)->setTextColor(QColor(150, 150, 150));
+            }
+        }
+    }
 }
 
 void MainWindow::clearTable()
