@@ -10,10 +10,12 @@ class LanguageControl
 private:
    LanguageData languageData;
    QDir languageFileDirectory;
+   QFileInfoList languageFileList;
 
 public:
     LanguageControl();
     bool initialize();
+    QStringList getLanguageList();
     bool loadLanguage(QString language);
     QString getTranslation(int translateThis);
     QStringList getTranslationList();

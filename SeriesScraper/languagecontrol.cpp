@@ -15,13 +15,26 @@ bool LanguageControl::initialize()
 {
     languageFileDirectory.setPath(QCoreApplication::applicationDirPath());
     QStringList fileType("*.json");
-    if (!languageFileDirectory.cd("language")
-            || languageFileDirectory.entryList(fileType, QDir::Files).isEmpty())    {
+    if (!languageFileDirectory.cd("language")) {
         return false;
     }
-    else { // Language files exist
-        return true;
+    else { // Language files exist, load them
+        languageFileList = languageFileDirectory.entryInfoList(fileType, QDir::Files);
+        if (languageFileList.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
     }
+}
+
+QStringList LanguageControl::getLanguageList()
+{
+    QStringList languageListWithoutExtensions;
+    for (int i = 0; i < languageFileList.size(); i++) {
+        languageListWithoutExtensions << languageFileList.at(i).baseName();
+    }
+    return languageListWithoutExtensions;
 }
 
 bool LanguageControl::loadLanguage(QString language)

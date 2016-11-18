@@ -30,7 +30,6 @@ private:
 
     QMenu *helpMenu;
     QMenu *viewMenu;
-    QMenu *languageMenu;
     QAction *aboutAction;
     QAction *settingsAction;
 
@@ -75,7 +74,6 @@ private slots:
     void onSeriesLanguageChanged(int index);
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
-    void changeGUILanguage(QAction *selectedLanguage);
     void showAboutDialog();
     void showSettingsWindow();
 

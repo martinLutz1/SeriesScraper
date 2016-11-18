@@ -23,6 +23,9 @@ private:
     Ui::SettingsWindow *ui;
     void changeLocalization(QStringList translationList);
 
+private slots:
+    void onGUILanguageChanged(QString language);
+
 signals:
     void sendMessage(Message &msg);
 };

@@ -67,6 +67,26 @@ void Controller::initializeSeriesLanguages()
     delete english;
 }
 
+void Controller::initializeGUILanguages()
+{
+    bool languageInitSuccess = languageControl.initialize();
+    if (languageInitSuccess) {
+        QStringList guiLanguageList = languageControl.getLanguageList();
+        for (int i = 0; i < guiLanguageList.size(); i++) {
+            Message msgAddGUILanguage;
+            msgAddGUILanguage.type = Message::controller_addGUILanguage_settings;
+            msgAddGUILanguage.data[0].qsPointer = &guiLanguageList[i];
+            emit(sendMessage(msgAddGUILanguage));
+        }
+    }
+    else {
+        setStatusMessage("No language files found");
+        Message msgNoGUILanguagesFound;
+        msgNoGUILanguagesFound.type = Message::controller_noGUILanguagesFound_settings;
+        emit(sendMessage(msgNoGUILanguagesFound));
+    }
+}
+
 void Controller::updateNewFileNames()
 {
     QString series = seriesData.getSeries();
@@ -92,14 +112,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
 void Controller::initialize()
 {
-    bool languageInitSuccess = languageControl.initialize();
-    if (languageInitSuccess) {
-        languageControl.loadLanguage("English");
-    }
-    else {
-        setStatusMessage("No language files found");
-        // Disable language selection
-    }
+    initializeGUILanguages();
     initializeNameSchemes();
     initializeSeriesLanguages();
 }
@@ -338,7 +351,7 @@ void Controller::notify(Message &msg)
         updateView();
         break;
     }
-    case Message::view_changeGUILanguage_controller:
+    case Message::settings_changeGUILanguage_controller:
     {
         QString language = *msg.data[0].qsPointer;
         bool loadingSuccessful = languageControl.loadLanguage(language);

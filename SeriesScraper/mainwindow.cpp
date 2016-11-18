@@ -74,7 +74,6 @@ MainWindow::~MainWindow()
     delete seriesProgressBar;
     delete blur;
     delete helpMenu;
-    delete languageMenu;
     delete aboutAction;
     delete settingsAction;
 }
@@ -117,7 +116,6 @@ void MainWindow::setUpMenuBar()
     QString aboutText = "About " APPLICATIONNAME;
 
     viewMenu = new QMenu("Display");
-    languageMenu = new QMenu("Language");
     helpMenu = new QMenu("Help");
     aboutAction = new QAction(aboutText);
     settingsAction = new QAction("Settings");
@@ -127,15 +125,10 @@ void MainWindow::setUpMenuBar()
 
     helpMenu->addAction(aboutAction);
     viewMenu->addAction(settingsAction);
-    languageMenu->addAction("English");
-    languageMenu->addAction("German");
 
-    viewMenu->addMenu(languageMenu);
     ui->menuBar->addMenu(viewMenu);
     ui->menuBar->addMenu(helpMenu);
 
-    // To get text of clicked language
-    QObject::connect(languageMenu, SIGNAL(triggered(QAction *)), this, SLOT(changeGUILanguage(QAction *)));
     // Connect settings and about
     QObject::connect(helpMenu, SIGNAL(triggered(QAction*)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
@@ -352,7 +345,6 @@ void MainWindow::changeLocalization(QStringList translationList)
     ui->renameButton->setText(translationList.at(LanguageData::rename));
     seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
     viewMenu->setTitle(translationList.at(LanguageData::display));
-    languageMenu->setTitle(translationList.at(LanguageData::language));
     helpMenu->setTitle(translationList.at(LanguageData::help));
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
@@ -464,16 +456,6 @@ void MainWindow::onNameSchemeChanged(int index)
     msgNameSchemeChanged.type = Message::view_changeNameScheme_controller;
     msgNameSchemeChanged.data[0].i = index;
     emit(sendMessage(msgNameSchemeChanged));
-}
-
-void MainWindow::changeGUILanguage(QAction *selectedLanguage)
-{
-    QString language = selectedLanguage->text();
-
-    Message msgChangeGUILanguage;
-    msgChangeGUILanguage.type = Message::view_changeGUILanguage_controller;
-    msgChangeGUILanguage.data[0].qsPointer = &language;
-    emit(sendMessage(msgChangeGUILanguage));
 }
 
 void MainWindow::showAboutDialog()

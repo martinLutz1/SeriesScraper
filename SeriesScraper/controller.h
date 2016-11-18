@@ -28,6 +28,7 @@ private:
 
     void initializeNameSchemes();
     void initializeSeriesLanguages();
+    void initializeGUILanguages();
     void updateNewFileNames();
     void setStatusMessage(QString status);
 
