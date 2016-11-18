@@ -31,6 +31,7 @@ private:
     void initializeGUILanguages();
     void updateNewFileNames();
     void setStatusMessage(QString status);
+    bool loadSeries(int season, QString language);
 
 public:
     explicit Controller(QObject *parent = 0);

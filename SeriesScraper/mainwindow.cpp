@@ -381,7 +381,6 @@ void MainWindow::setPath()
         ui->pathLineEdit->setStyleSheet(colorRed);
         ui->correctPathLabel->setText(times);
     }
-
     QString directory = dir.path();
     Message directoryChangedMsg;
     directoryChangedMsg.type = Message::view_directory_changed_controller;
@@ -531,10 +530,11 @@ void MainWindow::notify(Message &msg)
 
         break;
     }
-    case Message::controller_addNameScheme_view:
+    case Message::controller_addNameSchemes_view:
     {
-        QString nameScheme = *msg.data[0].qsPointer;
-        addNameSchemeItem(nameScheme);
+        QStringList nameSchemeList = *msg.data[0].qsListPointer;
+        for (int i = 0; i < nameSchemeList.size(); i++)
+            addNameSchemeItem(nameSchemeList.at(i));
         break;
     }
     case Message::controller_changeLocalization_view:
@@ -543,10 +543,11 @@ void MainWindow::notify(Message &msg)
         changeLocalization(translationList);
         break;
     }
-    case Message::controller_addSeriesLanguage_view:
+    case Message::controller_addSeriesLanguages_view:
     {
-        QString seriesLanguage = *msg.data[0].qsPointer;
-        ui->seriesLanguageComboBox->addItem(seriesLanguage);
+        QStringList seriesLanguageList = *msg.data[0].qsListPointer;
+        for (int i = 0; i < seriesLanguageList.size(); i++)
+            ui->seriesLanguageComboBox->addItem(seriesLanguageList.at(i));
         break;
     }
     case Message::controller_successSeriesLoading_view:

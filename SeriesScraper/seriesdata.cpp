@@ -52,9 +52,9 @@ void SeriesData::setEpisodes(QStringList newEpisodeList)
     amountEpisodes = episodesList.length();
 }
 
-void SeriesData::setLanguage(QString languageShortName)
+void SeriesData::setSelectedLanguage(QString languageShortName)
 {
-    language = languageShortName;
+   selectedLanguage = languageShortName;
 }
 
 void SeriesData::setAmountSeasons(int newAmount)
@@ -64,7 +64,7 @@ void SeriesData::setAmountSeasons(int newAmount)
 
 void SeriesData::setSelectedSeason(int newSelectedSeason)
 {
-    if (newSelectedSeason < amountSeasons)
+    if (newSelectedSeason <= amountSeasons)
         selectedSeason = newSelectedSeason;
 }
 
@@ -122,9 +122,9 @@ QStringList SeriesData::getEpisodes()
     return episodesList;
 }
 
-QString SeriesData::getLanguage()
+QString SeriesData::getSelectedLanguage()
 {
-    return language;
+    return selectedLanguage;
 }
 
 int SeriesData::getAmountEpisodes()

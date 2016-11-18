@@ -27,13 +27,13 @@ public:
         controller_startSeriesLoading_view,
         controller_successSeriesLoading_view,
         controller_failureSeriesLoading_view,
-        controller_addNameScheme_view,
-        controller_addSeriesLanguage_view,
+        controller_addNameSchemes_view,
+        controller_addSeriesLanguages_view,
         controller_changeLocalization_view,
         controller_setStatus_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
-        controller_addGUILanguage_settings,
+        controller_addGUILanguages_settings,
         controller_noGUILanguagesFound_settings
     };
 

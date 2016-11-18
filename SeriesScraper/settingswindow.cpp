@@ -30,10 +30,11 @@ void SettingsWindow::notify(Message &msg)
         changeLocalization(translationList);
         break;
     }
-    case Message::controller_addGUILanguage_settings:
+    case Message::controller_addGUILanguages_settings:
     {
-        QString language = *msg.data[0].qsPointer;
-        ui->selectInterfaceLanguageComboBox->addItem(language);
+        QStringList guiLanguageList = *msg.data[0].qsListPointer;
+        for (int i = 0; i < guiLanguageList.size(); i++)
+            ui->selectInterfaceLanguageComboBox->addItem(guiLanguageList.at(i));
         break;
     }
     case Message::controller_noGUILanguagesFound_settings:
