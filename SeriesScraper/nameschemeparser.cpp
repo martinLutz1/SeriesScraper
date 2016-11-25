@@ -122,7 +122,6 @@ QString NameSchemeParser::getNameSchemeRepresentation()
         nameSchemeRepresentation += variables.at(replace) + QString::number(replaceCount) + ")$";
     }
 
-
     return nameSchemeRepresentation;
 }
 

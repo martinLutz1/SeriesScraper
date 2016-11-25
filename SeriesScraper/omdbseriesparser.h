@@ -2,19 +2,19 @@
 #define OMDBSERIESPARSER_H
 
 #include <QStringList>
+#include "jsonscraper.h"
 
-class OMDbSeriesParser
+class OMDbSeriesParser : public JsonScraper
 {
 private:
-    QStringList idList;
+    QStringList episodeList;
     int amountSeasons;
 
 public:
     OMDbSeriesParser();
-    bool getSeriesSeason(QString url, QString series, int season, QString id);
+    bool scrapeSeries(QString series, int season);
 
-    // Only execute if getIDfromURL returned true before, otherwise you will get an empty string
-    QStringList getIDValue();
+    QStringList getEpisodeList();
     int getAmountSeasons();
 };
 

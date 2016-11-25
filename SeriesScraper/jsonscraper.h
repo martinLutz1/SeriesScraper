@@ -12,7 +12,6 @@ public:
 
 protected:
     QJsonObject parsedObject;
-
 };
 
 #endif // JSONSCRAPER_H

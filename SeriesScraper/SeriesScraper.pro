@@ -30,7 +30,9 @@ SOURCES += main.cpp \
     serieslanguage.cpp \
     aboutdialog.cpp \
     settingswindow.cpp \
-    error.cpp
+    error.cpp \
+    settings.cpp \
+    jsonloader.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -49,7 +51,9 @@ HEADERS  += mainwindow.h \
     serieslanguage.h \
     aboutdialog.h \
     settingswindow.h \
-    error.h
+    error.h \
+    settings.h \
+    jsonloader.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

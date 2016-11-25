@@ -17,7 +17,7 @@ class Controller : public QObject
 {
     Q_OBJECT
 private:
-    OMDbSeriesParser seriesParser;
+    OMDbSeriesParser omdbSeriesParser;
     TMDbSeriesParser tmdbSeriesParser;
     DirectoryParser directoryParser;
     SeriesData seriesData;

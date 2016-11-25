@@ -4,8 +4,9 @@
 #include <QDir>
 #include <QFile>
 #include <QStringList>
+#include "jsonloader.h"
 
-class SeriesLanguage
+class SeriesLanguage : public JsonLoader
 {
 public:
     SeriesLanguage();
@@ -15,10 +16,8 @@ public:
     QString getShortName(int language);
 
 private:
-    bool successReading;
     QDir applicationDirectory;
-    QFile seriesLanguageFile;
-
+    QString filePath;
     QString defaulEntry = "en-EN";
     QStringList seriesLanguageList;
     QStringList languageShortNameList;

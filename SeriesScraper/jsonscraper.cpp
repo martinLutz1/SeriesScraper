@@ -21,7 +21,8 @@ bool JsonScraper::scrapeJsonObject(QString requestUrl)
     QNetworkReply *reply = mgr.get(req);
     eventLoop.exec(); // Blocks stack until "finished()" has been called
 
-    if (reply->error() == QNetworkReply::NoError) {
+    if (reply->error() == QNetworkReply::NoError)
+    {
         QByteArray byteArray = reply->readAll();
         QJsonParseError err;
         QJsonDocument doc = QJsonDocument::fromJson(byteArray, &err);
@@ -30,12 +31,12 @@ bool JsonScraper::scrapeJsonObject(QString requestUrl)
         {
             parsedObject = doc.object();
             scrapingSuccessful = true;
-        }
-        else {
+        } else
+        {
             qDebug() << "Not found";
         }
-    }
-    else {
+    } else
+    {
         qDebug() << "Failure" << reply->errorString();
     }
     delete reply;

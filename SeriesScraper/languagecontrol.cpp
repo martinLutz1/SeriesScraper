@@ -13,87 +13,76 @@ LanguageControl::LanguageControl()
 
 bool LanguageControl::initialize()
 {
+    bool languageFilesExist = false;
     languageFileDirectory.setPath(QCoreApplication::applicationDirPath());
     QStringList fileType("*.json");
-    if (!languageFileDirectory.cd("language")) {
-        return false;
-    }
-    else { // Language files exist, load them
+
+    if (languageFileDirectory.cd("language"))
+    {
         languageFileList = languageFileDirectory.entryInfoList(fileType, QDir::Files);
-        if (languageFileList.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        if (!(languageFileList.isEmpty()))
+            languageFilesExist = true;
     }
+    return languageFilesExist;
 }
 
 QStringList LanguageControl::getLanguageList()
 {
     QStringList languageListWithoutExtensions;
-    for (int i = 0; i < languageFileList.size(); i++) {
+    for (int i = 0; i < languageFileList.size(); i++)
         languageListWithoutExtensions << languageFileList.at(i).baseName();
-    }
+
     return languageListWithoutExtensions;
 }
 
 bool LanguageControl::loadLanguage(QString language)
 {
-    QString fileName =  languageFileDirectory.absoluteFilePath(language.append(".json"));
-    QFile loadFile(fileName);
+    QString filePath =  languageFileDirectory.absoluteFilePath(language.append(".json"));
+    bool loadingSuccessful = loadJsonObject(filePath);
 
-    if (!loadFile.open(QIODevice::ReadOnly))
-        return false;
-
-    QByteArray languageByteArray = loadFile.readAll();
-    QJsonParseError err;
-    QJsonDocument doc = QJsonDocument::fromJson(languageByteArray, &err);
-
-    if(doc.isObject())
+    if(loadingSuccessful)
     {
-        QJsonObject obj = doc.object();
         QStringList translationList;
-        translationList << obj.value("OldNames").toString()
-                        << obj.value("NewNames").toString()
-                        << obj.value("DirectorySelection").toString()
-                        << obj.value("Selection").toString()
-                        << obj.value("Path").toString()
-                        << obj.value("SeriesSelection").toString()
-                        << obj.value("Series").toString()
-                        << obj.value("Season").toString()
-                        << obj.value("NameScheme").toString()
-                        << obj.value("Rename").toString()
-                        << obj.value("About").toString()
-                        << obj.value("Settings").toString()
-                        << obj.value("Language").toString()
-                        << obj.value("Display").toString()
-                        << obj.value("Help").toString()
-                        << obj.value("Close").toString()
-                        << obj.value("Done").toString()
-                        << obj.value("General").toString()
-                        << obj.value("Interface").toString()
-                        << obj.value("ShowSeriesInformation").toString()
-                        << obj.value("SaveOnExit").toString()
-                        << obj.value("SeriesDatabase").toString()
-                        << obj.value("Recommended").toString()
-                        << obj.value("NewFormat").toString()
-                        << obj.value("Add").toString()
-                        << obj.value("Remove").toString()
-                        << obj.value("Video").toString()
-                        << obj.value("NewNameScheme").toString()
-                        << obj.value("Reset").toString()
-                        << obj.value("ResetAll").toString()
-                        << obj.value("NotFound").toString()
-                        << obj.value("SeriesLanguageNotFound").toString()
-                        << obj.value("NameSchemeNotFound").toString()
-                        << obj.value("RenameFailed").toString()
-                        << obj.value("RenameSuccess").toString();
+        translationList << loadedObject.value("OldNames").toString()
+                        << loadedObject.value("NewNames").toString()
+                        << loadedObject.value("DirectorySelection").toString()
+                        << loadedObject.value("Selection").toString()
+                        << loadedObject.value("Path").toString()
+                        << loadedObject.value("SeriesSelection").toString()
+                        << loadedObject.value("Series").toString()
+                        << loadedObject.value("Season").toString()
+                        << loadedObject.value("NameScheme").toString()
+                        << loadedObject.value("Rename").toString()
+                        << loadedObject.value("About").toString()
+                        << loadedObject.value("Settings").toString()
+                        << loadedObject.value("Language").toString()
+                        << loadedObject.value("Display").toString()
+                        << loadedObject.value("Help").toString()
+                        << loadedObject.value("Close").toString()
+                        << loadedObject.value("Done").toString()
+                        << loadedObject.value("General").toString()
+                        << loadedObject.value("Interface").toString()
+                        << loadedObject.value("ShowSeriesInformation").toString()
+                        << loadedObject.value("SaveOnExit").toString()
+                        << loadedObject.value("SeriesDatabase").toString()
+                        << loadedObject.value("Recommended").toString()
+                        << loadedObject.value("NewFormat").toString()
+                        << loadedObject.value("Add").toString()
+                        << loadedObject.value("Remove").toString()
+                        << loadedObject.value("Video").toString()
+                        << loadedObject.value("NewNameScheme").toString()
+                        << loadedObject.value("Reset").toString()
+                        << loadedObject.value("ResetAll").toString()
+                        << loadedObject.value("NotFound").toString()
+                        << loadedObject.value("SeriesLanguageNotFound").toString()
+                        << loadedObject.value("NameSchemeNotFound").toString()
+                        << loadedObject.value("RenameFailed").toString()
+                        << loadedObject.value("RenameSuccess").toString();
 
         languageData.setTranslationSet(translationList);
         languageData.setLanguage(language);
-        return true;
     }
-    return false;
+    return loadingSuccessful;
 }
 
 QString LanguageControl::getTranslation(int translateThis)

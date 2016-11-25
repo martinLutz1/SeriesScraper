@@ -156,18 +156,19 @@ bool Controller::setSeries(QString series, int season)
     int newAmountSeasons = 0;
     QStringList newEpisodeList;
 
-    // bool seriesFound = seriesParser.getSeriesSeason("http://www.omdbapi.com/?", series, season, "Title"); // load title?
-    bool seriesFound = tmdbSeriesParser.scrapeSeries(series);
+    bool seriesFound = omdbSeriesParser.scrapeSeries(series, season); // load title?
+    // bool seriesFound = tmdbSeriesParser.scrapeSeries(series);
     if (seriesFound)
     {
         QString seriesLanguage = seriesData.getSelectedLanguage();
         newSelectedSeason = season;
 
-        newSeriesName = tmdbSeriesParser.getSeriesName();
-        newAmountSeasons = tmdbSeriesParser.getAmountSeasons();
-        newEpisodeList = tmdbSeriesParser.getSeason(season, seriesLanguage);
-        // QStringList episodeList = seriesParser.getIDValue();
-        // int amountSeasons = seriesParser.getAmountSeasons();
+        //  newSeriesName = tmdbSeriesParser.getSeriesName();
+        //   newAmountSeasons = tmdbSeriesParser.getAmountSeasons();
+        //  newEpisodeList = tmdbSeriesParser.getSeason(season, seriesLanguage);
+        newSeriesName = series;
+        newAmountSeasons = omdbSeriesParser.getAmountSeasons();
+        newEpisodeList = omdbSeriesParser.getEpisodeList();
 
         // Finish loading animation
         Message msgSuccessLoading;

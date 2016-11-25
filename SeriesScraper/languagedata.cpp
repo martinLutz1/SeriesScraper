@@ -27,9 +27,8 @@ void LanguageData::setLanguage(QString language)
 void LanguageData::setTranslation(int toTranslate, QString translation)
 {
     // Prepare space
-    while (translations.size() <= toTranslate) {
+    while (translations.size() <= toTranslate)
         translations.push_back(QString(""));
-    }
 
     translations[toTranslate] = translation;
 }

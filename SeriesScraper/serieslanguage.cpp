@@ -10,34 +10,21 @@
 SeriesLanguage::SeriesLanguage()
 {
     applicationDirectory = QCoreApplication::applicationDirPath();
-    seriesLanguageFile.setFileName(applicationDirectory.absoluteFilePath("serieslanguages.json"));
+    filePath = applicationDirectory.absoluteFilePath("serieslanguages.json");
 }
 
 bool SeriesLanguage::loadSeriesLanguageFile()
 {
     languageShortNameList.clear();
     seriesLanguageList.clear();
+    bool loadingSuccessful = loadJsonObject(filePath);
 
-    bool loadingSuccessful = false;
-    successReading = seriesLanguageFile.open(QIODevice::ReadOnly);
-    if (!successReading) {
-        return false;
-    }
-
-    QByteArray languageByteArray = seriesLanguageFile.readAll();
-    QJsonParseError err;
-    QJsonDocument doc = QJsonDocument::fromJson(languageByteArray, &err);
-    if(doc.isObject())
+    if (loadingSuccessful)
     {
-        QJsonObject obj = doc.object();
-        seriesLanguageList = obj.keys();
-        for (int i = 0; i < seriesLanguageList.size(); i++) {
-            languageShortNameList << obj.value(seriesLanguageList.at(i)).toString();
-        }
-        loadingSuccessful = true;
+        seriesLanguageList = loadedObject.keys();
+        for (int i = 0; i < seriesLanguageList.size(); i++)
+            languageShortNameList << loadedObject.value(seriesLanguageList.at(i)).toString();
     }
-
-    seriesLanguageFile.close();
     return loadingSuccessful;
 }
 
@@ -48,10 +35,10 @@ QStringList SeriesLanguage::getLanguageList()
 
 QString SeriesLanguage::getShortName(QString language)
 {
-    for (int i = 0; i < seriesLanguageList.size(); i++) {
-        if (seriesLanguageList.at(i) == language) {
+    for (int i = 0; i < seriesLanguageList.size(); i++)
+    {
+        if (seriesLanguageList.at(i) == language)
             return languageShortNameList.at(i);
-        }
     }
     // Not found, return default
     return defaulEntry;
@@ -59,12 +46,8 @@ QString SeriesLanguage::getShortName(QString language)
 
 QString SeriesLanguage::getShortName(int language)
 {
-    if (language >= 1 && language <= languageShortNameList.size()) {
+    if (language > 0 && language <= languageShortNameList.size())
         return languageShortNameList.at(language - 1);
-    }
-    // Not found, return default
-    else {
+    else // Not found, return default
         return defaulEntry;
-    }
-
 }

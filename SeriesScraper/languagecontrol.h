@@ -2,10 +2,11 @@
 #define LANGUAGECONTROL_H
 
 #include "languagedata.h"
+#include "jsonloader.h"
 #include <QDir>
 
 
-class LanguageControl
+class LanguageControl : public JsonLoader
 {
 private:
    LanguageData languageData;
