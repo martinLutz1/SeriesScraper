@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "languagedata.h"
+#include "seriesparser.h"
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QTimer>
@@ -569,7 +570,25 @@ void MainWindow::notify(Message &msg)
         ui->statusBar->showMessage(status, 10000);
         break;
     }
-
+    case Message::controller_changeSeriesParser_view:
+    {
+        int selectedSeriesParser = msg.data[0].i;
+        switch(selectedSeriesParser)
+        {
+        default:
+        case SeriesParser::tmdb:
+        {
+            ui->seriesLanguageComboBox->setEnabled(true);
+            break;
+        }
+        case SeriesParser::omdb:
+        {
+            ui->seriesLanguageComboBox->setEnabled(false);
+            break;
+        }
+        }
+        break;
+    }
     default:
         break;
     }

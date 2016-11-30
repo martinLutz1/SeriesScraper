@@ -80,6 +80,17 @@ void Controller::initializeGUILanguages()
     }
 }
 
+void Controller::initializeSettings()
+{
+    settings.loadSettingsFile();
+    int selectedSeriesParser = settings.getSeriesDatabase();
+    QString selectedGuiLanguage = settings.getGuiLanguage();
+
+    changeSeriesParser(selectedSeriesParser);
+    changeGuiLanguage(selectedGuiLanguage);
+    seriesParser.setSeriesParser(selectedSeriesParser);
+}
+
 void Controller::updateNewFileNames()
 {
     QString series = seriesData.getSeries();
@@ -110,7 +121,7 @@ bool Controller::loadSeries(int season, QString language)
     emit(sendMessage(msgStartLoading));
 
     // Load episode list
-    QStringList episodeList = tmdbSeriesParser.getSeason(season, language); // Selectable
+    QStringList episodeList = seriesParser.getEpisodeList(season, language);
     // Set aquired information
     seriesData.setSelectedSeason(season);
     seriesData.setSelectedLanguage(language);
@@ -142,6 +153,7 @@ void Controller::initialize()
     initializeGUILanguages();
     initializeNameSchemes();
     initializeSeriesLanguages();
+    initializeSettings();
 }
 
 bool Controller::setSeries(QString series, int season)
@@ -152,23 +164,19 @@ bool Controller::setSeries(QString series, int season)
     emit(sendMessage(msgStartLoading));
 
     QString newSeriesName("");
-    int newSelectedSeason = 0;
+    int newSelectedSeason = 1;
     int newAmountSeasons = 0;
     QStringList newEpisodeList;
 
-    //    bool seriesFound = omdbSeriesParser.scrapeSeries(series, season); // load title?
-    bool seriesFound = tmdbSeriesParser.scrapeSeries(series);
+    bool seriesFound = seriesParser.scrapeSeries(series);
     if (seriesFound)
     {
         QString seriesLanguage = seriesData.getSelectedLanguage();
         newSelectedSeason = season;
 
-        newSeriesName = tmdbSeriesParser.getSeriesName();
-        newAmountSeasons = tmdbSeriesParser.getAmountSeasons();
-        newEpisodeList = tmdbSeriesParser.getSeason(season, seriesLanguage);
-        //        newSeriesName = series;
-        //        newAmountSeasons = omdbSeriesParser.getAmountSeasons();
-        //        newEpisodeList = omdbSeriesParser.getEpisodeList();
+        newSeriesName = seriesParser.getSeriesName();
+        newAmountSeasons = seriesParser.getAmountSeasons();
+        newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
 
         // Finish loading animation
         Message msgSuccessLoading;
@@ -201,6 +209,47 @@ bool Controller::changeLanguage(QString language)
 {
     int season = seriesData.getSelectedSeason();
     return loadSeries(season, language);
+}
+
+bool Controller::changeGuiLanguage(QString language)
+{
+    bool loadingSuccessful = languageControl.loadLanguage(language);
+    if (loadingSuccessful)
+    {
+        settings.setGuiLanguage(language);
+        QStringList translationList = languageControl.getTranslationList();
+        // Send translations to view, about and settings
+        Message msgChangeLocalization;
+        msgChangeLocalization.type = Message::controller_changeLocalization_view;
+        msgChangeLocalization.data[0].qsListPointer = &translationList;
+        msgChangeLocalization.data[1].qsPointer = &language;
+        emit(sendMessage(msgChangeLocalization));
+    } else
+    {
+        settings.setGuiLanguage("English");
+        // Error message
+        setStatusMessage("Could not read language file " + language + ".json");
+    }
+    return loadingSuccessful;
+}
+
+void Controller::changeSeriesParser(int selectedSeriesParser)
+{
+    Message msgChangeSeriesParser;
+    msgChangeSeriesParser.type = Message::controller_changeSeriesParser_view;
+    msgChangeSeriesParser.data[0].i = selectedSeriesParser;
+    emit(sendMessage(msgChangeSeriesParser));
+
+    int oldSeriesParser = seriesParser.getSeriesParser();
+    if (selectedSeriesParser != oldSeriesParser)
+    {
+        QString series = seriesParser.getSeriesInput();
+        int season = seriesData.getSelectedSeason();
+        seriesParser.setSeriesParser(selectedSeriesParser);
+        settings.setSeriesDatabase(selectedSeriesParser);
+        if (!series.isEmpty())
+            setSeries(series, season);
+    }
 }
 
 bool Controller::setDirectory(QDir directory)
@@ -350,21 +399,7 @@ void Controller::notify(Message &msg)
     case Message::settings_changeGUILanguage_controller:
     {
         QString language = *msg.data[0].qsPointer;
-        bool loadingSuccessful = languageControl.loadLanguage(language);
-
-        if (loadingSuccessful)
-        {
-            QStringList translationList = languageControl.getTranslationList();
-            // Send translations to view, about and settings
-            Message msgChangeLocalization;
-            msgChangeLocalization.type = Message::controller_changeLocalization_view;
-            msgChangeLocalization.data[0].qsListPointer = &translationList;
-            emit(sendMessage(msgChangeLocalization));
-        } else
-        {
-            // Error message
-            setStatusMessage("Could not read language file " + language + ".json");
-        }
+        changeGuiLanguage(language);
         break;
     }
     case Message::view_showAboutDialog_controller:
@@ -379,6 +414,12 @@ void Controller::notify(Message &msg)
         Message msgShowSettingsDialog;
         msgShowSettingsDialog.type = Message::controller_showSettingsWindow_settings;
         emit(sendMessage(msgShowSettingsDialog));
+        break;
+    }
+    case Message::settings_changeSeriesParser_controller:
+    {
+        int selectedSeriesParser = msg.data[0].i;
+        changeSeriesParser(selectedSeriesParser);
         break;
     }
     default:

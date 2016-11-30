@@ -25,6 +25,7 @@ private:
 
 private slots:
     void onGUILanguageChanged(QString language);
+    void onSeriesParserChanged();
 
 signals:
     void sendMessage(Message &msg);

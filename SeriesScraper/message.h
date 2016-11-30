@@ -20,6 +20,7 @@ public:
         view_showSettingsWindow_controller,
 
         settings_changeGUILanguage_controller,
+        settings_changeSeriesParser_controller,
 
         controller_updateView_view,
         controller_seriesSet_view,
@@ -31,6 +32,7 @@ public:
         controller_addSeriesLanguages_view,
         controller_changeLocalization_view,
         controller_setStatus_view,
+         controller_changeSeriesParser_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
         controller_addGUILanguages_settings,

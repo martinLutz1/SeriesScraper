@@ -101,6 +101,9 @@
       </property>
      </widget>
      <widget class="QRadioButton" name="omdbRadioButton">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>180</x>
@@ -184,6 +187,9 @@
       <string>Interface</string>
      </property>
      <widget class="QCheckBox" name="showSeriesInformationCheckBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>5</x>
@@ -264,6 +270,9 @@
       </property>
      </widget>
      <widget class="QPushButton" name="newFormatAddButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -278,6 +287,9 @@
      </widget>
     </widget>
     <widget class="QPushButton" name="formatRemoveButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>280</x>
@@ -331,6 +343,9 @@
       </property>
      </widget>
      <widget class="QPushButton" name="newNameSchemeAddButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>275</x>
@@ -345,6 +360,9 @@
      </widget>
     </widget>
     <widget class="QPushButton" name="nameSchemeRemoveButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>280</x>
