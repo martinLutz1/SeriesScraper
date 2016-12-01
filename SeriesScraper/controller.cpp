@@ -85,10 +85,15 @@ void Controller::initializeSettings()
     settings.loadSettingsFile();
     int selectedSeriesParser = settings.getSeriesDatabase();
     QString selectedGuiLanguage = settings.getGuiLanguage();
+    QString selectedSeriesLanguage = settings.getSeriesLanguage();
+    bool saveSeries = settings.getSaveSeries();
+    bool savePath = settings.getSavePath();
 
     changeSeriesParser(selectedSeriesParser);
     changeGuiLanguage(selectedGuiLanguage);
-    seriesParser.setSeriesParser(selectedSeriesParser);
+    changeSeriesLanguage(selectedSeriesLanguage);
+    changeSaveSeries(saveSeries);
+    changeSavePath(savePath);
 }
 
 void Controller::updateNewFileNames()
@@ -148,6 +153,22 @@ Controller::Controller(QObject *parent) : QObject(parent)
 {
 }
 
+Controller::~Controller()
+{
+    bool saveSeries = settings.getSaveSeries();
+    if (saveSeries)
+    {
+        QString series = seriesParser.getSeriesInput();
+        int season = seriesData.getSelectedSeason();
+        settings.setSeries(series);
+        settings.setSeason(season);
+    } else
+    {
+        settings.setSeries("");
+        settings.setSeason(1);
+    }
+}
+
 void Controller::initialize()
 {
     initializeGUILanguages();
@@ -173,7 +194,6 @@ bool Controller::setSeries(QString series, int season)
     {
         QString seriesLanguage = seriesData.getSelectedLanguage();
         newSelectedSeason = season;
-
         newSeriesName = seriesParser.getSeriesName();
         newAmountSeasons = seriesParser.getAmountSeasons();
         newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
@@ -191,8 +211,8 @@ bool Controller::setSeries(QString series, int season)
     }
 
     seriesData.setSeries(newSeriesName);
-    seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setAmountSeasons(newAmountSeasons);
+    seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
     updateNewFileNames();
     updateView();
@@ -202,12 +222,6 @@ bool Controller::setSeries(QString series, int season)
 bool Controller::changeSeason(int season)
 {
     QString language = seriesData.getSelectedLanguage();
-    return loadSeries(season, language);
-}
-
-bool Controller::changeLanguage(QString language)
-{
-    int season = seriesData.getSelectedSeason();
     return loadSeries(season, language);
 }
 
@@ -233,6 +247,20 @@ bool Controller::changeGuiLanguage(QString language)
     return loadingSuccessful;
 }
 
+void Controller::changeSeriesLanguage(QString language)
+{
+    Message msgChangeSeriesLanguage;
+    msgChangeSeriesLanguage.type = Message::controller_changeSeriesLanguage_view;
+    msgChangeSeriesLanguage.data[0].qsPointer = &language;
+    emit(sendMessage(msgChangeSeriesLanguage));
+
+    QString selectedLanguage = seriesLanguage.getShortName(language);
+    seriesData.setSelectedLanguage(selectedLanguage);
+    settings.setSeriesLanguage(language);
+    int season = seriesData.getSelectedSeason();
+    loadSeries(season, selectedLanguage);
+}
+
 void Controller::changeSeriesParser(int selectedSeriesParser)
 {
     Message msgChangeSeriesParser;
@@ -250,6 +278,56 @@ void Controller::changeSeriesParser(int selectedSeriesParser)
         if (!series.isEmpty())
             setSeries(series, season);
     }
+}
+
+void Controller::changeSeries(QString series, int season)
+{
+    bool isEmpty = series.isEmpty();
+    bool seriesSet = setSeries(series, season);
+
+    // Send scraping status to view
+    Message msgSeriesSet;
+    msgSeriesSet.type = Message::controller_seriesSet_view;
+    msgSeriesSet.data[0].b = seriesSet;
+    msgSeriesSet.data[1].b = isEmpty;
+    emit(sendMessage(msgSeriesSet));
+    updateRenameButton();
+}
+
+void Controller::changeSaveSeries(bool saveSeries)
+{
+    if (saveSeries)
+    {
+        QString series = settings.getSeries();
+        int season = settings.getSeason();
+        changeSeries(series, season);
+
+        Message msgSetSeries;
+        msgSetSeries.type = Message::controller_setSeries_view;
+        msgSetSeries.data[0].qsPointer = &series;
+        msgSetSeries.data[1].i = season;
+        emit(sendMessage(msgSetSeries));
+    }
+    Message msgSaveSeries;
+    msgSaveSeries.type = Message::controller_saveSeries_settings;
+    msgSaveSeries.data[0].b = saveSeries;
+    emit(sendMessage(msgSaveSeries));
+}
+
+void Controller::changeSavePath(bool savePath)
+{
+    if (savePath)
+    {
+        QString path = settings.getPath();
+        Message msgSetPath;
+        msgSetPath.type = Message::controller_setPath_view;
+        msgSetPath.data[0].qsPointer = &path;
+        emit(sendMessage(msgSetPath));
+    }
+    Message msgSavePath;
+    msgSavePath.type = Message::controller_savePath_settings;
+    msgSavePath.data[0].b = savePath;
+    emit(sendMessage(msgSavePath));
 }
 
 bool Controller::setDirectory(QDir directory)
@@ -342,18 +420,8 @@ void Controller::notify(Message &msg)
     {
     case Message::view_changeSeriesText_controller:
     {
-        QString seriesText = *msg.data[0].qsPointer;
-        int season = msg.data[1].i;
-        bool isEmpty = seriesText.isEmpty();
-        bool seriesSet = setSeries(seriesText, season);
-
-        // Send scraping status to view
-        Message msgSeriesSet;
-        msgSeriesSet.type = Message::controller_seriesSet_view;
-        msgSeriesSet.data[0].b = seriesSet;
-        msgSeriesSet.data[1].b = isEmpty;
-        emit(sendMessage(msgSeriesSet));
-        updateRenameButton();
+        QString series = *msg.data[0].qsPointer;
+        changeSeries(series, 1);
         break;
     }
     case Message::view_changeSeason_controller:
@@ -368,17 +436,19 @@ void Controller::notify(Message &msg)
     case Message::view_changeSeriesLanguage_controller:
     {
         int languageIndex = msg.data[0].i;
-        QString language = seriesLanguage.getShortName(languageIndex + 1);
-        QString oldLanguage = seriesData.getSelectedLanguage();
+        QString language = seriesLanguage.getLanguageList().at(languageIndex);
+        QString languageShortName = seriesLanguage.getShortName(languageIndex + 1);
+        QString oldLanguageShortName = seriesData.getSelectedLanguage();
         // Only write on change
-        if (oldLanguage != language)
-            changeLanguage(language);
+        if (oldLanguageShortName != languageShortName)
+            changeSeriesLanguage(language);
         break;
     }
     case Message::view_changeDirectory_controller:
     {
         QString directory = *msg.data[0].qsPointer;
         setDirectory(QDir(directory));
+        settings.setPath(directory);
         updateView();
         updateRenameButton();
         break;
@@ -420,6 +490,18 @@ void Controller::notify(Message &msg)
     {
         int selectedSeriesParser = msg.data[0].i;
         changeSeriesParser(selectedSeriesParser);
+        break;
+    }
+    case Message::settings_saveSeries_controller:
+    {
+        bool saveSeries = msg.data[0].b;
+        settings.setSaveSeries(saveSeries);
+        break;
+    }
+    case Message::settings_savePath_controller:
+    {
+        bool savePath = msg.data[0].b;
+        settings.setSavePath(savePath);
         break;
     }
     default:

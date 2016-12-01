@@ -8,8 +8,10 @@ Settings::Settings() :
     saveSeries(1),
     path(""),
     series(""),
+    season(1),
     seriesDatabase(0),
-    guiLanguage("English")
+    guiLanguage("English"),
+    seriesLanguage("English")
 {
     settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
 }
@@ -27,8 +29,10 @@ bool Settings::loadSettingsFile()
         setSaveSeries(loadedObject.find(jsonKeySaveSeries).value().toBool());
         setPath(loadedObject.find(jsonKeyPath).value().toString());
         setSeries(loadedObject.find(jsonKeySeries).value().toString());
+        setSeason(loadedObject.find(jsonKeySeason).value().toInt());
         setSeriesDatabase(loadedObject.find(jsonKeySeriesDatabase).value().toInt());
         setGuiLanguage(loadedObject.find(jsonKeyGUILanguage).value().toString());
+        setSeriesLanguage(loadedObject.find(jsonKeySeriesLanguage).value().toString());
         return true;
     } else
     {
@@ -73,6 +77,15 @@ void Settings::setSeries(QString series)
     }
 }
 
+void Settings::setSeason(int season)
+{
+    if (this->season != season)
+    {
+        this->season = season;
+        saveSettingsFile();
+    }
+}
+
 void Settings::setSeriesDatabase(int seriesDatabase)
 {
     if (this->seriesDatabase != seriesDatabase)
@@ -90,6 +103,15 @@ void Settings::setGuiLanguage(QString guiLanguage)
     if (this->guiLanguage != guiLanguage)
     {
         this->guiLanguage = guiLanguage;
+        saveSettingsFile();
+    }
+}
+
+void Settings::setSeriesLanguage(QString seriesLanguage)
+{
+    if (this->seriesLanguage != seriesLanguage)
+    {
+        this->seriesLanguage = seriesLanguage;
         saveSettingsFile();
     }
 }
@@ -119,6 +141,16 @@ QString Settings::getGuiLanguage()
     return guiLanguage;
 }
 
+QString Settings::getSeriesLanguage()
+{
+    return seriesLanguage;
+}
+
+int Settings::getSeason()
+{
+    return season;
+}
+
 int Settings::getSeriesDatabase()
 {
     return seriesDatabase;
@@ -133,6 +165,8 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeySeries, series);
     jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
     jsonSettings.insert(jsonKeyGUILanguage, guiLanguage);
+    jsonSettings.insert(jsonKeySeriesLanguage, seriesLanguage);
+    jsonSettings.insert(jsonKeySeason, season);
 
     bool successReading = settingsFile.open(QIODevice::ReadWrite | QIODevice::Text);
     if (successReading)

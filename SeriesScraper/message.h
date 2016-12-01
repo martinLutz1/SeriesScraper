@@ -21,9 +21,13 @@ public:
 
         settings_changeGUILanguage_controller,
         settings_changeSeriesParser_controller,
+        settings_saveSeries_controller,
+        settings_savePath_controller,
 
         controller_updateView_view,
         controller_seriesSet_view,
+        controller_setSeries_view,
+        controller_setPath_view,
         controller_enableButton_view,
         controller_startSeriesLoading_view,
         controller_successSeriesLoading_view,
@@ -32,11 +36,14 @@ public:
         controller_addSeriesLanguages_view,
         controller_changeLocalization_view,
         controller_setStatus_view,
-         controller_changeSeriesParser_view,
+        controller_changeSeriesParser_view,
+        controller_changeSeriesLanguage_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
         controller_addGUILanguages_settings,
-        controller_noGUILanguagesFound_settings
+        controller_noGUILanguagesFound_settings,
+        controller_saveSeries_settings,
+        controller_savePath_settings
     };
 
     union MessageData {

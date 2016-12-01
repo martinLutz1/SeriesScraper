@@ -68,8 +68,8 @@ private slots:
     void startSeriesTextChangeTimer();
     void disableSeriesProgressbar();
     void updateProgressbar();
-    void onCellChange(int row, int coloumn);
-    void onSeriesTextChange();
+    void onCellChanged(int row, int coloumn);
+    void onSeriesTextChanged();
     void onSeasonChanged(int index);
     void onSeriesLanguageChanged(int index);
     void onRenameButtonPressed();

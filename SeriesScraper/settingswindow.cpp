@@ -13,6 +13,8 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
     QObject::connect(ui->tmdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
     QObject::connect(ui->omdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
+    QObject::connect(ui->saveSeriesCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSaveSeriesChanged(bool)));
+    QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
 }
 
 SettingsWindow::~SettingsWindow()
@@ -67,6 +69,19 @@ void SettingsWindow::notify(Message &msg)
             break;
         }
         }
+        break;
+    }
+    case Message::controller_saveSeries_settings:
+    {
+        bool saveSeries = msg.data[0].b;
+        ui->saveSeriesCheckBox->setChecked(saveSeries);
+        break;
+    }
+    case Message::controller_savePath_settings:
+    {
+        bool savePath = msg.data[0].b;
+        ui->savePathCheckBox->setChecked(savePath);
+        break;
     }
     default:
         break;
@@ -122,4 +137,20 @@ void SettingsWindow::onSeriesParserChanged()
     else // Should never happen
         msgSeriesParserChanged.data[0].i = 0;
     emit(sendMessage(msgSeriesParserChanged));
+}
+
+void SettingsWindow::onSaveSeriesChanged(bool saveSeries)
+{
+    Message msgSaveSeries;
+    msgSaveSeries.type = Message::settings_saveSeries_controller;
+    msgSaveSeries.data[0].b = saveSeries;
+    emit(sendMessage(msgSaveSeries));
+}
+
+void SettingsWindow::onSavePathChanged(bool savePath)
+{
+    Message msgSavePath;
+    msgSavePath.type = Message::settings_savePath_controller;
+    msgSavePath.data[0].b = savePath;
+    emit(sendMessage(msgSavePath));
 }

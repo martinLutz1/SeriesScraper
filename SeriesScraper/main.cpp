@@ -6,4 +6,3 @@ int main(int argc, char *argv[])
     app.init();
     return app.exec();
 }
-

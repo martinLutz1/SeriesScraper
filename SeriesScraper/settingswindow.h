@@ -26,6 +26,8 @@ private:
 private slots:
     void onGUILanguageChanged(QString language);
     void onSeriesParserChanged();
+    void onSaveSeriesChanged(bool saveSeries);
+    void onSavePathChanged(bool savePath);
 
 signals:
     void sendMessage(Message &msg);

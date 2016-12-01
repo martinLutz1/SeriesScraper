@@ -36,12 +36,16 @@ private:
 
 public:
     explicit Controller(QObject *parent = 0);
+    ~Controller();
     void initialize();
     bool setSeries(QString series, int season); // Set series if existing and set table
     bool changeSeason(int season);
-    bool changeLanguage(QString language);
     bool changeGuiLanguage(QString language);
+    void changeSeriesLanguage(QString language);
     void changeSeriesParser(int seriesParser);
+    void changeSeries(QString series, int season);
+    void changeSaveSeries(bool saveSeries);
+    void changeSavePath(bool savePath);
     bool setDirectory(QDir directory);
     bool renameFiles();
     void updateView();

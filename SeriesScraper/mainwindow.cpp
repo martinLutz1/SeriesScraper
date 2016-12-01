@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     int lowerWidth = pathBoxWidth + buttonWidth + 3 * UNIVERSAL_SPACER;
     this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
 
-
     // Table
     setUpTable();
 
@@ -52,9 +51,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
     QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
-    QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChange(int,int)));
+    QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChanged(int,int)));
     QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
-    QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChange()));
+    QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChanged()));
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
     QObject::connect(ui->seriesLanguageComboBox, SIGNAL(activated(int)), this, SLOT(onSeriesLanguageChanged(int)));
     QObject::connect(ui->renameButton, SIGNAL(pressed()), this , SLOT(onRenameButtonPressed()));
@@ -355,7 +354,7 @@ void MainWindow::openDirectory()
 {
     // Open directory-dialog to chose directory
     QString directoryPath;
-    directoryPath = QFileDialog::getExistingDirectory(this,"Ordner wählen", chosenPath.path());
+    directoryPath = QFileDialog::getExistingDirectory(this,"Ordner wählen", chosenPath.path()); // Todo Translate
     if (!directoryPath.isNull())
     {
         chosenPath = directoryPath; // Remember path
@@ -366,8 +365,9 @@ void MainWindow::openDirectory()
 void MainWindow::setPath()
 {
     setPathTimer->stop();
+    QString directoryPath = ui->pathLineEdit->text();
     QDir dir;
-    dir.setPath(ui->pathLineEdit->text());
+    dir.setPath(directoryPath);
 
     // Set the status
     if (dir.path().isEmpty()) {
@@ -375,6 +375,7 @@ void MainWindow::setPath()
         ui->correctPathLabel->setText("");
     }
     else if (dir.exists()) {
+        chosenPath = directoryPath;
         ui->pathLineEdit->setStyleSheet(colorGreen);
         ui->correctPathLabel->setText(checkmark);
     }
@@ -421,7 +422,7 @@ void MainWindow::updateProgressbar()
     seriesProgressBar->setValue(progress);
 }
 
-void MainWindow::onSeriesTextChange()
+void MainWindow::onSeriesTextChanged()
 {
     seriesTextChangeTimer->stop();
     QString seriesText = ui->seriesLineEdit->text();
@@ -480,7 +481,7 @@ void MainWindow::onSeriesLanguageChanged(int index)
     emit(sendMessage(msgChangeSeriesLanguage));
 }
 
-void MainWindow::onCellChange(int row, int coloumn)
+void MainWindow::onCellChanged(int row, int coloumn)
 {
     if (coloumn == 0) { // Only Episode names
         QString newEpisodeName = ui->episodeNameTable->item(row, coloumn)->text();
@@ -499,7 +500,6 @@ void MainWindow::notify(Message &msg)
         updateView(oldFileNameList, newFileNameList, amountSeasons);
         break;
     }
-
     case Message::controller_seriesSet_view:
     {
         bool seriesSet = msg.data[0].b;
@@ -507,14 +507,12 @@ void MainWindow::notify(Message &msg)
         setSeriesAvailableStatus(seriesSet, isEmpty);
         break;
     }
-
     case Message::controller_enableButton_view:
     {
         bool enableButton = msg.data[0].b;
         ui->renameButton->setEnabled(enableButton);
         break;
     }
-
     case Message::controller_startSeriesLoading_view:
     {
         // Hide to avoid delay with blur
@@ -587,6 +585,28 @@ void MainWindow::notify(Message &msg)
             break;
         }
         }
+        break;
+    }
+    case Message::controller_changeSeriesLanguage_view:
+    {
+        QString language = *msg.data[0].qsPointer;
+        int indexOfLanguage = ui->seriesLanguageComboBox->findText(language);
+        ui->seriesLanguageComboBox->setCurrentIndex(indexOfLanguage);
+        break;
+    }
+    case Message::controller_setSeries_view:
+    {
+        QString series = *msg.data[0].qsPointer;
+        int season = msg.data[1].i - 1;
+        ui->seriesLineEdit->setText(series);
+        ui->seasonComboBox->setCurrentIndex(season);
+        seriesTextChangeTimer->stop(); // Avoid double loading
+        break;
+    }
+    case Message::controller_setPath_view:
+    {
+        QString path = *msg.data[0].qsPointer;
+        ui->pathLineEdit->setText(path);
         break;
     }
     default:
