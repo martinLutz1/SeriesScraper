@@ -3,17 +3,17 @@
 #include <QDir>
 #include <QDebug>
 
-Settings::Settings() :
-    savePath(1),
-    saveSeries(1),
-    path(""),
-    series(""),
-    season(1),
-    seriesDatabase(0),
-    guiLanguage("English"),
-    seriesLanguage("English")
+Settings::Settings()
 {
     settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
+    savePath = defaultSavePath;
+    saveSeries = defaultSaveSeries;
+    path = defaultPath;
+    series = defaultSeries;
+    season = defaultSeason;
+    seriesDatabase = defaultSeriesDatabase;
+    guiLanguage = defaultGuiLanguage;
+    seriesLanguage = defaultSeriesLanguage;
 }
 
 bool Settings::loadSettingsFile()
@@ -53,6 +53,19 @@ bool Settings::saveSettingsFile()
     settingsFile.close();
 
     return successReading;
+}
+
+bool Settings::resetSettingsFile()
+{
+    savePath = defaultSavePath;
+    saveSeries = defaultSaveSeries;
+    path = defaultPath;
+    series = defaultSeries;
+    season = defaultSeason;
+    seriesDatabase = defaultSeriesDatabase;
+    guiLanguage = defaultGuiLanguage;
+    seriesLanguage = defaultSeriesLanguage;
+    return saveSettingsFile();
 }
 
 void Settings::setSavePath(bool savePathOnExit)

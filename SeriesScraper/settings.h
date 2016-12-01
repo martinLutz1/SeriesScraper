@@ -12,6 +12,7 @@ public:
     Settings();
     bool loadSettingsFile();
     bool saveSettingsFile();
+    bool resetSettingsFile();
 
     void setSavePath(bool savePathOnExit);
     void setSaveSeries(bool saveSeriesOnExit);
@@ -49,6 +50,15 @@ private:
     const QString jsonKeySeriesDatabase = "SeriesDatabase";
     const QString jsonKeyGUILanguage = "InterfaceLanguage";
     const QString jsonKeySeriesLanguage = "SeriesLanguage";
+
+    const bool defaultSavePath = false;
+    const bool defaultSaveSeries = false;
+    const QString defaultPath = "";
+    const QString defaultSeries = "";
+    const int defaultSeason = 1;
+    const int defaultSeriesDatabase = 0;
+    const QString defaultGuiLanguage = "English";
+    const QString defaultSeriesLanguage = "English";
 };
 
 #endif // SETTINGS_H

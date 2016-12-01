@@ -514,6 +514,12 @@ void Controller::notify(Message &msg)
         settings.setSavePath(savePath);
         break;
     }
+    case Message::settings_reset_controller:
+    {
+        settings.resetSettingsFile();
+        initializeSettings();
+        break;
+    }
     default:
         break;
     }

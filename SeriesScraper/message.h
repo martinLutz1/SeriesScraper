@@ -23,6 +23,7 @@ public:
         settings_changeSeriesParser_controller,
         settings_saveSeries_controller,
         settings_savePath_controller,
+        settings_reset_controller,
 
         controller_updateView_view,
         controller_seriesSet_view,

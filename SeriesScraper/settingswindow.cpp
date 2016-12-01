@@ -15,6 +15,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->omdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
     QObject::connect(ui->saveSeriesCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSaveSeriesChanged(bool)));
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
+    QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
 }
 
 SettingsWindow::~SettingsWindow()
@@ -94,7 +95,7 @@ void SettingsWindow::changeLocalization(QStringList translationList)
     ui->tabWidget->setTabText(0, translationList.at(LanguageData::general));
     ui->tabWidget->setTabText(1, translationList.at(LanguageData::video));
     ui->tabWidget->setTabText(2, translationList.at(LanguageData::nameScheme));
-    ui->resetAllButton->setText(translationList.at(LanguageData::resetAll));
+    ui->resetButton->setText(translationList.at(LanguageData::reset));
     ui->doneButton->setText(translationList.at(LanguageData::done));
     ui->interfaceGroupBox->setTitle(translationList.at(LanguageData::interface));
     ui->languageLabel->setText(translationList.at(LanguageData::language));
@@ -104,15 +105,12 @@ void SettingsWindow::changeLocalization(QStringList translationList)
     ui->saveSeriesCheckBox->setText(translationList.at(LanguageData::series));
     ui->seriesDatabaseGroupBox->setTitle(translationList.at(LanguageData::seriesDatabase));
     ui->recommendLabel->setText(translationList.at(LanguageData::recommended));
-    ui->generalResetButton->setText(translationList.at(LanguageData::reset));
     ui->newFormatGroupBox->setTitle(translationList.at(LanguageData::newFormat));
     ui->newFormatAddButton->setText(translationList.at(LanguageData::add));
     ui->formatRemoveButton->setText(translationList.at(LanguageData::remove));
-    ui->videoResetButton->setText(translationList.at(LanguageData::reset));
     ui->newNameSchemeGroupBox->setTitle(translationList.at(LanguageData::newNameScheme));
     ui->newNameSchemeAddButton->setText(translationList.at(LanguageData::add));
     ui->nameSchemeRemoveButton->setText(translationList.at(LanguageData::remove));
-    ui->nameSchemeResetButton->setText(translationList.at(LanguageData::reset));
 }
 
 void SettingsWindow::onGUILanguageChanged(QString language)
@@ -153,4 +151,11 @@ void SettingsWindow::onSavePathChanged(bool savePath)
     msgSavePath.type = Message::settings_savePath_controller;
     msgSavePath.data[0].b = savePath;
     emit(sendMessage(msgSavePath));
+}
+
+void SettingsWindow::onResetClicked()
+{
+    Message msgResetSettings;
+    msgResetSettings.type = Message::settings_reset_controller;
+    emit(sendMessage(msgResetSettings));
 }

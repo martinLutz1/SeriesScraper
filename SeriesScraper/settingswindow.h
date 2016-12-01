@@ -28,6 +28,7 @@ private slots:
     void onSeriesParserChanged();
     void onSaveSeriesChanged(bool saveSeries);
     void onSavePathChanged(bool savePath);
+    void onResetClicked();
 
 signals:
     void sendMessage(Message &msg);
