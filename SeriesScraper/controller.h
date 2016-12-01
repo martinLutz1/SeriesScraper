@@ -46,7 +46,7 @@ public:
     void changeSeries(QString series, int season);
     void changeSaveSeries(bool saveSeries);
     void changeSavePath(bool savePath);
-    bool setDirectory(QDir directory);
+    bool setDirectory(QString path);
     bool renameFiles();
     void updateView();
     void updateRenameButton();

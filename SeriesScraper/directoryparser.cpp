@@ -1,6 +1,7 @@
 #include "directoryparser.h"
 #include <QDebug>
 #include <QCollator>
+#include <QCoreApplication>
 
 QStringList DirectoryParser::sortFiles(QStringList files)
 {
@@ -60,20 +61,19 @@ DirectoryParser::DirectoryParser()
     numberFromEpisodeNumberExpression.setPattern("[0-9]*$");
 }
 
-bool DirectoryParser::initializeDirectory(QDir directory)
+bool DirectoryParser::initializeDirectory(QString path)
 {
-    if (directory.exists()) {
+    QDir directory(path);
+    bool directoryExists = directory.exists();
+    if (directoryExists)
         this->directory = directory;
-        return true;
-    }
-    else {
-        return false;
-    }
+    directoryPathInput = path;
+    return directoryExists;
 }
 
-bool DirectoryParser::directoryExists()
+QString DirectoryParser::getDirectoryPathInput()
 {
-    return directory.exists();
+    return directoryPathInput;
 }
 
 QStringList DirectoryParser::getFiles()

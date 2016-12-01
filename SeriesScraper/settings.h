@@ -10,8 +10,8 @@ class Settings : public JsonLoader
 {
 public:
     Settings();
-    ~Settings();
     bool loadSettingsFile();
+    bool saveSettingsFile();
 
     void setSavePath(bool savePathOnExit);
     void setSaveSeries(bool saveSeriesOnExit);
@@ -49,8 +49,6 @@ private:
     const QString jsonKeySeriesDatabase = "SeriesDatabase";
     const QString jsonKeyGUILanguage = "InterfaceLanguage";
     const QString jsonKeySeriesLanguage = "SeriesLanguage";
-
-    bool saveSettingsFile();
 };
 
 #endif // SETTINGS_H

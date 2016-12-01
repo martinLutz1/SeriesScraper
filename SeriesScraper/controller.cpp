@@ -83,6 +83,7 @@ void Controller::initializeGUILanguages()
 void Controller::initializeSettings()
 {
     settings.loadSettingsFile();
+
     int selectedSeriesParser = settings.getSeriesDatabase();
     QString selectedGuiLanguage = settings.getGuiLanguage();
     QString selectedSeriesLanguage = settings.getSeriesLanguage();
@@ -156,6 +157,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
 Controller::~Controller()
 {
     bool saveSeries = settings.getSaveSeries();
+    bool savePath = settings.getSavePath();
     if (saveSeries)
     {
         QString series = seriesParser.getSeriesInput();
@@ -167,6 +169,15 @@ Controller::~Controller()
         settings.setSeries("");
         settings.setSeason(1);
     }
+
+    if (savePath)
+    {
+        QString path = directoryParser.getDirectoryPathInput();
+        settings.setPath(path);
+    } else
+        settings.setPath("");
+
+    settings.saveSettingsFile();
 }
 
 void Controller::initialize()
@@ -330,9 +341,9 @@ void Controller::changeSavePath(bool savePath)
     emit(sendMessage(msgSavePath));
 }
 
-bool Controller::setDirectory(QDir directory)
+bool Controller::setDirectory(QString path)
 {
-    bool directoryExists = directoryParser.initializeDirectory(directory);
+    bool directoryExists = directoryParser.initializeDirectory(path);
     QDir newDirectory("");
     QStringList newOldFileNames;
     QStringList newOldFileNamesWithoutSuffixes;
@@ -341,7 +352,7 @@ bool Controller::setDirectory(QDir directory)
     // Update directory and file infos
     if (directoryExists)
     {
-        newDirectory = directory;
+        newDirectory = QDir(path);
         newSuffixes = directoryParser.getFilesSuffix();
         newOldFileNames = directoryParser.getFiles();
         newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutExtension();
@@ -446,9 +457,8 @@ void Controller::notify(Message &msg)
     }
     case Message::view_changeDirectory_controller:
     {
-        QString directory = *msg.data[0].qsPointer;
-        setDirectory(QDir(directory));
-        settings.setPath(directory);
+        QString path = *msg.data[0].qsPointer;
+        setDirectory(path);
         updateView();
         updateRenameButton();
         break;

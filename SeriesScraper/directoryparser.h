@@ -10,6 +10,7 @@ class DirectoryParser
 {
 private:
     QDir directory;
+    QString directoryPathInput;
     QRegularExpression episodeNumberExpression;
     QRegularExpression numberFromEpisodeNumberExpression;
     QStringList filter;
@@ -20,8 +21,8 @@ private:
 
 public:
     DirectoryParser();
-    bool initializeDirectory(QDir directory);
-    bool directoryExists();
+    bool initializeDirectory(QString path);
+    QString getDirectoryPathInput();
     QStringList getFiles();
     QStringList getFilesWithoutExtension();
     QStringList getFiles(QString extension);

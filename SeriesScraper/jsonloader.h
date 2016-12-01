@@ -9,9 +9,9 @@ class JsonLoader
 {
 public:
     JsonLoader();
-    bool loadJsonObject(QString pathToJsonFile);
 
 protected:
+    bool loadJsonObject(QString pathToJsonFile);
     QJsonObject loadedObject;
 };
 

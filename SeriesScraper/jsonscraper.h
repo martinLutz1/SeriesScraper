@@ -8,9 +8,9 @@ class JsonScraper
 {
 public:
     JsonScraper();
-    bool scrapeJsonObject(QString requestUrl);
 
 protected:
+    bool scrapeJsonObject(QString requestUrl);
     QJsonObject parsedObject;
 };
 
