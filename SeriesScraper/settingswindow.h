@@ -2,6 +2,7 @@
 #define SETTINGSWINDOW_H
 
 #include <QWidget>
+#include <QMessageBox>
 #include "message.h"
 
 namespace Ui {
@@ -22,6 +23,8 @@ public slots:
 private:
     Ui::SettingsWindow *ui;
     void changeLocalization(QStringList translationList);
+    QMessageBox resetConfirmationMessageBox;
+    void createResetConfirmationDialog();
 
 private slots:
     void onGUILanguageChanged(QString language);

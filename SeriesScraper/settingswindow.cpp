@@ -9,6 +9,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     ui(new Ui::SettingsWindow)
 {
     ui->setupUi(this);
+    createResetConfirmationDialog();
     QObject::connect(ui->doneButton, SIGNAL(clicked()), this, SLOT(hide()));
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
     QObject::connect(ui->tmdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
@@ -29,6 +30,7 @@ void SettingsWindow::notify(Message &msg)
     case Message::controller_showSettingsWindow_settings:
     {
         this->show();
+        this->setFocus();
         break;
     }
     case Message::controller_changeLocalization_view:
@@ -111,6 +113,20 @@ void SettingsWindow::changeLocalization(QStringList translationList)
     ui->newNameSchemeGroupBox->setTitle(translationList.at(LanguageData::newNameScheme));
     ui->newNameSchemeAddButton->setText(translationList.at(LanguageData::add));
     ui->nameSchemeRemoveButton->setText(translationList.at(LanguageData::remove));
+    // Reset confirmation dialog
+    resetConfirmationMessageBox.setWindowTitle(translationList.at(LanguageData::areYouSure));
+    resetConfirmationMessageBox.setText(translationList.at(LanguageData::areYouSureDetailed));
+    resetConfirmationMessageBox.setButtonText(0, translationList.at(LanguageData::yes));
+    resetConfirmationMessageBox.setButtonText(1, translationList.at(LanguageData::no));
+}
+
+void SettingsWindow::createResetConfirmationDialog()
+{
+    resetConfirmationMessageBox.setWindowTitle("Are you sure?");
+    resetConfirmationMessageBox.setText("Are you sure? All settings will be reset to default. This cannot be undone.");
+    resetConfirmationMessageBox.addButton("Yes", QMessageBox::YesRole);
+    resetConfirmationMessageBox.addButton("No", QMessageBox::NoRole);
+    resetConfirmationMessageBox.setDefaultButton(QMessageBox::No);
 }
 
 void SettingsWindow::onGUILanguageChanged(QString language)
@@ -155,7 +171,11 @@ void SettingsWindow::onSavePathChanged(bool savePath)
 
 void SettingsWindow::onResetClicked()
 {
-    Message msgResetSettings;
-    msgResetSettings.type = Message::settings_reset_controller;
-    emit(sendMessage(msgResetSettings));
+    resetConfirmationMessageBox.setFocus();
+    if (resetConfirmationMessageBox.exec() == 0) // 0 = Yes button
+    {
+        Message msgResetSettings;
+        msgResetSettings.type = Message::settings_reset_controller;
+        emit(sendMessage(msgResetSettings));
+    }
 }

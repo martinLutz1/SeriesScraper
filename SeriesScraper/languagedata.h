@@ -34,6 +34,10 @@ public:
         close,
         // Settings window
         done,
+        yes,
+        no,
+        areYouSure,
+        areYouSureDetailed,
         general,
         interface,
         showSeriesInformation,

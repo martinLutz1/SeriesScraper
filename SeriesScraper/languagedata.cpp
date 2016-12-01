@@ -1,4 +1,5 @@
 #include "languagedata.h"
+#include <QDebug>
 
 LanguageData::LanguageData()
 {
