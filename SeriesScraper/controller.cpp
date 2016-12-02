@@ -22,8 +22,8 @@ void Controller::initializeNameSchemes()
         nameSchemeHandler.addNameScheme("%$series% - S%$season%E%$episode(2)% - %$episodeName%");
         nameSchemeRepresentationList << nameSchemeHandler.getNameSchemeRepresentation();
         // Error message
-        QString nameSchemeNotFound = languageControl.getTranslation(LanguageData::nameSchemeNotFound);
-        setStatusMessage(nameSchemeNotFound);
+        QString nameSchemeFileNotFound = languageControl.getTranslation(LanguageData::nameSchemeFileNotFound);
+        setStatusMessage(nameSchemeFileNotFound);
     }
 
     // Send name scheme list to view
@@ -251,7 +251,10 @@ bool Controller::changeGuiLanguage(QString language)
         msgChangeLocalization.data[1].qsPointer = &language;
         emit(sendMessage(msgChangeLocalization));
     } else
+    {
+        // Error message
         setStatusMessage("Could not read language file " + language + ".json");
+    }
 
     settings.setGuiLanguage(guiLanguage);
     return loadingSuccessful;
@@ -348,8 +351,12 @@ void Controller::changeNameScheme(int nameScheme)
     if (nameScheme < amountNameSchemes)
         newNameScheme = nameScheme;
     else
-        setStatusMessage("Name scheme " + QString::number(nameScheme + 1) + " could not be found"); // Localization!
+    {
+        QString nameSchemeLineNotFound = languageControl.getTranslation(LanguageData::nameSchemeLineNotFound);
+        setStatusMessage(nameSchemeLineNotFound + " " +  QString::number(nameScheme + 1));
+    }
 
+    settings.setNameScheme(newNameScheme);
     nameSchemeHandler.setNameScheme(newNameScheme);
     Message msgChangeNameScheme;
     msgChangeNameScheme.type = Message::controller_changeNameScheme_view;
@@ -488,7 +495,6 @@ void Controller::notify(Message &msg)
     {
         int selectedNameScheme = msg.data[0].i;
         changeNameScheme(selectedNameScheme);
-        settings.setNameScheme(selectedNameScheme);
         updateNewFileNames();
         updateView();
         break;

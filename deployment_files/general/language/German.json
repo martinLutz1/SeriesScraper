@@ -35,7 +35,8 @@
     "ResetAll":"Alles zurücksetzen",
     "NotFound":"Nicht gefunden",
     "SeriesLanguageNotFound":"Seriensprachdatei konnte nicht geladen werden",
-    "NameSchemeNotFound":"Namenschemadatei konnte nicht gefunden werden. Erstelle neue.",   
+    "NameSchemeFileNotFound":"Namensschemadatei konnte nicht gefunden werden. Erstelle neue.",   
+    "NameSchemeLineNotFound":"Namesschema konnte nicht gefunden werden in Zeile",
     "RenameFailed":"Umbenennen fehlgeschlagen",
     "RenameSuccess":"Dateien erfolgreich umbenannt!"
 }

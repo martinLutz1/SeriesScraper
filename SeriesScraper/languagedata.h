@@ -54,7 +54,8 @@ public:
         // Feedback
         notFound,
         seriesLanguageNotFound,
-        nameSchemeNotFound,
+        nameSchemeFileNotFound,
+        nameSchemeLineNotFound,
         renameFailed,
         renameSuccess,
     };

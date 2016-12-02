@@ -547,9 +547,14 @@ void MainWindow::notify(Message &msg)
     }
     case Message::controller_addNameSchemes_view:
     {
+        ui->nameSchemeComboBox->clear();
         QStringList nameSchemeList = *msg.data[0].qsListPointer;
         for (int i = 0; i < nameSchemeList.size(); i++)
             addNameSchemeItem(nameSchemeList.at(i));
+
+        // Make sure even the largest item can be displayed on dropdown
+        int minimumWidth = ui->nameSchemeComboBox->minimumSizeHint().width();
+        ui->nameSchemeComboBox->view()->setMinimumWidth(minimumWidth);
         break;
     }
     case Message::controller_changeLocalization_view:

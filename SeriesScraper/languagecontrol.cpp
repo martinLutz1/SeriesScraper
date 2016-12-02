@@ -79,7 +79,8 @@ bool LanguageControl::loadLanguage(QString language)
                         << loadedObject.value("ResetAll").toString()
                         << loadedObject.value("NotFound").toString()
                         << loadedObject.value("SeriesLanguageNotFound").toString()
-                        << loadedObject.value("NameSchemeNotFound").toString()
+                        << loadedObject.value("NameSchemeFileNotFound").toString()
+                        << loadedObject.value("NameSchemeLineNotFound").toString()
                         << loadedObject.value("RenameFailed").toString()
                         << loadedObject.value("RenameSuccess").toString();
 

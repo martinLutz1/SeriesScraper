@@ -35,7 +35,8 @@
     "ResetAll":"Reset everything",
     "NotFound":"Not found",
     "SeriesLanguageNotFound":"Series language file could not be loaded",
-    "NameSchemeNotFound":"Name scheme file not found. Creating new one.",
+    "NameSchemeFileNotFound":"Name scheme file not found. Creating new one.",
+    "NameSchemeLineNotFound":"Name scheme coult not be found in line",
     "RenameFailed":"Renaming failed",
     "RenameSuccess":"Files successfully renamed!"
 }
