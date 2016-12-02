@@ -76,6 +76,7 @@ MainWindow::~MainWindow()
     delete helpMenu;
     delete aboutAction;
     delete settingsAction;
+    delete fullScreenAction;
 }
 
 void MainWindow::setUpTable()
@@ -119,12 +120,15 @@ void MainWindow::setUpMenuBar()
     helpMenu = new QMenu("Help");
     aboutAction = new QAction(aboutText);
     settingsAction = new QAction("Settings");
+    fullScreenAction = new QAction("Fullscreen");
 
     aboutAction->setMenuRole(QAction::ApplicationSpecificRole);
     settingsAction->setMenuRole(QAction::ApplicationSpecificRole);
+    fullScreenAction->setShortcut(QKeySequence::FullScreen);
 
     helpMenu->addAction(aboutAction);
     viewMenu->addAction(settingsAction);
+    viewMenu->addAction(fullScreenAction);
 
     ui->menuBar->addMenu(viewMenu);
     ui->menuBar->addMenu(helpMenu);
@@ -132,6 +136,7 @@ void MainWindow::setUpMenuBar()
     // Connect settings and about
     QObject::connect(helpMenu, SIGNAL(triggered(QAction*)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
+    QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -471,6 +476,16 @@ void MainWindow::showSettingsWindow()
     Message msgShowSettings;
     msgShowSettings.type = Message::view_showSettingsWindow_controller;
     emit(sendMessage(msgShowSettings));
+}
+
+void MainWindow::toggleFullScreen()
+{
+    fullScreenEnabled = !fullScreenEnabled;
+
+    if (fullScreenEnabled)
+        this->showFullScreen();
+    else
+        this->showNormal();
 }
 
 void MainWindow::onSeriesLanguageChanged(int index)

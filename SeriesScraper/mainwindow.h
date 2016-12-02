@@ -32,6 +32,7 @@ private:
     QMenu *viewMenu;
     QAction *aboutAction;
     QAction *settingsAction;
+    QAction *fullScreenAction;
 
     QDir chosenPath;
     int tableRows;
@@ -44,6 +45,7 @@ private:
     QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
     QChar checkmark = QChar(0x13, 0x27);
     QChar times = QChar(0x15, 0x27);
+    bool fullScreenEnabled = false;
 
     void setUpTable();
     void setUpMenuBar();
@@ -76,6 +78,7 @@ private slots:
     void onNameSchemeChanged(int index);
     void showAboutDialog();
     void showSettingsWindow();
+    void toggleFullScreen();
 
 public slots:
     void notify(Message &msg);
