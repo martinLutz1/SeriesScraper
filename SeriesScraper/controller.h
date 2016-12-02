@@ -46,6 +46,7 @@ public:
     void changeSeries(QString series, int season);
     void changeSaveSeries(bool saveSeries);
     void changeSavePath(bool savePath);
+    void changeNameScheme(int nameScheme);
     bool setDirectory(QString path);
     bool renameFiles();
     void updateView();

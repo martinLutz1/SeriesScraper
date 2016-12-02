@@ -353,13 +353,14 @@ void MainWindow::changeLocalization(QStringList translationList)
     helpMenu->setTitle(translationList.at(LanguageData::help));
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
+    directorySelectionText = translationList.at(LanguageData::directorySelection);
 }
 
 void MainWindow::openDirectory()
 {
     // Open directory-dialog to chose directory
     QString directoryPath;
-    directoryPath = QFileDialog::getExistingDirectory(this,"Ordner wählen", chosenPath.path()); // Todo Translate
+    directoryPath = QFileDialog::getExistingDirectory(this, directorySelectionText, chosenPath.path());
     if (!directoryPath.isNull())
     {
         chosenPath = directoryPath; // Remember path
@@ -607,6 +608,12 @@ void MainWindow::notify(Message &msg)
         QString language = *msg.data[0].qsPointer;
         int indexOfLanguage = ui->seriesLanguageComboBox->findText(language);
         ui->seriesLanguageComboBox->setCurrentIndex(indexOfLanguage);
+        break;
+    }
+    case Message::controller_changeNameScheme_view:
+    {
+        int nameSchemeIndex = msg.data[0].i;
+        ui->nameSchemeComboBox->setCurrentIndex(nameSchemeIndex);
         break;
     }
     case Message::controller_setSeries_view:

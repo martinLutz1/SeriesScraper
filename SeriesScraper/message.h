@@ -39,6 +39,7 @@ public:
         controller_setStatus_view,
         controller_changeSeriesParser_view,
         controller_changeSeriesLanguage_view,
+        controller_changeNameScheme_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
         controller_addGUILanguages_settings,

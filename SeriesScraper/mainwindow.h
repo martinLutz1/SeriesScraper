@@ -46,6 +46,7 @@ private:
     QChar checkmark = QChar(0x13, 0x27);
     QChar times = QChar(0x15, 0x27);
     bool fullScreenEnabled = false;
+    QString directorySelectionText = "Directory selection";
 
     void setUpTable();
     void setUpMenuBar();

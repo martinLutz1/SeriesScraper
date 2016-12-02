@@ -20,6 +20,7 @@ public:
     void setSeries(QString series);
     void setSeason(int season);
     void setSeriesDatabase(int seriesDatabase);
+    void setNameScheme(int nameScheme);
     void setGuiLanguage(QString guiLanguage);
     void setSeriesLanguage(QString seriesLanguage);
     bool getSavePath();
@@ -30,6 +31,7 @@ public:
     QString getSeriesLanguage();
     int getSeason();
     int getSeriesDatabase();
+    int getNameScheme();
 
 private:
     QFile settingsFile;
@@ -39,6 +41,7 @@ private:
     QString series;
     int season;
     int seriesDatabase; // 0 = TMDb, 1 = OMDb
+    int nameScheme;
     QString guiLanguage;
     QString seriesLanguage;
 
@@ -48,6 +51,7 @@ private:
     const QString jsonKeySeries = "Series";
     const QString jsonKeySeason = "Season";
     const QString jsonKeySeriesDatabase = "SeriesDatabase";
+    const QString jsonKeyNameScheme = "NameScheme";
     const QString jsonKeyGUILanguage = "InterfaceLanguage";
     const QString jsonKeySeriesLanguage = "SeriesLanguage";
 
@@ -57,6 +61,7 @@ private:
     const QString defaultSeries = "";
     const int defaultSeason = 1;
     const int defaultSeriesDatabase = 0;
+    const int defaultNameScheme = 0;
     const QString defaultGuiLanguage = "English";
     const QString defaultSeriesLanguage = "English";
 };

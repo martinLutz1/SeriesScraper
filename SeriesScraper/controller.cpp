@@ -31,8 +31,6 @@ void Controller::initializeNameSchemes()
     msgAddNameSchemes.type = Message::controller_addNameSchemes_view;
     msgAddNameSchemes.data[0].qsListPointer = &nameSchemeRepresentationList;
     emit(sendMessage(msgAddNameSchemes));
-
-    nameSchemeHandler.setNameScheme(0); // Settings
 }
 
 void Controller::initializeSeriesLanguages()
@@ -85,13 +83,15 @@ void Controller::initializeSettings()
     settings.loadSettingsFile();
 
     int selectedSeriesParser = settings.getSeriesDatabase();
+    int selectedNameScheme = settings.getNameScheme();
     QString selectedGuiLanguage = settings.getGuiLanguage();
     QString selectedSeriesLanguage = settings.getSeriesLanguage();
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
 
-    changeSeriesParser(selectedSeriesParser);
     changeGuiLanguage(selectedGuiLanguage);
+    changeSeriesParser(selectedSeriesParser);
+    changeNameScheme(selectedNameScheme);
     changeSeriesLanguage(selectedSeriesLanguage);
     changeSaveSeries(saveSeries);
     changeSavePath(savePath);
@@ -239,9 +239,10 @@ bool Controller::changeSeason(int season)
 bool Controller::changeGuiLanguage(QString language)
 {
     bool loadingSuccessful = languageControl.loadLanguage(language);
+    QString guiLanguage = "English";
     if (loadingSuccessful)
     {
-        settings.setGuiLanguage(language);
+        guiLanguage = language;
         QStringList translationList = languageControl.getTranslationList();
         // Send translations to view, about and settings
         Message msgChangeLocalization;
@@ -250,11 +251,9 @@ bool Controller::changeGuiLanguage(QString language)
         msgChangeLocalization.data[1].qsPointer = &language;
         emit(sendMessage(msgChangeLocalization));
     } else
-    {
-        settings.setGuiLanguage("English");
-        // Error message
         setStatusMessage("Could not read language file " + language + ".json");
-    }
+
+    settings.setGuiLanguage(guiLanguage);
     return loadingSuccessful;
 }
 
@@ -339,6 +338,23 @@ void Controller::changeSavePath(bool savePath)
     msgSavePath.type = Message::controller_savePath_settings;
     msgSavePath.data[0].b = savePath;
     emit(sendMessage(msgSavePath));
+}
+
+void Controller::changeNameScheme(int nameScheme)
+{
+    int amountNameSchemes = nameSchemeHandler.getAmountNameSchemes();
+    int newNameScheme = 0;
+
+    if (nameScheme < amountNameSchemes)
+        newNameScheme = nameScheme;
+    else
+        setStatusMessage("Name scheme " + QString::number(nameScheme + 1) + " could not be found"); // Localization!
+
+    nameSchemeHandler.setNameScheme(newNameScheme);
+    Message msgChangeNameScheme;
+    msgChangeNameScheme.type = Message::controller_changeNameScheme_view;
+    msgChangeNameScheme.data[0].i = newNameScheme;
+    emit(sendMessage(msgChangeNameScheme));
 }
 
 bool Controller::setDirectory(QString path)
@@ -471,7 +487,8 @@ void Controller::notify(Message &msg)
     case Message::view_changeNameScheme_controller:
     {
         int selectedNameScheme = msg.data[0].i;
-        nameSchemeHandler.setNameScheme(selectedNameScheme);
+        changeNameScheme(selectedNameScheme);
+        settings.setNameScheme(selectedNameScheme);
         updateNewFileNames();
         updateView();
         break;

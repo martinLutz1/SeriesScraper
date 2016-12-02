@@ -12,6 +12,7 @@ Settings::Settings()
     series = defaultSeries;
     season = defaultSeason;
     seriesDatabase = defaultSeriesDatabase;
+    nameScheme = defaultNameScheme;
     guiLanguage = defaultGuiLanguage;
     seriesLanguage = defaultSeriesLanguage;
 }
@@ -27,6 +28,7 @@ bool Settings::loadSettingsFile()
         setSeries(loadedObject.find(jsonKeySeries).value().toString());
         setSeason(loadedObject.find(jsonKeySeason).value().toInt());
         setSeriesDatabase(loadedObject.find(jsonKeySeriesDatabase).value().toInt());
+        setNameScheme(loadedObject.find(jsonKeyNameScheme).value().toInt());
         setGuiLanguage(loadedObject.find(jsonKeyGUILanguage).value().toString());
         setSeriesLanguage(loadedObject.find(jsonKeySeriesLanguage).value().toString());
     } else
@@ -45,6 +47,7 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
     jsonSettings.insert(jsonKeyGUILanguage, guiLanguage);
     jsonSettings.insert(jsonKeySeriesLanguage, seriesLanguage);
+    jsonSettings.insert(jsonKeyNameScheme, nameScheme);
     jsonSettings.insert(jsonKeySeason, season);
 
     bool successReading = settingsFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
@@ -63,6 +66,7 @@ bool Settings::resetSettingsFile()
     series = defaultSeries;
     season = defaultSeason;
     seriesDatabase = defaultSeriesDatabase;
+    nameScheme = defaultNameScheme;
     guiLanguage = defaultGuiLanguage;
     seriesLanguage = defaultSeriesLanguage;
     return saveSettingsFile();
@@ -70,57 +74,50 @@ bool Settings::resetSettingsFile()
 
 void Settings::setSavePath(bool savePathOnExit)
 {
-    if (savePath != savePathOnExit)
-        savePath = savePathOnExit;
+    savePath = savePathOnExit;
 }
 
 void Settings::setSaveSeries(bool saveSeriesOnExit)
 {
-    if (saveSeries != saveSeriesOnExit)
-        saveSeries = saveSeriesOnExit;
+    saveSeries = saveSeriesOnExit;
 }
 
 void Settings::setPath(QString path)
 {
-    if (this->path != path)
-        this->path = path;
+    this->path = path;
 }
 
 void Settings::setSeries(QString series)
 {
-    if (series.isEmpty())
-        this->series.clear();
-    else if (this->series != series)
-        this->series = series;
+    this->series = series;
 }
 
 void Settings::setSeason(int season)
 {
-    if (this->season != season)
-        this->season = season;
+    this->season = season;
 }
 
 void Settings::setSeriesDatabase(int seriesDatabase)
 {
-    if (this->seriesDatabase != seriesDatabase)
-    {
-        if (seriesDatabase >= 0 && seriesDatabase <= 1)
-            this->seriesDatabase = seriesDatabase;
-        else // Set to default if seriesDatabase is not valid
-            this->seriesDatabase = 0;
-    }
+    if (seriesDatabase >= 0 && seriesDatabase <= 1)
+        this->seriesDatabase = seriesDatabase;
+    else // Set to default if seriesDatabase is not valid
+        this->seriesDatabase = 0;
+}
+
+void Settings::setNameScheme(int nameScheme)
+{
+    this->nameScheme = nameScheme;
 }
 
 void Settings::setGuiLanguage(QString guiLanguage)
 {
-    if (this->guiLanguage != guiLanguage)
-        this->guiLanguage = guiLanguage;
+    this->guiLanguage = guiLanguage;
 }
 
 void Settings::setSeriesLanguage(QString seriesLanguage)
 {
-    if (this->seriesLanguage != seriesLanguage)
-        this->seriesLanguage = seriesLanguage;
+    this->seriesLanguage = seriesLanguage;
 }
 
 bool Settings::getSavePath()
@@ -161,4 +158,9 @@ int Settings::getSeason()
 int Settings::getSeriesDatabase()
 {
     return seriesDatabase;
+}
+
+int Settings::getNameScheme()
+{
+    return nameScheme;
 }
