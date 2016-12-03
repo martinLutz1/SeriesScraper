@@ -676,7 +676,9 @@ void MainWindow::notify(Message &msg)
         if (useDarkTheme)
         {
             changeToDarkTheme();
-            onSeriesTextChanged(); // Workaround for white table headers
+            // Workaround for white table headers
+            setRow(0, "", "");
+            clearTable();
         }
         break;
     }
