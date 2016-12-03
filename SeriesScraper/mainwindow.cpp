@@ -387,6 +387,7 @@ void MainWindow::changeLocalization(QStringList translationList)
     helpMenu->setTitle(translationList.at(LanguageData::help));
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
+    fullScreenAction->setText(translationList.at(LanguageData::fullscreen));
     directorySelectionText = translationList.at(LanguageData::directorySelection);
 }
 

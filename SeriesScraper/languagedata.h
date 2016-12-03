@@ -27,6 +27,7 @@ public:
         rename,
         about,
         settings,
+        fullscreen,
         language,
         display,
         help,
