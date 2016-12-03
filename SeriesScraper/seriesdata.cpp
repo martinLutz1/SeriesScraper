@@ -15,7 +15,7 @@ SeriesData::SeriesData() :
 
 void SeriesData::setSeries(QString newSeries)
 {
-    series = newSeries;
+    series = removeSpecialCharacters(newSeries);
 }
 
 void SeriesData::setSuffix(int index, QString newSuffix)
@@ -54,7 +54,7 @@ void SeriesData::setEpisodes(QStringList newEpisodeList)
 
 void SeriesData::setSelectedLanguage(QString languageShortName)
 {
-   selectedLanguage = languageShortName;
+    selectedLanguage = languageShortName;
 }
 
 void SeriesData::setAmountSeasons(int newAmount)
@@ -165,8 +165,7 @@ QDir SeriesData::getWorkingDirectory()
 QString SeriesData::removeSpecialCharacters(QString string)
 {
     QString stringWithoutSpecialCharacters = string;
-    for (int i = 0; i < specialCharacterList.size(); i++) {
+    for (int i = 0; i < specialCharacterList.size(); i++)
         stringWithoutSpecialCharacters.replace(specialCharacterList.at(i), "");
-    }
     return stringWithoutSpecialCharacters;
 }
