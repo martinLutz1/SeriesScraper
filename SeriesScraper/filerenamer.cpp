@@ -32,9 +32,8 @@ bool FileRenamer::rename()
     int amountNewNames = newFileNameList.size();
     int amountSuffixes = suffixes.size();
 
-    if (amountSuffixes!= amountOldFiles) {
+    if (amountOldFiles != amountSuffixes)
         return false;
-    }
 
     if (workingDirectory.exists())
     {
@@ -42,16 +41,16 @@ bool FileRenamer::rename()
         for (int i = 0; i < amountToRename; i++)
         {
             QString fileToRename = oldFileNameList.at(i);
+
             if (fileToRename.isEmpty()) // Do not rename empty files
                 continue;
 
-            //try catch!
             QString newFileName = newFileNameList.at(i) + "." + suffixes.at(i);
-            workingDirectory.rename(fileToRename, newFileName);
+            bool renameSuccess = workingDirectory.rename(fileToRename, newFileName);
+            if (!renameSuccess)
+                return false;
         }
         return true;
     } else
-    {
         return false;
-    }
 }

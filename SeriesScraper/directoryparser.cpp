@@ -125,6 +125,8 @@ QStringList DirectoryParser::getFilesSuffix()
         for (int i = 0; i < fileList.length(); i++) {
             if (fileList.at(i).isFile())
                 suffixes << fileList.at(i).suffix();
+            else if(!fileList.at(i).isDir())
+                suffixes << "";
         }
     }
     else {

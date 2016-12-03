@@ -8,6 +8,7 @@ Settings::Settings()
     settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
     savePath = defaultSavePath;
     saveSeries = defaultSaveSeries;
+    useDarkTheme = defaultUseDarkTheme;
     path = defaultPath;
     series = defaultSeries;
     season = defaultSeason;
