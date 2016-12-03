@@ -32,11 +32,15 @@ bool FileRenamer::rename()
     int amountNewNames = newFileNameList.size();
     int amountSuffixes = suffixes.size();
 
+    qDebug() << amountNewNames << amountOldFiles << amountSuffixes;
     if (amountOldFiles != amountSuffixes)
         return false;
 
+    bool renamingSucceded = false;
+
     if (workingDirectory.exists())
     {
+        renamingSucceded = true;
         int amountToRename = std::min(amountNewNames, amountOldFiles);
         for (int i = 0; i < amountToRename; i++)
         {
@@ -48,9 +52,9 @@ bool FileRenamer::rename()
             QString newFileName = newFileNameList.at(i) + "." + suffixes.at(i);
             bool renameSuccess = workingDirectory.rename(fileToRename, newFileName);
             if (!renameSuccess)
-                return false;
+                renamingSucceded = renameSuccess;
         }
-        return true;
-    } else
-        return false;
+
+    }
+    return renamingSucceded;
 }
