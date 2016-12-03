@@ -8,38 +8,42 @@ QStringList DirectoryParser::sortFiles(QStringList files)
     QStringList sortedFiles;
     std::vector<int> position = getEpisodePositions(files);
 
-    if (int(position.size()) != files.size()) { // Name scheme not found, let QT sort
+    if (int(position.size()) != files.size())  // Name scheme not found, let QT sort
         return files;
-    }
 
-    for (int i = 0; i < files.length(); i++) {
-        while (sortedFiles.length() <= position.at(i)) { // Prepare space
+    for (int i = 0; i < files.size(); i++)
+    {
+        while (sortedFiles.size() <= position.at(i))  // Prepare space
             sortedFiles.push_back("");
-        }
-        sortedFiles[position.at(i)] = files.at(i);
+        if (position.at(i) >= 0)
+            sortedFiles[position.at(i)] = files.at(i);
     }
     return sortedFiles;
 }
 
 QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 {
-    QFileInfoList sortedFiles = files;
+    QFileInfoList sortedFiles;
     QStringList filesQs;
 
-    for (int i = 0; i < sortedFiles.length(); i++) { // Get strings to calculate positions
-        filesQs << sortedFiles.at(i).filePath();
-    }
+    for (int i = 0; i < files.size(); i++)  // Get strings to calculate positions
+        filesQs << files.at(i).filePath();
+
     std::vector<int> position = getEpisodePositions(filesQs);
 
-    if (int(position.size()) < files.size()) { // Name scheme not found, let QT sort
+    qDebug() << position;
+    if (int(position.size()) < files.size())  // Name scheme not found, let QT sort
         return files;
-    }
 
-    for (int i = 0; i < files.size(); i++) {
-        while (sortedFiles.length() <= position.at(i)) { // Prepare space
+
+
+    for (int i = 0; i < files.size(); i++)
+    {
+        while (sortedFiles.size() <= position.at(i))  // Prepare space
             sortedFiles.push_back(QFileInfo(""));
-        }
-        sortedFiles[position.at(i)] = files.at(i);
+        if (position.at(i) >= 0)
+            sortedFiles[position.at(i)] = files.at(i);
+        qDebug() << sortedFiles[position.at(i)].fileName();
     }
     return sortedFiles;
 }
@@ -57,7 +61,7 @@ DirectoryParser::DirectoryParser()
     directory.setPath("");
     setNameFilterToAll();
 
-    episodeNumberExpression.setPattern("\\w+[0-9]+\\w+[0-9]+");
+    episodeNumberExpression.setPattern("\\w+[0-9]+(.*)\\w+[0-9]+");
     numberFromEpisodeNumberExpression.setPattern("[0-9]*$");
 }
 
@@ -83,7 +87,8 @@ QStringList DirectoryParser::getFiles()
     QFileInfoList list = directory.entryInfoList();
     QStringList filesToReturn;
 
-    for (int i = 0; i < list.size(); ++i) {
+    for (int i = 0; i < list.size(); ++i)
+    {
         fileInfo = list.at(i);
         if (fileInfo.isFile())
             filesToReturn << fileInfo.fileName();
@@ -98,7 +103,8 @@ QStringList DirectoryParser::getFilesWithoutExtension()
     QStringList fileList = getFiles();
     QStringList fileWithoutExtension;
 
-    for (int i = 0; i < getFiles().size(); i++) {
+    for (int i = 0; i < getFiles().size(); i++)
+    {
         fileInfo.setFile(fileList.at(i));
         fileWithoutExtension << fileInfo.completeBaseName();
     }
@@ -117,21 +123,23 @@ QStringList DirectoryParser::getFilesSuffix()
 {
     QStringList suffixes;
 
-    if (directory.exists()) {
+    if (directory.exists())
+    {
         directory.setNameFilters(filter);
         QFileInfoList fileList = directory.entryInfoList();
         fileList = sortFiles(fileList);
 
-        for (int i = 0; i < fileList.length(); i++) {
+        for (int i = 0; i < fileList.size(); i++)
+        {
             if (fileList.at(i).isFile())
                 suffixes << fileList.at(i).suffix();
             else if(!fileList.at(i).isDir())
                 suffixes << "";
         }
     }
-    else {
+    else
         suffixes << "";
-    }
+
     return suffixes;
 }
 
@@ -141,11 +149,14 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     QRegularExpressionMatch match;
     QRegularExpressionMatch matchEpisodeNumber;
 
-    for (int i = 0; i < episodeList.length(); i++) {
+    for (int i = 0; i < episodeList.size(); i++)
+    {
         match = episodeNumberExpression.match
                 (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
 
-        if (match.hasMatch()) {
+        if (match.hasMatch())
+        {
+            //qDebug() << "match " << i << match.captured();
             QString capturedEpisodeString = match.captured();
             matchEpisodeNumber = numberFromEpisodeNumberExpression.match
                     (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);

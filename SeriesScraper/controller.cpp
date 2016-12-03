@@ -114,40 +114,6 @@ void Controller::setStatusMessage(QString status)
     emit(sendMessage(msgSetStatus));
 }
 
-bool Controller::loadSeries(int season, QString language)
-{
-    if (seriesData.getSeries().isEmpty())
-        return false;
-
-    // Start loading animation
-    Message msgStartLoading;
-    msgStartLoading.type = Message::controller_startSeriesLoading_view;
-    emit(sendMessage(msgStartLoading));
-
-    // Load episode list
-    QStringList episodeList = seriesParser.getEpisodeList(season, language);
-    // Set aquired information
-    seriesData.setSelectedSeason(season);
-    seriesData.setSelectedLanguage(language);
-    seriesData.setEpisodes(episodeList);
-    updateNewFileNames();
-    updateView();
-
-    bool loadingSuccessful = !episodeList.isEmpty();
-    if (loadingSuccessful) // Finish loading animation
-    {
-        Message msgSuccessLoading;
-        msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
-        emit(sendMessage(msgSuccessLoading));
-    } else // Finish loading animation with failure message
-    {
-        Message msgFailureLoading;
-        msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
-        emit(sendMessage(msgFailureLoading));
-    }
-    return loadingSuccessful;
-}
-
 Controller::Controller(QObject *parent) : QObject(parent)
 {
 }
@@ -195,13 +161,8 @@ void Controller::initialize()
     initializeSettings();
 }
 
-bool Controller::setSeries(QString series, int season)
+bool Controller::loadSeries(QString series, int season)
 {
-    // Avoid loading if the text is not changed
-    QString lastScrapedSeries = seriesParser.getSeriesInput();
-    if (lastScrapedSeries == series)
-        return true;
-
     // Set default values
     QString newSeriesName("");
     int newSelectedSeason = 1;
@@ -222,6 +183,7 @@ bool Controller::setSeries(QString series, int season)
         if (seriesFound)
         {
             QString seriesLanguage = seriesData.getSelectedLanguage();
+            qDebug() << seriesLanguage;
             newSelectedSeason = season;
             newSeriesName = seriesParser.getSeriesName();
             newAmountSeasons = seriesParser.getAmountSeasons();
@@ -239,11 +201,14 @@ bool Controller::setSeries(QString series, int season)
             emit(sendMessage(msgFailureLoading));
         }
     }
+    else
+        seriesParser.scrapeSeries(series); // Reset
 
     seriesData.setSeries(newSeriesName);
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
+    qDebug() << newEpisodeList;
     updateNewFileNames();
     updateView();
     return seriesFound;
@@ -251,8 +216,8 @@ bool Controller::setSeries(QString series, int season)
 
 bool Controller::changeSeason(int season)
 {
-    QString language = seriesData.getSelectedLanguage();
-    return loadSeries(season, language);
+    QString series = seriesParser.getSeriesInput();
+    return loadSeries(series, season);
 }
 
 bool Controller::changeGuiLanguage(QString language)
@@ -289,8 +254,9 @@ void Controller::changeSeriesLanguage(QString language)
     QString selectedLanguage = seriesLanguage.getShortName(language);
     seriesData.setSelectedLanguage(selectedLanguage);
     settings.setSeriesLanguage(language);
+    QString series = seriesParser.getSeriesInput();
     int season = seriesData.getSelectedSeason();
-    loadSeries(season, selectedLanguage);
+    loadSeries(series, season);
 }
 
 void Controller::changeSeriesParser(int selectedSeriesParser)
@@ -308,14 +274,14 @@ void Controller::changeSeriesParser(int selectedSeriesParser)
         seriesParser.setSeriesParser(selectedSeriesParser);
         settings.setSeriesDatabase(selectedSeriesParser);
         if (!series.isEmpty())
-            setSeries(series, season);
+            loadSeries(series, season);
     }
 }
 
 void Controller::changeSeries(QString series, int season)
 {
     bool isEmpty = series.isEmpty();
-    bool seriesSet = setSeries(series, season);
+    bool seriesSet = loadSeries(series, season);
 
     // Send scraping status to view
     Message msgSeriesSet;
@@ -395,8 +361,8 @@ bool Controller::setDirectory(QString path)
     if (directoryExists)
     {
         newDirectory = QDir(path);
-        newSuffixes = directoryParser.getFilesSuffix();
         newOldFileNames = directoryParser.getFiles();
+        newSuffixes = directoryParser.getFilesSuffix();
         newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutExtension();
     }
     seriesData.setWorkingDirectory(newDirectory);
@@ -474,7 +440,8 @@ void Controller::notify(Message &msg)
     case Message::view_changeSeriesText_controller:
     {
         QString series = *msg.data[0].qsPointer;
-        changeSeries(series, 1);
+        int season = seriesData.getSelectedSeason();
+        changeSeries(series, season);
         break;
     }
     case Message::view_changeSeason_controller:

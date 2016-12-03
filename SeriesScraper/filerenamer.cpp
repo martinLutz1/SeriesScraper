@@ -32,7 +32,6 @@ bool FileRenamer::rename()
     int amountNewNames = newFileNameList.size();
     int amountSuffixes = suffixes.size();
 
-    qDebug() << amountNewNames << amountOldFiles << amountSuffixes;
     if (amountOldFiles != amountSuffixes)
         return false;
 

@@ -11,9 +11,16 @@ OMDbSeriesParser::OMDbSeriesParser()
 
 bool OMDbSeriesParser::scrapeSeries(QString series, int season)
 {
+    if (series.isEmpty())
+    {
+        amountSeasons = 0;
+        episodeList = QStringList();
+        return false;
+    }
     bool scrapingSuccessful = false;
     // Create request string
     QString requestUrl = "http://www.omdbapi.com/?t=" + series + "&season=" + QString::number(season);
+
 
     if (scrapeJsonObject(requestUrl))
     {

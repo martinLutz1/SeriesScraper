@@ -32,13 +32,12 @@ private:
     void initializeSettings();
     void updateNewFileNames();
     void setStatusMessage(QString status);
-    bool loadSeries(int season, QString language);
 
 public:
     explicit Controller(QObject *parent = 0);
     ~Controller();
     void initialize();
-    bool setSeries(QString series, int season); // Set series if existing and set table
+    bool loadSeries(QString series, int season); // Set series if existing and set table
     bool changeSeason(int season);
     bool changeGuiLanguage(QString language);
     void changeSeriesLanguage(QString language);

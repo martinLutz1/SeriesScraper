@@ -96,7 +96,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>230</x>
         <y>30</y>
         <width>60</width>
         <height>20</height>
@@ -109,19 +109,19 @@
      <widget class="QLabel" name="recommendLabel">
       <property name="geometry">
        <rect>
-        <x>65</x>
-        <y>34</y>
-        <width>90</width>
+        <x>70</x>
+        <y>32</y>
+        <width>101</width>
         <height>16</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>8</pointsize>
+        <pointsize>13</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#353535;&quot;&gt;recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#353535;&quot;&gt;(recommended)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </widget>
