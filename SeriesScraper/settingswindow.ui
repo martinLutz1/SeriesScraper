@@ -77,7 +77,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>10</x>
         <y>30</y>
         <width>60</width>
         <height>20</height>
@@ -140,7 +140,7 @@
      <widget class="QCheckBox" name="savePathCheckBox">
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>10</x>
         <y>25</y>
         <width>140</width>
         <height>20</height>
@@ -153,7 +153,7 @@
      <widget class="QCheckBox" name="saveSeriesCheckBox">
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>10</x>
         <y>50</y>
         <width>140</width>
         <height>20</height>
@@ -182,7 +182,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>10</x>
         <y>95</y>
         <width>290</width>
         <height>20</height>
@@ -195,7 +195,7 @@
      <widget class="QComboBox" name="selectInterfaceLanguageComboBox">
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>10</x>
         <y>40</y>
         <width>170</width>
         <height>26</height>
@@ -205,7 +205,7 @@
      <widget class="QLabel" name="languageLabel">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>15</x>
         <y>25</y>
         <width>150</width>
         <height>16</height>
@@ -218,7 +218,7 @@
      <widget class="QCheckBox" name="darkThemeCheckBox">
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>10</x>
         <y>70</y>
         <width>290</width>
         <height>20</height>
@@ -386,7 +386,7 @@
   <widget class="QPushButton" name="resetButton">
    <property name="geometry">
     <rect>
-     <x>5</x>
+     <x>10</x>
      <y>275</y>
      <width>141</width>
      <height>32</height>
