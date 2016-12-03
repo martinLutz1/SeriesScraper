@@ -128,9 +128,9 @@
     <widget class="QGroupBox" name="saveOnExitGroupBox">
      <property name="geometry">
       <rect>
-       <x>325</x>
+       <x>315</x>
        <y>0</y>
-       <width>150</width>
+       <width>160</width>
        <height>130</height>
       </rect>
      </property>
@@ -169,7 +169,7 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>300</width>
+       <width>290</width>
        <height>130</height>
       </rect>
      </property>
