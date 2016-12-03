@@ -9,7 +9,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     ui(new Ui::SettingsWindow)
 {
     ui->setupUi(this);
-    createResetConfirmationDialog();
+    createResetConfirmationDialog();;
     QObject::connect(ui->doneButton, SIGNAL(clicked()), this, SLOT(hide()));
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
     QObject::connect(ui->tmdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
@@ -17,6 +17,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->saveSeriesCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSaveSeriesChanged(bool)));
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
     QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
+    QObject::connect(ui->darkThemeCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDarkThemeChanged(bool)));
 }
 
 SettingsWindow::~SettingsWindow()
@@ -31,6 +32,7 @@ void SettingsWindow::notify(Message &msg)
     {
         this->show();
         this->setFocus();
+        ui->doneButton->setFocus();
         break;
     }
     case Message::controller_changeLocalization_view:
@@ -86,6 +88,11 @@ void SettingsWindow::notify(Message &msg)
         ui->savePathCheckBox->setChecked(savePath);
         break;
     }
+    case Message::controller_useDarkTheme_view:
+    {
+        bool useDarkTheme = msg.data[0].b;
+        ui->darkThemeCheckBox->setChecked(useDarkTheme);
+    }
     default:
         break;
     }
@@ -101,6 +108,7 @@ void SettingsWindow::changeLocalization(QStringList translationList)
     ui->doneButton->setText(translationList.at(LanguageData::done));
     ui->interfaceGroupBox->setTitle(translationList.at(LanguageData::interface));
     ui->languageLabel->setText(translationList.at(LanguageData::language));
+    ui->darkThemeCheckBox->setText(translationList.at(LanguageData::darkTheme));
     ui->showSeriesInformationCheckBox->setText(translationList.at(LanguageData::showSeriesInformation));
     ui->saveOnExitGroupBox->setTitle(translationList.at(LanguageData::saveOnExit));
     ui->savePathCheckBox->setText(translationList.at(LanguageData::path));
@@ -178,4 +186,12 @@ void SettingsWindow::onResetClicked()
         msgResetSettings.type = Message::settings_reset_controller;
         emit(sendMessage(msgResetSettings));
     }
+}
+
+void SettingsWindow::onDarkThemeChanged(bool useDarkTheme)
+{
+    Message msgChangeDarkTheme;
+    msgChangeDarkTheme.type = Message::settings_useDarkTheme_controller;
+    msgChangeDarkTheme.data[0].b = useDarkTheme;
+    emit(sendMessage(msgChangeDarkTheme));
 }

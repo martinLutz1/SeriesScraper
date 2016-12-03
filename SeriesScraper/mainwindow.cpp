@@ -62,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
 }
 
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -84,7 +83,7 @@ void MainWindow::setUpTable()
     // Set table start size
     ui->episodeNameTable->setColumnCount(2);
 
-    // Set Column width and name headers
+    // Set column width and name headers
     ui->episodeNameTable->setHorizontalHeaderLabels(QString("Original names;New names").split(";"));
     ui->episodeNameTable->horizontalHeader()->setStretchLastSection(true);
 
@@ -118,12 +117,14 @@ void MainWindow::setUpMenuBar()
 
     viewMenu = new QMenu("Display");
     helpMenu = new QMenu("Help");
+
     aboutAction = new QAction(aboutText);
     settingsAction = new QAction("Settings");
     fullScreenAction = new QAction("Fullscreen");
 
     aboutAction->setMenuRole(QAction::ApplicationSpecificRole);
     settingsAction->setMenuRole(QAction::ApplicationSpecificRole);
+    settingsAction->setShortcut(QKeySequence::Preferences);
     fullScreenAction->setShortcut(QKeySequence::FullScreen);
 
     helpMenu->addAction(aboutAction);
@@ -133,26 +134,27 @@ void MainWindow::setUpMenuBar()
     ui->menuBar->addMenu(viewMenu);
     ui->menuBar->addMenu(helpMenu);
 
-    // Connect settings and about
-    QObject::connect(helpMenu, SIGNAL(triggered(QAction*)), this, SLOT(showAboutDialog()));
+    // Connect Actions
+    QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
     QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
 {
-    if (status) {
-        ui->seriesLineEdit->setStyleSheet(colorGreen);
-        ui->correctSeriesLabel->setText(checkmark);
-        ui->seasonComboBox->setCurrentIndex(0);
-    }
-    else if (isEmpty) {
+    if (isEmpty)
+    {
         ui->seriesLineEdit->setStyleSheet(colorWhite);
         ui->correctSeriesLabel->setText("");
         setAmountSeasons(0);
         disableSeriesProgressbar();
-    }
-    else {
+    } else if(status)
+    {
+        ui->seriesLineEdit->setStyleSheet(colorGreen);
+        ui->correctSeriesLabel->setText(checkmark);
+        ui->seasonComboBox->setCurrentIndex(0);
+    } else
+    {
         ui->seriesLineEdit->setStyleSheet(colorRed);
         ui->correctSeriesLabel->setText(times);
         setAmountSeasons(0);
@@ -276,6 +278,38 @@ void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, 
             }
         }
     }
+}
+
+void MainWindow::changeToDarkTheme()
+{
+    qApp->setStyle(QStyleFactory::create("Fusion"));
+    QPalette darkPalette;
+    darkPalette.setColor(QPalette::Window, QColor(53,53,53));
+    darkPalette.setColor(QPalette::WindowText, Qt::white);
+    darkPalette.setColor(QPalette::Base, QColor(25,25,25));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+    darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
+    darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+    darkPalette.setColor(QPalette::Text, Qt::white);
+    darkPalette.setColor(QPalette::Button, QColor(53,53,53));
+    darkPalette.setColor(QPalette::ButtonText, Qt::white);
+    darkPalette.setColor(QPalette::BrightText, Qt::red);
+    darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+    colorWhite = "QLineEdit { background: rgb(25,25,25); }";
+    colorGreen = "QLineEdit { background: rgb(4, 55, 4); }";
+    colorRed = "QLineEdit { background: rgb(55, 15, 15); }";
+    imageBackground = QString("background-image: url(:/images/logo.png); ")
+            + QString("background-color: rgb(30, 30, 30);")
+            + QString("background-repeat: no-repeat; ")
+            + QString("background-attachment: fixed; ")
+            + QString("background-position: center;");
+
+    qApp->setPalette(darkPalette);
+    qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+    if (ui->episodeNameTable->itemAt(1,1) == NULL)
+        clearTable();
 }
 
 void MainWindow::clearTable()
@@ -634,6 +668,16 @@ void MainWindow::notify(Message &msg)
     {
         QString path = *msg.data[0].qsPointer;
         ui->pathLineEdit->setText(path);
+        break;
+    }
+    case Message::controller_useDarkTheme_view:
+    {
+        bool useDarkTheme = msg.data[0].b;
+        if (useDarkTheme)
+        {
+            changeToDarkTheme();
+            onSeriesTextChanged(); // Workaround for white table headers
+        }
         break;
     }
     default:

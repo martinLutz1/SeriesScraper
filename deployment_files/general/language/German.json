@@ -22,6 +22,7 @@
     "AreYouSureDetailed":"Sind Sie sich sicher? Alle Einstellungen werden zurückgesetzt. Das kann nicht rückgängig gemacht werden.",
     "General":"Allgemein",
     "Interface":"Oberfläche",
+    "DarkTheme":"Dunkles Theme (Benötigt neustart)",
     "ShowSeriesInformation":"Serieninformationen anzeigen",
     "SaveOnExit":"Beim Schließen speichern",
     "SeriesDatabase":"Seriendatenbank",

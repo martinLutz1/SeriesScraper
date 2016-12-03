@@ -32,6 +32,7 @@ private slots:
     void onSaveSeriesChanged(bool saveSeries);
     void onSavePathChanged(bool savePath);
     void onResetClicked();
+    void onDarkThemeChanged(bool useDarkTheme);
 
 signals:
     void sendMessage(Message &msg);

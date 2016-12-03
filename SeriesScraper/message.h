@@ -24,6 +24,7 @@ public:
         settings_saveSeries_controller,
         settings_savePath_controller,
         settings_reset_controller,
+        settings_useDarkTheme_controller,
 
         controller_updateView_view,
         controller_seriesSet_view,
@@ -40,6 +41,7 @@ public:
         controller_changeSeriesParser_view,
         controller_changeSeriesLanguage_view,
         controller_changeNameScheme_view,
+        controller_useDarkTheme_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
         controller_addGUILanguages_settings,

@@ -40,6 +40,7 @@ public:
         areYouSureDetailed,
         general,
         interface,
+        darkTheme,
         showSeriesInformation,
         saveOnExit,
         seriesDatabase,

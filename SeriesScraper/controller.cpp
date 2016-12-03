@@ -80,8 +80,6 @@ void Controller::initializeGUILanguages()
 
 void Controller::initializeSettings()
 {
-    settings.loadSettingsFile();
-
     int selectedSeriesParser = settings.getSeriesDatabase();
     int selectedNameScheme = settings.getNameScheme();
     QString selectedGuiLanguage = settings.getGuiLanguage();
@@ -182,6 +180,15 @@ Controller::~Controller()
 
 void Controller::initialize()
 {
+    settings.loadSettingsFile();
+
+    // Dont change theme afterwards!
+    bool useDarkTheme = settings.getDarkTheme();
+    Message msgUseDarkTheme;
+    msgUseDarkTheme.type = Message::controller_useDarkTheme_view;
+    msgUseDarkTheme.data[0].b = useDarkTheme;
+    emit(sendMessage(msgUseDarkTheme));
+
     initializeGUILanguages();
     initializeNameSchemes();
     initializeSeriesLanguages();
@@ -190,35 +197,47 @@ void Controller::initialize()
 
 bool Controller::setSeries(QString series, int season)
 {
-    // Start loading animation
-    Message msgStartLoading;
-    msgStartLoading.type = Message::controller_startSeriesLoading_view;
-    emit(sendMessage(msgStartLoading));
+    // Avoid loading if the text is not changed
+    QString lastScrapedSeries = seriesParser.getSeriesInput();
+    if (lastScrapedSeries == series)
+        return true;
 
+    // Set default values
     QString newSeriesName("");
     int newSelectedSeason = 1;
     int newAmountSeasons = 0;
     QStringList newEpisodeList;
+    bool seriesFound = false;
 
-    bool seriesFound = seriesParser.scrapeSeries(series);
-    if (seriesFound)
+    // Dont scrape the empty string
+    bool seriesStringNotEmpty = !series.isEmpty();
+    if (seriesStringNotEmpty)
     {
-        QString seriesLanguage = seriesData.getSelectedLanguage();
-        newSelectedSeason = season;
-        newSeriesName = seriesParser.getSeriesName();
-        newAmountSeasons = seriesParser.getAmountSeasons();
-        newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
+        // Start loading animation
+        Message msgStartLoading;
+        msgStartLoading.type = Message::controller_startSeriesLoading_view;
+        emit(sendMessage(msgStartLoading));
 
-        // Finish loading animation
-        Message msgSuccessLoading;
-        msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
-        emit(sendMessage(msgSuccessLoading));
-    } else // No series found
-    {
-        // Finish loading animation with failure message
-        Message msgFailureLoading;
-        msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
-        emit(sendMessage(msgFailureLoading));
+        seriesFound = seriesParser.scrapeSeries(series);
+        if (seriesFound)
+        {
+            QString seriesLanguage = seriesData.getSelectedLanguage();
+            newSelectedSeason = season;
+            newSeriesName = seriesParser.getSeriesName();
+            newAmountSeasons = seriesParser.getAmountSeasons();
+            newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
+
+            // Finish loading animation
+            Message msgSuccessLoading;
+            msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
+            emit(sendMessage(msgSuccessLoading));
+        } else // No series found
+        {
+            // Finish loading animation with failure message
+            Message msgFailureLoading;
+            msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
+            emit(sendMessage(msgFailureLoading));
+        }
     }
 
     seriesData.setSeries(newSeriesName);
@@ -541,6 +560,12 @@ void Controller::notify(Message &msg)
     {
         settings.resetSettingsFile();
         initializeSettings();
+        break;
+    }
+    case Message::settings_useDarkTheme_controller:
+    {
+        bool useDarkTheme = msg.data[0].b;
+        settings.setDarkTheme(useDarkTheme);
         break;
     }
     default:

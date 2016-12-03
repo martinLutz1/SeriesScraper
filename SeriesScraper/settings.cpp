@@ -24,6 +24,7 @@ bool Settings::loadSettingsFile()
     {
         setSavePath(loadedObject.find(jsonKeySavePath).value().toBool());
         setSaveSeries(loadedObject.find(jsonKeySaveSeries).value().toBool());
+        setDarkTheme(loadedObject.find(jsonKeyDarkTheme).value().toBool());
         setPath(loadedObject.find(jsonKeyPath).value().toString());
         setSeries(loadedObject.find(jsonKeySeries).value().toString());
         setSeason(loadedObject.find(jsonKeySeason).value().toInt());
@@ -42,6 +43,7 @@ bool Settings::saveSettingsFile()
     QJsonObject jsonSettings;
     jsonSettings.insert(jsonKeySavePath, savePath);
     jsonSettings.insert(jsonKeyPath, path);
+    jsonSettings.insert(jsonKeyDarkTheme, useDarkTheme);
     jsonSettings.insert(jsonKeySaveSeries, saveSeries);
     jsonSettings.insert(jsonKeySeries, series);
     jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
@@ -62,6 +64,7 @@ bool Settings::resetSettingsFile()
 {
     savePath = defaultSavePath;
     saveSeries = defaultSaveSeries;
+    useDarkTheme = defaultUseDarkTheme;
     path = defaultPath;
     series = defaultSeries;
     season = defaultSeason;
@@ -80,6 +83,11 @@ void Settings::setSavePath(bool savePathOnExit)
 void Settings::setSaveSeries(bool saveSeriesOnExit)
 {
     saveSeries = saveSeriesOnExit;
+}
+
+void Settings::setDarkTheme(bool useDarkTheme)
+{
+    this->useDarkTheme = useDarkTheme;
 }
 
 void Settings::setPath(QString path)
@@ -128,6 +136,11 @@ bool Settings::getSavePath()
 bool Settings::getSaveSeries()
 {
     return saveSeries;
+}
+
+bool Settings::getDarkTheme()
+{
+    return useDarkTheme;
 }
 
 QString Settings::getSeries()

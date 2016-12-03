@@ -22,6 +22,7 @@
     "AreYouSureDetailed":"Are you sure? All settings will be reset to default. This cannot be undone.",
     "General":"General",
     "Interface":"Interface",
+    "DarkTheme":"Dark theme (requires restart)",
     "ShowSeriesInformation":"Show series information",
     "SaveOnExit":"Save on exit",
     "SeriesDatabase":"Series database",

@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QGraphicsBlurEffect>
+#include <QStyleFactory>
 #include "aboutdialog.h"
 #include "message.h"
 
@@ -30,6 +31,7 @@ private:
 
     QMenu *helpMenu;
     QMenu *viewMenu;
+    QMenu *appearanceMenu;
     QAction *aboutAction;
     QAction *settingsAction;
     QAction *fullScreenAction;
@@ -57,6 +59,7 @@ private:
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
     void updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons);
+    void changeToDarkTheme();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -77,6 +80,7 @@ private slots:
     void onSeriesLanguageChanged(int index);
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
+
     void showAboutDialog();
     void showSettingsWindow();
     void toggleFullScreen();
