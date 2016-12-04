@@ -447,8 +447,12 @@ void Controller::notify(Message &msg)
     case Message::view_changeSeriesText_controller:
     {
         QString series = *msg.data[0].qsPointer;
-        int season = seriesData.getSelectedSeason();
-        changeSeries(series, season);
+        QString oldSeries = seriesParser.getSeriesInput();
+        // Only write on change
+        if (series != oldSeries)
+        {
+            changeSeries(series, 1);
+        }
         break;
     }
     case Message::view_changeSeason_controller:
