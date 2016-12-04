@@ -88,7 +88,7 @@ void SettingsWindow::notify(Message &msg)
         ui->savePathCheckBox->setChecked(savePath);
         break;
     }
-    case Message::controller_useDarkTheme_view:
+    case Message::controller_useDarkTheme_settings:
     {
         bool useDarkTheme = msg.data[0].b;
         ui->darkThemeCheckBox->setChecked(useDarkTheme);

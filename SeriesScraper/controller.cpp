@@ -86,6 +86,7 @@ void Controller::initializeSettings()
     QString selectedSeriesLanguage = settings.getSeriesLanguage();
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
+    bool useDarkTheme = settings.getDarkTheme();
 
     changeGuiLanguage(selectedGuiLanguage);
     changeSeriesParser(selectedSeriesParser);
@@ -93,6 +94,11 @@ void Controller::initializeSettings()
     changeSeriesLanguage(selectedSeriesLanguage);
     changeSaveSeries(saveSeries);
     changeSavePath(savePath);
+
+    Message msgUseDarkTheme;
+    msgUseDarkTheme.type = Message::controller_useDarkTheme_settings;
+    msgUseDarkTheme.data[0].b = useDarkTheme;
+    emit(sendMessage(msgUseDarkTheme));
 }
 
 void Controller::updateNewFileNames()
@@ -150,10 +156,12 @@ void Controller::initialize()
 
     // Dont change theme afterwards!
     bool useDarkTheme = settings.getDarkTheme();
-    Message msgUseDarkTheme;
-    msgUseDarkTheme.type = Message::controller_useDarkTheme_view;
-    msgUseDarkTheme.data[0].b = useDarkTheme;
-    emit(sendMessage(msgUseDarkTheme));
+    if (useDarkTheme)
+    {
+        Message msgUseDarkTheme;
+        msgUseDarkTheme.type = Message::controller_useDarkTheme_view;
+        emit(sendMessage(msgUseDarkTheme));
+    }
 
     initializeGUILanguages();
     initializeNameSchemes();

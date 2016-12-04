@@ -673,14 +673,10 @@ void MainWindow::notify(Message &msg)
     }
     case Message::controller_useDarkTheme_view:
     {
-        bool useDarkTheme = msg.data[0].b;
-        if (useDarkTheme)
-        {
-            changeToDarkTheme();
-            // Workaround for white table headers
-            setRow(0, "", "");
-            clearTable();
-        }
+        changeToDarkTheme();
+        // Workaround for white table headers
+        setRow(0, "", "");
+        clearTable();
         break;
     }
     default:
