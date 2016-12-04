@@ -57,7 +57,6 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 
         if (match.hasMatch())
         {
-
             QString capturedEpisodeString = match.captured();
             matchEpisodeNumber = numberFromEpisodeNumberExpression.match
                     (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
