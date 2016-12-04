@@ -31,11 +31,8 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 
     std::vector<int> position = getEpisodePositions(filesQs);
 
-    qDebug() << position;
     if (int(position.size()) < files.size())  // Name scheme not found, let QT sort
         return files;
-
-
 
     for (int i = 0; i < files.size(); i++)
     {
@@ -46,6 +43,30 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
         qDebug() << sortedFiles[position.at(i)].fileName();
     }
     return sortedFiles;
+}
+
+std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
+{
+    std::vector<int> episodePosition;
+    QRegularExpressionMatch match;
+    QRegularExpressionMatch matchEpisodeNumber;
+
+    for (int i = 0; i < episodeList.size(); i++)
+    {
+        match = episodeNumberExpression.match
+                (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
+
+        if (match.hasMatch())
+        {
+            //qDebug() << "match " << i << match.captured();
+            QString capturedEpisodeString = match.captured();
+            matchEpisodeNumber = numberFromEpisodeNumberExpression.match
+                    (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
+            int actualPosition = matchEpisodeNumber.captured().toInt() - 1;
+            episodePosition.push_back(actualPosition);
+        }
+    }
+    return episodePosition;
 }
 
 void DirectoryParser::setNameFilterToAll()
@@ -103,7 +124,7 @@ QStringList DirectoryParser::getFilesWithoutExtension()
     QStringList fileList = getFiles();
     QStringList fileWithoutExtension;
 
-    for (int i = 0; i < getFiles().size(); i++)
+    for (int i = 0; i < fileList.size(); i++)
     {
         fileInfo.setFile(fileList.at(i));
         fileWithoutExtension << fileInfo.completeBaseName();
@@ -142,28 +163,3 @@ QStringList DirectoryParser::getFilesSuffix()
 
     return suffixes;
 }
-
-std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
-{
-    std::vector<int> episodePosition;
-    QRegularExpressionMatch match;
-    QRegularExpressionMatch matchEpisodeNumber;
-
-    for (int i = 0; i < episodeList.size(); i++)
-    {
-        match = episodeNumberExpression.match
-                (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
-
-        if (match.hasMatch())
-        {
-            //qDebug() << "match " << i << match.captured();
-            QString capturedEpisodeString = match.captured();
-            matchEpisodeNumber = numberFromEpisodeNumberExpression.match
-                    (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
-            int actualPosition = matchEpisodeNumber.captured().toInt() - 1;
-            episodePosition.push_back(actualPosition);
-        }
-    }
-    return episodePosition;
-}
-

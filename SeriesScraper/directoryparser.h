@@ -17,6 +17,7 @@ private:
 
     QStringList sortFiles(QStringList files);
     QFileInfoList sortFiles(QFileInfoList files);
+     std::vector<int> getEpisodePositions(QStringList episodeList);
     void setNameFilterToAll();
 
 public:
@@ -27,7 +28,6 @@ public:
     QStringList getFilesWithoutExtension();
     QStringList getFiles(QString extension);
     QStringList getFilesSuffix();
-    std::vector<int> getEpisodePositions(QStringList episodeList);
 };
 
 #endif // DIRECTORYPARSER_H

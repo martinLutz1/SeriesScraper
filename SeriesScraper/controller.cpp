@@ -365,6 +365,7 @@ bool Controller::setDirectory(QString path)
         newSuffixes = directoryParser.getFilesSuffix();
         newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutExtension();
     }
+
     seriesData.setWorkingDirectory(newDirectory);
     seriesData.setOldFileNames(newOldFileNames);
     seriesData.setOldFileNamesWithoutExtionsions(newOldFileNamesWithoutSuffixes);
