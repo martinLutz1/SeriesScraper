@@ -183,7 +183,6 @@ bool Controller::loadSeries(QString series, int season)
         if (seriesFound)
         {
             QString seriesLanguage = seriesData.getSelectedLanguage();
-            qDebug() << seriesLanguage;
             newSelectedSeason = season;
             newSeriesName = seriesParser.getSeriesName();
             newAmountSeasons = seriesParser.getAmountSeasons();
@@ -208,7 +207,6 @@ bool Controller::loadSeries(QString series, int season)
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
-    qDebug() << newEpisodeList;
     updateNewFileNames();
     updateView();
     return seriesFound;

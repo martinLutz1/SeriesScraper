@@ -40,7 +40,6 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
             sortedFiles.push_back(QFileInfo(""));
         if (position.at(i) >= 0)
             sortedFiles[position.at(i)] = files.at(i);
-        qDebug() << sortedFiles[position.at(i)].fileName();
     }
     return sortedFiles;
 }
@@ -58,7 +57,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 
         if (match.hasMatch())
         {
-            //qDebug() << "match " << i << match.captured();
+
             QString capturedEpisodeString = match.captured();
             matchEpisodeNumber = numberFromEpisodeNumberExpression.match
                     (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -82,7 +81,7 @@ DirectoryParser::DirectoryParser()
     directory.setPath("");
     setNameFilterToAll();
 
-    episodeNumberExpression.setPattern("\\w+[0-9]+(.*)\\w+[0-9]+");
+    episodeNumberExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
     numberFromEpisodeNumberExpression.setPattern("[0-9]*$");
 }
 
@@ -143,7 +142,6 @@ QStringList DirectoryParser::getFiles(QString extension)
 QStringList DirectoryParser::getFilesSuffix()
 {
     QStringList suffixes;
-
     if (directory.exists())
     {
         directory.setNameFilters(filter);
