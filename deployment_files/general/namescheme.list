@@ -1,6 +1,9 @@
-$series% - S%$season%E%$episode(2)% - %$episodeName
-[%$series%] - S%$season%E%$episode(2)% - %$episodeName
-[%$series%] S%$season%E%$episode(2)% [%$episodeName%]
-$series% s%$season%e%$episode(2)% %$episodeName%$replace( =.)
+$series% - S%$season(2)%E%$episode(2)% - %$episodeName
+$series% - s%$season%e%$episode% - %$episodeName
+$series% S%$season(2)%E%$episode(2)% %$episodeName
+[%$series%] - S%$season(2)%E%$episode(2)% - %$episodeName
+[%$series%] S%$season(2)%E%$episode(2)% %$episodeName
+$series% s%$season(2)% e%$episode(2)% %$episodeName%$replace( =.)
+$series%.%$season%$episode(2)
+$series% S%$season% Episode %$episode
 $series% - s%$season%e%$episode(2)% - %$episodeName%$replace(ö=oe)%$replace(Ö=Oe)%$replace(ü=ue)%$replace(Ü=Ue)%$replace(ä=ae)%$replace(Ä=Ae)%$replace(ß=ss)
-$series%.%$season%$episode(2)%

@@ -14,6 +14,7 @@ public:
 private:
     QRegExp seriesNameExpression;
     QRegExp seasonNumberExpression;
+    QRegExp seasonNumberAdvancedExpression;
     QRegExp episodeNumberAdvancedExpression;
     QRegExp episodeNumberExpression;
     QRegExp episodeNameExpression;
