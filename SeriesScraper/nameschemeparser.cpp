@@ -35,7 +35,7 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
         QString currentString = parsedNameSchemeList.at(i);
         int variableType = getVariableType(currentString);
 
-        if (variableType == episodeNumber)
+        if (variableType == episodeNumber || variableType == seasonNumber)
         {
             numberExpression.indexIn(currentString, 0);
             // Simple format
@@ -45,20 +45,12 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
             else
             {
                 int numberLenght = numberExpression.cap(0).toInt();
-                QString number = QString("%1").arg(episode.toInt(), numberLenght, 10, QChar('0'));
-                fileName += number;
-            }
-        } else if (variableType == seasonNumber)
-        {
-            numberExpression.indexIn(currentString, 0);
-            // Simple format
-            if (numberExpression.cap(0).isEmpty())
-                fileName += variables[variableType];
-            // Advanced format (leading zeros)
-            else
-            {
-                int numberLenght = numberExpression.cap(0).toInt();
-                QString number = QString("%1").arg(season.toInt(), numberLenght, 10, QChar('0'));
+                QString number;
+                if (variableType == episodeNumber)
+                    number = QString("%1").arg(episode.toInt(), numberLenght, 10, QChar('0'));
+                else if(variableType == seasonNumber)
+                    number = QString("%1").arg(season.toInt(), numberLenght, 10, QChar('0'));
+
                 fileName += number;
             }
         } else if (variableType == replace) // Doesnt operate on RegExp, change me if you change replace operation
@@ -95,7 +87,7 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
 
 QString NameSchemeParser::getNameSchemeRepresentation()
 {
-    QStringList variables = {"<series>", "<s", "<ep", "<episode name>", "$replace("};
+    QStringList variables = {"<series>", "<season", "<episode", "<episode name>", "$replace("};
     QString nameSchemeRepresentation;
     QStringList replaceOperationList;
 
