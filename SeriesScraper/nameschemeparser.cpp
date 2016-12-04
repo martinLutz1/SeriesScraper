@@ -95,7 +95,7 @@ QString NameSchemeParser::getNameSchemeRepresentation()
     {
         QString currentString = parsedNameSchemeList.at(i);
         int variableType = getVariableType(currentString);
-        if (variableType == episodeNumber)
+        if (variableType == episodeNumber || variableType == seasonNumber)
         {
             numberExpression.indexIn(currentString, 0);
             nameSchemeRepresentation += variables.at(variableType);
@@ -104,43 +104,27 @@ QString NameSchemeParser::getNameSchemeRepresentation()
             if (numberExpression.cap(0).isEmpty())
                 nameSchemeRepresentation.append(">");
             // Advanced format (leading zeros)
-            else {
+            else
+            {
                 int numberLenght = numberExpression.cap(0).toInt();
                 nameSchemeRepresentation += "(" + QString::number(numberLenght) + ")>";
             }
-        } else if (variableType == seasonNumber) {
-            numberExpression.indexIn(currentString, 0);
-            nameSchemeRepresentation += variables.at(variableType);
-
-            // Simple format
-            if (numberExpression.cap(0).isEmpty())
-                nameSchemeRepresentation.append(">");
-            // Advanced format (leading zeros)
-            else {
-                int numberLenght = numberExpression.cap(0).toInt();
-                nameSchemeRepresentation += "(" + QString::number(numberLenght) + ")>";
-            }
-        }
-        else if (variableType == replace) {
+        } else if (variableType == replace)
+        {
             QString replaceOperationWithoutDollar = currentString.remove(0, 1);
             replaceOperationList << replaceOperationWithoutDollar;
-        }
-        else if (variableType != none) {
+        } else if (variableType != none)
             nameSchemeRepresentation += variables.at(variableType);
-        }
-        else {
+        else
             nameSchemeRepresentation += currentString;
-        }
     }
 
     int replaceCount = replaceOperationList.size();
     // Add counted replace operations to representation
-    if (replaceCount == 1) { // Show replace string if only one replace operation
+    if (replaceCount == 1)  // Show replace string if only one replace operation
         nameSchemeRepresentation += "$" + replaceOperationList.at(0) + "$";
-    }
-    else if (replaceCount > 1) {
+    else if (replaceCount > 1)
         nameSchemeRepresentation += variables.at(replace) + QString::number(replaceCount) + ")$";
-    }
 
     return nameSchemeRepresentation;
 }
