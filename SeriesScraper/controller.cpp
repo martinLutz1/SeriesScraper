@@ -19,7 +19,7 @@ void Controller::initializeNameSchemes()
         }
     } else // Add default entry if name scheme list not found or empty
     {
-        nameSchemeHandler.addNameScheme("%$series% - S%$season%E%$episode(2)% - %$episodeName%");
+        nameSchemeHandler.addNameScheme("%$series% - S%$season(2)%E%$episode(2)% - %$episodeName%");
         nameSchemeRepresentationList << nameSchemeHandler.getNameSchemeRepresentation();
         // Error message
         QString nameSchemeFileNotFound = languageControl.getTranslation(LanguageData::nameSchemeFileNotFound);
@@ -485,6 +485,8 @@ void Controller::notify(Message &msg)
     }
     case Message::view_rename_controller:
     {
+        seriesData.getSelectedSeason();
+        directoryParser.
         renameFiles();
         break;
     }

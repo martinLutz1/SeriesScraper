@@ -15,9 +15,11 @@ private:
     QRegularExpression numberFromEpisodeNumberExpression;
     QStringList filter;
 
+    int foundSeason;
+
     QStringList sortFiles(QStringList files);
     QFileInfoList sortFiles(QFileInfoList files);
-     std::vector<int> getEpisodePositions(QStringList episodeList);
+    std::vector<int> getEpisodePositions(QStringList episodeList);
     void setNameFilterToAll();
 
 public:

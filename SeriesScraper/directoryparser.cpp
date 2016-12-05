@@ -8,8 +8,11 @@ QStringList DirectoryParser::sortFiles(QStringList files)
     QStringList sortedFiles;
     std::vector<int> position = getEpisodePositions(files);
 
-    if (int(position.size()) != files.size())  // Name scheme not found, let QT sort
+    if (int(position.size()) != files.size()) // Name scheme not found, let QT sort
+    {
+        foundSeason = 0;
         return files;
+    }
 
     for (int i = 0; i < files.size(); i++)
     {
@@ -31,8 +34,11 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 
     std::vector<int> position = getEpisodePositions(filesQs);
 
-    if (int(position.size()) < files.size())  // Name scheme not found, let QT sort
+    if (int(position.size()) < files.size()) // Name scheme not found, let QT sort
+    {
+        foundSeason = 0;
         return files;
+    }
 
     for (int i = 0; i < files.size(); i++)
     {
@@ -58,6 +64,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
         if (match.hasMatch())
         {
             QString capturedEpisodeString = match.captured();
+            qDebug() << capturedEpisodeString;
             matchEpisodeNumber = numberFromEpisodeNumberExpression.match
                     (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
             int actualPosition = matchEpisodeNumber.captured().toInt() - 1;
@@ -73,7 +80,7 @@ void DirectoryParser::setNameFilterToAll()
     filter << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
 }
 
-DirectoryParser::DirectoryParser()
+DirectoryParser::DirectoryParser() : foundSeason(0)
 {
     directory.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     directory.setSorting(QDir::NoSort);
