@@ -485,8 +485,21 @@ void Controller::notify(Message &msg)
     }
     case Message::view_rename_controller:
     {
-        seriesData.getSelectedSeason();
-        directoryParser.
+        int foundSeason = directoryParser.getFoundSeason();
+        int selectedSeason =  seriesData.getSelectedSeason();
+
+        if (foundSeason == 0 || foundSeason == selectedSeason)
+            renameFiles();
+        else
+        {
+            Message msgSeasonMismatch;
+            msgSeasonMismatch.type = Message::controller_seasonMismatch_view;
+            emit(sendMessage(msgSeasonMismatch));
+        }
+        break;
+    }
+    case Message::view_forceRename_controller:
+    {
         renameFiles();
         break;
     }

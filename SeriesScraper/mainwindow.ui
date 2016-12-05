@@ -326,7 +326,7 @@
      <x>0</x>
      <y>0</y>
      <width>740</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -335,6 +335,16 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>episodeNameTable</tabstop>
+  <tabstop>seriesLineEdit</tabstop>
+  <tabstop>seasonComboBox</tabstop>
+  <tabstop>seriesLanguageComboBox</tabstop>
+  <tabstop>nameSchemeComboBox</tabstop>
+  <tabstop>selectionButton</tabstop>
+  <tabstop>pathLineEdit</tabstop>
+  <tabstop>renameButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

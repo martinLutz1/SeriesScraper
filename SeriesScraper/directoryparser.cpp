@@ -53,22 +53,29 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 {
     std::vector<int> episodePosition;
-    QRegularExpressionMatch match;
-    QRegularExpressionMatch matchEpisodeNumber;
+    QRegularExpressionMatch seasonAndEpisodeMatch;
+    QRegularExpressionMatch episodeNumberMatch;
+    QRegularExpressionMatch seasonNumberMatch;
 
     for (int i = 0; i < episodeList.size(); i++)
     {
-        match = episodeNumberExpression.match
+        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
                 (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
 
-        if (match.hasMatch())
+        if (seasonAndEpisodeMatch.hasMatch())
         {
-            QString capturedEpisodeString = match.captured();
-            qDebug() << capturedEpisodeString;
-            matchEpisodeNumber = numberFromEpisodeNumberExpression.match
-                    (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
-            int actualPosition = matchEpisodeNumber.captured().toInt() - 1;
-            episodePosition.push_back(actualPosition);
+            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
+
+            seasonNumberMatch = seasonNumberExpression.match(seasonAndEpisodeText, 0);
+            QString seasonNumberText = seasonNumberMatch.captured();
+            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
+            foundSeason = seasonNumberMatch.captured().toInt();
+
+            episodeNumberMatch = episodeNumberExpression.match(seasonAndEpisodeText, 0);
+            QString episodeNumberText = episodeNumberMatch.captured();
+            episodeNumberMatch = numberExpression.match(episodeNumberText, 0);
+            int foundEpisodePosition = episodeNumberMatch.captured().toInt() - 1;
+            episodePosition.push_back(foundEpisodePosition);
         }
     }
     return episodePosition;
@@ -87,8 +94,10 @@ DirectoryParser::DirectoryParser() : foundSeason(0)
     directory.setPath("");
     setNameFilterToAll();
 
-    episodeNumberExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
-    numberFromEpisodeNumberExpression.setPattern("[0-9]*$");
+    seasonAndEpisodeExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
+    seasonNumberExpression.setPattern("(s)[0-9]*");
+    episodeNumberExpression.setPattern("(e)[0-9]*");
+    numberExpression.setPattern("[0-9]*$");
 }
 
 bool DirectoryParser::initializeDirectory(QString path)
@@ -166,4 +175,9 @@ QStringList DirectoryParser::getFilesSuffix()
         suffixes << "";
 
     return suffixes;
+}
+
+int DirectoryParser::getFoundSeason()
+{
+    return foundSeason;
 }

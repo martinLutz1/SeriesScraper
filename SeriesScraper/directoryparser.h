@@ -11,8 +11,10 @@ class DirectoryParser
 private:
     QDir directory;
     QString directoryPathInput;
+    QRegularExpression seasonAndEpisodeExpression;
     QRegularExpression episodeNumberExpression;
-    QRegularExpression numberFromEpisodeNumberExpression;
+    QRegularExpression seasonNumberExpression;
+    QRegularExpression numberExpression;
     QStringList filter;
 
     int foundSeason;
@@ -30,6 +32,7 @@ public:
     QStringList getFilesWithoutExtension();
     QStringList getFiles(QString extension);
     QStringList getFilesSuffix();
+    int getFoundSeason();
 };
 
 #endif // DIRECTORYPARSER_H

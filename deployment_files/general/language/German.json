@@ -9,6 +9,7 @@
     "Season":"Staffel",
     "NameScheme":"Namensschema",
     "Rename":"Umbenennen",
+    "ForceRename":"Die ausgewählte Staffel scheint sich von der zu unterscheiden, die im angegebenen Ordner gefunden wurde. Wollen Sie wirklich fortfahren?",
     "Settings":"Einstellungen",
     "FullScreen":"Vollbild",
     "Display":"Anzeige",

@@ -9,6 +9,7 @@
     "Season":"Season",
     "NameScheme":"Name scheme",
     "Rename":"Rename",
+    "ForceRename":"The selected season seams to differ from the season found in your series directory. Do you really want to continue?",
     "Settings":"Settings",
     "FullScreen":"Fullscreen",
     "Language":"Language",

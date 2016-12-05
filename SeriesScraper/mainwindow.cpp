@@ -36,16 +36,12 @@ MainWindow::MainWindow(QWidget *parent) :
     int lowerWidth = pathBoxWidth + buttonWidth + 3 * UNIVERSAL_SPACER;
     this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
 
-    // Table
     setUpTable();
-
-    // Menubar
     setUpMenuBar();
+    setUpRenameConfirmationMessageBox();
 
-    // Button
+    // initialize view state
     ui->renameButton->setEnabled(false);
-
-    // Season combobox
     ui->seasonComboBox->setEnabled(false);
 
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
@@ -72,6 +68,7 @@ MainWindow::~MainWindow()
     delete seriesStatusLabel;
     delete seriesProgressBar;
     delete blur;
+    delete renameConfirmationMessageBox;
     delete helpMenu;
     delete aboutAction;
     delete settingsAction;
@@ -138,6 +135,16 @@ void MainWindow::setUpMenuBar()
     QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
     QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));
+}
+
+void MainWindow::setUpRenameConfirmationMessageBox()
+{
+    renameConfirmationMessageBox = new QMessageBox;
+    renameConfirmationMessageBox->setWindowTitle("Are you sure?");
+    renameConfirmationMessageBox->setText("The selected season seams to differ from the season found in your series directory. Do you really want to continue?");
+    renameConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
+    renameConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
+    renameConfirmationMessageBox->setDefaultButton(QMessageBox::No);
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -389,6 +396,11 @@ void MainWindow::changeLocalization(QStringList translationList)
     settingsAction->setText(translationList.at(LanguageData::settings));
     fullScreenAction->setText(translationList.at(LanguageData::fullscreen));
     directorySelectionText = translationList.at(LanguageData::directorySelection);
+    // Rename confirmation dialog
+    renameConfirmationMessageBox->setWindowTitle(translationList.at(LanguageData::areYouSure));
+    renameConfirmationMessageBox->setText(translationList.at(LanguageData::forceRename));
+    renameConfirmationMessageBox->setButtonText(0, translationList.at(LanguageData::yes));
+    renameConfirmationMessageBox->setButtonText(1, translationList.at(LanguageData::no));
 }
 
 void MainWindow::openDirectory()
@@ -616,6 +628,19 @@ void MainWindow::notify(Message &msg)
         seriesStatusLabel->setHidden(false);
         progressIncrement = 1;
         disableSeriesProgressbarTimer->start(2000);
+        break;
+    }
+    case Message::controller_seasonMismatch_view:
+    {
+        renameConfirmationMessageBox->show();
+        renameConfirmationMessageBox->setFocus();
+        if (renameConfirmationMessageBox->exec() == 0) // 0 = Yes button
+        {
+            Message msgForceRename;
+            msgForceRename.type = Message::view_forceRename_controller;
+            emit(sendMessage(msgForceRename));
+        }
+        ui->renameButton->setDown(false);
         break;
     }
     case Message::controller_setStatus_view:
