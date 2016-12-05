@@ -57,10 +57,11 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     QRegularExpressionMatch episodeNumberMatch;
     QRegularExpressionMatch seasonNumberMatch;
 
-    for (int i = 0; i < episodeList.size(); i++)
+    // Set season
+    if (episodeList.size() > 0)
     {
         seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
-                (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
+                (episodeList.at(0).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
 
         if (seasonAndEpisodeMatch.hasMatch())
         {
@@ -70,6 +71,18 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
             QString seasonNumberText = seasonNumberMatch.captured();
             seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
             foundSeason = seasonNumberMatch.captured().toInt();
+        }
+    }
+
+    // Get episode positions
+    for (int i = 0; i < episodeList.size(); i++)
+    {
+        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
+                (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
+
+        if (seasonAndEpisodeMatch.hasMatch())
+        {
+            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
 
             episodeNumberMatch = episodeNumberExpression.match(seasonAndEpisodeText, 0);
             QString episodeNumberText = episodeNumberMatch.captured();
