@@ -590,6 +590,8 @@ void MainWindow::notify(Message &msg)
         seriesProgressBar->setHidden(false);
         progressBarTimer->start(5);
 
+        ui->selectionButton->setEnabled(false);
+
         break;
     }
     case Message::controller_addNameSchemes_view:
@@ -621,6 +623,7 @@ void MainWindow::notify(Message &msg)
     {
         progressIncrement = 10;
         disableSeriesProgressbarTimer->start(200);
+        ui->selectionButton->setEnabled(true);
         break;
     }
     case Message::controller_failureSeriesLoading_view:
@@ -628,6 +631,7 @@ void MainWindow::notify(Message &msg)
         seriesStatusLabel->setHidden(false);
         progressIncrement = 1;
         disableSeriesProgressbarTimer->start(2000);
+        ui->selectionButton->setEnabled(true);
         break;
     }
     case Message::controller_seasonMismatch_view:

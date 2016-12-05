@@ -457,7 +457,6 @@ void Controller::updateRenameButton()
     msgEnableButton.type = Message::controller_enableButton_view;
     msgEnableButton.data[0].b = enableButton;
     emit(sendMessage(msgEnableButton));
-    qDebug() << differentFileNames << seriesData.getOldFileNames().size() << seriesData.getNewFileNames().size();
 }
 
 void Controller::notify(Message &msg)
