@@ -263,7 +263,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
 {
-    bool filesAvaiable = !oldFileNames.empty();
+    bool oldFileNamesAvaiable = !oldFileNames.empty();
+    bool newFileNamesAvaiable = !newFileNames.empty();
+
     setAmountSeasons(amountSeasons);
     clearTable();
 
@@ -277,12 +279,13 @@ void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, 
     for (int i = 0; i < tableSize; i++) {
         setRow(i, oldFileNames.at(i), newFileNames.at(i));
     }
-    if (filesAvaiable) {
+    if (oldFileNamesAvaiable && newFileNamesAvaiable) {
         for (int i = 0; i < tableSize; i++) {
-            // Disable where no file exists
-            if (oldFileNames.at(i).isEmpty()) {
+            // Disable where not both entries exists
+            if (oldFileNames.at(i).isEmpty())
                 ui->episodeNameTable->item(i,1)->setTextColor(QColor(150, 150, 150));
-            }
+            if (newFileNames.at(i).isEmpty())
+                ui->episodeNameTable->item(i,0)->setTextColor(QColor(150, 150, 150));
         }
     }
 }
