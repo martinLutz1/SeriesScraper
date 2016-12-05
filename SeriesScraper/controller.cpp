@@ -442,7 +442,7 @@ void Controller::updateRenameButton()
     int minimumSize = std::min(oldNames.size(), newNames.size());
     for (int i = 0; i < minimumSize; i ++)
     {
-        if (oldNames.at(i) != newNames.at(i))
+        if ((oldNames.at(i) != newNames.at(i)) && !oldNames.at(i).isEmpty() && !newNames.at(i).isEmpty())
         {
             differentFileNames = true;
             break;
