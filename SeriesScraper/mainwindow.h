@@ -10,6 +10,8 @@
 #include <QGraphicsBlurEffect>
 #include <QStyleFactory>
 #include <QMessageBox>
+#include "customshadoweffect.h"
+#include "keypresseater.h"
 #include "aboutdialog.h"
 #include "message.h"
 
@@ -28,7 +30,11 @@ private:
     QTimer *disableSeriesProgressbarTimer;
     QLabel *seriesStatusLabel;
     QProgressBar *seriesProgressBar;
+    QPoint *tableItemPoint;
     QGraphicsBlurEffect *blur;
+    CustomShadowEffect *shadow;
+    KeyPressEater *keyPressEaterEscape;
+    KeyPressEater *keyPressEaterEnter;
     QMessageBox *renameConfirmationMessageBox;
 
     QMenu *helpMenu;
@@ -55,6 +61,7 @@ private:
     void setUpTable();
     void setUpMenuBar();
     void setUpRenameConfirmationMessageBox();
+    void setUpEpisodeEdit();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
@@ -83,6 +90,8 @@ private slots:
     void onSeriesLanguageChanged(int index);
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
+    void onChangeEpisodeText();
+    void onTableEnter();
 
     void showAboutDialog();
     void showSettingsWindow();

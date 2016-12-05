@@ -34,7 +34,9 @@ SOURCES += main.cpp \
     settings.cpp \
     jsonloader.cpp \
     seriesparser.cpp \
-    seriesfilesaver.cpp
+    seriesfilesaver.cpp \
+    customshadoweffect.cpp \
+    keypresseater.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -57,7 +59,9 @@ HEADERS  += mainwindow.h \
     settings.h \
     jsonloader.h \
     seriesparser.h \
-    seriesfilesaver.h
+    seriesfilesaver.h \
+    customshadoweffect.h \
+    keypresseater.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

@@ -24,7 +24,15 @@ MainWindow::MainWindow(QWidget *parent) :
     disableSeriesProgressbarTimer = new QTimer(this);
     seriesProgressBar = new QProgressBar(this);
     seriesStatusLabel = new QLabel(this);
+
     blur = new QGraphicsBlurEffect;
+    shadow = new CustomShadowEffect;
+    tableItemPoint = new QPoint;
+    keyPressEaterEscape = new KeyPressEater;
+    keyPressEaterEnter = new KeyPressEater;
+    keyPressEaterEscape->setKey(16777216);
+    keyPressEaterEnter->setKey(16777220);
+
 
     // Define minimum of the window size to display everything correctly
     int pathBoxWidth = ui->pathGroupBox->width();
@@ -39,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpTable();
     setUpMenuBar();
     setUpRenameConfirmationMessageBox();
+    setUpEpisodeEdit();
 
     // initialize view state
     ui->renameButton->setEnabled(false);
@@ -47,7 +56,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
     QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
-    QObject::connect(ui->episodeNameTable, SIGNAL(cellActivated(int,int)), this, SLOT(onCellClicked(int,int)));
+    QObject::connect(ui->episodeNameTable, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(onCellClicked(int,int)));
+    QObject::connect(ui->episodeLineEdit, SIGNAL(editingFinished()), ui->episodeLineEdit, SLOT(hide()));
+    QObject::connect(keyPressEaterEscape, SIGNAL(keyPressed()), ui->episodeLineEdit, SLOT(hide()));
+    QObject::connect(keyPressEaterEnter, SIGNAL(keyPressed()), this, SLOT(onTableEnter()));
+    QObject::connect(ui->episodeLineEdit, SIGNAL(returnPressed()), this, SLOT(onChangeEpisodeText()));
     QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
     QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChanged()));
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
@@ -67,12 +80,16 @@ MainWindow::~MainWindow()
     delete disableSeriesProgressbarTimer;
     delete seriesStatusLabel;
     delete seriesProgressBar;
+    delete tableItemPoint;
     delete blur;
+    delete shadow;
     delete renameConfirmationMessageBox;
     delete helpMenu;
     delete aboutAction;
     delete settingsAction;
     delete fullScreenAction;
+    delete keyPressEaterEscape;
+    delete keyPressEaterEnter;
 }
 
 void MainWindow::setUpTable()
@@ -106,6 +123,7 @@ void MainWindow::setUpTable()
                                      "font-weight: bold; "
                                      "font-size: 16px;");
     seriesStatusLabel->setHidden(true);
+    ui->episodeNameTable->installEventFilter(keyPressEaterEnter);
 }
 
 void MainWindow::setUpMenuBar()
@@ -146,6 +164,16 @@ void MainWindow::setUpRenameConfirmationMessageBox()
     renameConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
     renameConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
     renameConfirmationMessageBox->setDefaultButton(QMessageBox::No);
+}
+
+void MainWindow::setUpEpisodeEdit()
+{
+    shadow->setBlurRadius(40.0);
+    shadow->setDistance(6.0);
+    shadow->setColor(QColor(0, 0, 0, 80));
+    ui->episodeLineEdit->setAutoFillBackground(true);
+    ui->episodeLineEdit->setGraphicsEffect(shadow);
+    ui->episodeLineEdit->installEventFilter(keyPressEaterEscape);
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -253,9 +281,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int episodeTableY = ui->episodeNameTable->y();
 
     // Move and resize episode edit
-    //QTableWidgetItem* tableItem = ui->episodeNameTable->item(row, coloumn);
-    //QRect position = ui->episodeNameTable->visualItemRect(tableItem;);
-    //ui->episodeLineEdit->move(position.x() + 50, position.y() + 50);
+    QRect activatedTableItemRect = ui->episodeNameTable->visualItemRect(ui->episodeNameTable->item(tableItemPoint->x(), tableItemPoint->y()));
+    ui->episodeLineEdit->move(activatedTableItemRect.x() + 100, activatedTableItemRect.y() + 40);
+    ui->episodeLineEdit->resize(activatedTableItemRect.width() - 150, activatedTableItemRect.height());
 
     int seriesProgressbarX = episodeTableX + episodeTableWidth / 2 - seriesProgressBar->width() / 2;
     int seriesProgressbarY = episodeTableY + episodeTableHeight / 2 - seriesProgressBar->height() / 2;
@@ -521,6 +549,25 @@ void MainWindow::onNameSchemeChanged(int index)
     emit(sendMessage(msgNameSchemeChanged));
 }
 
+void MainWindow::onChangeEpisodeText()
+{
+    int episode = tableItemPoint->x();
+    QString newEpisodeText = ui->episodeLineEdit->text();
+
+    Message msgChangeEpisodeText;
+    msgChangeEpisodeText.type = Message::view_changeEpisodeName_controller;
+    msgChangeEpisodeText.data[0].i = episode;
+    msgChangeEpisodeText.data[1].qsPointer = &newEpisodeText;
+    emit(sendMessage(msgChangeEpisodeText));
+}
+
+void MainWindow::onTableEnter()
+{
+    int row = ui->episodeNameTable->selectedItems().at(0)->row();
+    int coloumn = ui->episodeNameTable->selectedItems().at(0)->column();
+    onCellClicked(row, coloumn);
+}
+
 void MainWindow::showAboutDialog()
 {
     Message msgShowAbout;
@@ -555,16 +602,22 @@ void MainWindow::onSeriesLanguageChanged(int index)
 
 void MainWindow::onCellClicked(int row, int coloumn)
 {
-    if (coloumn == 1) { // Only Episode names
+    if (coloumn == 1) { // Only at new names
+
+        tableItemPoint->setX(row);
+        tableItemPoint->setY(coloumn);
+        QRect activatedTableItemRect = ui->episodeNameTable->visualItemRect(ui->episodeNameTable->item(row, coloumn));
+
+        ui->episodeLineEdit->move(activatedTableItemRect.x() + 100, activatedTableItemRect.y() + 40);
+        ui->episodeLineEdit->resize(activatedTableItemRect.width() - 150, activatedTableItemRect.height());
+
+        Message msgGetEpisodeName;
+        msgGetEpisodeName.type = Message::view_getEpisodeName_controller;
+        msgGetEpisodeName.data[0].i = row;
+        emit(sendMessage(msgGetEpisodeName));
+
         ui->episodeLineEdit->show();
-        //qDebug() << position;
-        //QWi
-        QTableWidgetItem* tableItem = ui->episodeNameTable->item(row, coloumn);
-        QRect position = ui->episodeNameTable->visualItemRect(tableItem);
-        ui->episodeLineEdit->move(position.x() + 50, position.y() + 50);
-        ui->episodeLineEdit->resize(position.width() - 200, position.height());
-
-
+        ui->episodeLineEdit->setFocus();
     }
 }
 
@@ -663,6 +716,12 @@ void MainWindow::notify(Message &msg)
         ui->renameButton->setDown(false);
         break;
     }
+    case Message::controller_returnEpisodeName_view:
+    {
+        QString episodeText = *msg.data[0].qsPointer;
+        ui->episodeLineEdit->setText(episodeText);
+        break;
+    }
     case Message::controller_setStatus_view:
     {
         QString status = *msg.data[0].qsPointer;
@@ -748,6 +807,7 @@ bool MainWindow::setRow(int row, QString oldFileName, QString newFileName)
         QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
         oldFile->setFlags(oldFile->flags() & ~Qt::ItemIsEditable);
         newFile->setFlags(newFile->flags() & ~Qt::ItemIsEditable);
+        //QObject::connect(keyPressEaterEscape, SIGNAL(keyPressed()), ui->episodeNameTable->item(row, 1), SLOT(hide()));
 
         ui->episodeNameTable->setRowCount(tableRows);
         ui->episodeNameTable->setItem(row, 0, oldFile);

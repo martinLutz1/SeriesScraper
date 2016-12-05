@@ -505,6 +505,30 @@ void Controller::notify(Message &msg)
         updateView();
         break;
     }
+    case Message::view_changeEpisodeName_controller:
+    {
+        int episode = msg.data[0].i;
+        QString newEpisodeName = *msg.data[1].qsPointer;
+        QString oldEpisodeName = seriesData.getEpisode(episode);
+        if (oldEpisodeName != newEpisodeName) // Only write on change
+        {
+            seriesData.setEpisode(episode, newEpisodeName);
+            updateNewFileNames();
+            updateView();
+        }
+        break;
+    }
+    case Message::view_getEpisodeName_controller:
+    {
+        int episode = msg.data[0].i;
+        QString episodeName = seriesData.getEpisode(episode);
+
+        Message msgReturnEpisodeName;
+        msgReturnEpisodeName.type = Message::controller_returnEpisodeName_view;
+        msgReturnEpisodeName.data[0].qsPointer = &episodeName;
+        emit(sendMessage(msgReturnEpisodeName));
+        break;
+    }
     case Message::view_rename_controller:
     {
         int foundSeason = directoryParser.getFoundSeason();
