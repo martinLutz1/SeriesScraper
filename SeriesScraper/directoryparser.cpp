@@ -132,23 +132,23 @@ QStringList DirectoryParser::getFiles()
     return filesToReturn;
 }
 
-QStringList DirectoryParser::getFilesWithoutExtension()
+QStringList DirectoryParser::getFilesWithoutSuffix()
 {
     QFileInfo fileInfo;
     QStringList fileList = getFiles();
-    QStringList fileWithoutExtension;
+    QStringList fileWithoutSuffix;
 
     for (int i = 0; i < fileList.size(); i++)
     {
         fileInfo.setFile(fileList.at(i));
-        fileWithoutExtension << fileInfo.completeBaseName();
+        fileWithoutSuffix << fileInfo.completeBaseName();
     }
-    return fileWithoutExtension;
+    return fileWithoutSuffix;
 }
 
-QStringList DirectoryParser::getFiles(QString extension)
+QStringList DirectoryParser::getFiles(QString suffix)
 {
-    filter = QStringList(extension);
+    filter = QStringList(suffix);
     QStringList fileList = getFiles();
     setNameFilterToAll();
     return fileList;

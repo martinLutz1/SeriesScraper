@@ -107,9 +107,17 @@ void Controller::updateNewFileNames()
     int season = seriesData.getSelectedSeason();
     int amountEpisodes = seriesData.getAmountEpisodes();
     QStringList episodeList = seriesData.getEpisodes();
+    QStringList suffixList = seriesData.getSuffixes();
 
-    QStringList newFileNames = nameSchemeHandler.getFileNameList(series, season, amountEpisodes, episodeList);
+    QStringList newFileNames;
+    QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, season, amountEpisodes, episodeList);
+
+    int minimumSize = std::min(newFileNamesWithoutSuffix.size(), suffixList.size());
+    for (int i = 0; i < minimumSize; i++)
+        newFileNames << (newFileNamesWithoutSuffix.at(i) + "." + suffixList.at(i));
+
     seriesData.setNewFileNames(newFileNames);
+    seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
 }
 
 void Controller::setStatusMessage(QString status)
@@ -295,7 +303,6 @@ void Controller::changeSeries(QString series, int season)
     msgSeriesSet.data[0].b = seriesSet;
     msgSeriesSet.data[1].b = isEmpty;
     emit(sendMessage(msgSeriesSet));
-    updateRenameButton();
 }
 
 void Controller::changeSaveSeries(bool saveSeries)
@@ -369,12 +376,12 @@ bool Controller::setDirectory(QString path)
         newDirectory = QDir(path);
         newOldFileNames = directoryParser.getFiles();
         newSuffixes = directoryParser.getFilesSuffix();
-        newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutExtension();
+        newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutSuffix();
     }
 
     seriesData.setWorkingDirectory(newDirectory);
     seriesData.setOldFileNames(newOldFileNames);
-    seriesData.setOldFileNamesWithoutExtionsions(newOldFileNamesWithoutSuffixes);
+    seriesData.setOldFileNamesWithoutSuffix(newOldFileNamesWithoutSuffixes);
     seriesData.setSuffixes(newSuffixes);
 
     return directoryExists;
@@ -385,20 +392,18 @@ bool Controller::renameFiles()
     QDir directory = seriesData.getWorkingDirectory();
     QStringList newFileNameList = seriesData.getNewFileNames();
     QStringList oldFileNameList = seriesData.getOldFileNames();
-    QStringList suffixesList = seriesData.getSuffixes();
 
     fileRenamer.setDirectory(directory);
     fileRenamer.setOldFileNames(oldFileNameList);
     fileRenamer.setNewFileNames(newFileNameList);
-    fileRenamer.setSuffixes(suffixesList);
     bool renameSuccess = fileRenamer.rename();
 
     if (renameSuccess)
     {
         QStringList renamedFiles = directoryParser.getFiles();
-        QStringList renamedFilesWithoutExtionsion = directoryParser.getFilesWithoutExtension();
+        QStringList renamedFilesWithoutSuffix = directoryParser.getFilesWithoutSuffix();
         seriesData.setOldFileNames(renamedFiles);
-        seriesData.setOldFileNamesWithoutExtionsions(renamedFilesWithoutExtionsion);
+        seriesData.setOldFileNamesWithoutSuffix(renamedFilesWithoutSuffix);
         updateView();
 
         // Success Message
@@ -415,7 +420,7 @@ bool Controller::renameFiles()
 
 void Controller::updateView()
 {
-    QStringList newFileNameList = seriesData.getNewFileNames();
+    QStringList newFileNameList = seriesData.getNewFileNamesWithoutSuffix();
     QStringList oldFileNameList = seriesData.getOldFileNamesWithoutSuffix();
     int amountSeasons = seriesData.getAmountSeasons();
 
@@ -425,19 +430,34 @@ void Controller::updateView()
     msgViewUpdate.data[1].qsListPointer = &oldFileNameList;
     msgViewUpdate.data[2].qsListPointer = &newFileNameList;
     emit(sendMessage(msgViewUpdate));
+    updateRenameButton();
 }
 
 void Controller::updateRenameButton()
 {
     QDir testDir("");
+    bool differentFileNames = false;
+    QStringList oldNames = seriesData.getOldFileNames();
+    QStringList newNames = seriesData.getNewFileNames();
+    int minimumSize = std::min(oldNames.size(), newNames.size());
+    for (int i = 0; i < minimumSize; i ++)
+    {
+        if (oldNames.at(i) != newNames.at(i))
+        {
+            differentFileNames = true;
+            break;
+        }
+    }
+
     bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
     bool seriesSet = !seriesData.getSeries().isEmpty();
-    bool enableButton = seriesSet & directorySet;
+    bool enableButton = seriesSet & directorySet & differentFileNames;
 
     Message msgEnableButton;
     msgEnableButton.type = Message::controller_enableButton_view;
     msgEnableButton.data[0].b = enableButton;
     emit(sendMessage(msgEnableButton));
+    qDebug() << differentFileNames << seriesData.getOldFileNames().size() << seriesData.getNewFileNames().size();
 }
 
 void Controller::notify(Message &msg)
@@ -479,8 +499,8 @@ void Controller::notify(Message &msg)
     {
         QString path = *msg.data[0].qsPointer;
         setDirectory(path);
+        updateNewFileNames();
         updateView();
-        updateRenameButton();
         break;
     }
     case Message::view_rename_controller:

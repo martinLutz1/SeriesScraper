@@ -21,20 +21,10 @@ void FileRenamer::setDirectory(QDir directory)
     workingDirectory = directory;
 }
 
-void FileRenamer::setSuffixes(QStringList suffixList)
-{
-    suffixes = suffixList;
-}
-
 bool FileRenamer::rename()
 {
     int amountOldFiles = oldFileNameList.size();
     int amountNewNames = newFileNameList.size();
-    int amountSuffixes = suffixes.size();
-
-    if (amountOldFiles != amountSuffixes)
-        return false;
-
     bool renamingSucceded = false;
 
     if (workingDirectory.exists())
@@ -44,7 +34,7 @@ bool FileRenamer::rename()
         for (int i = 0; i < amountToRename; i++)
         {
             QString fileToRename = oldFileNameList.at(i);
-            QString newFileName = newFileNameList.at(i) + "." + suffixes.at(i);
+            QString newFileName = newFileNameList.at(i);
 
             bool emptyFileName = fileToRename.isEmpty();
             bool hasAlreadyNewName = (newFileName == fileToRename);

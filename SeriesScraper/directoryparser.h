@@ -29,8 +29,8 @@ public:
     bool initializeDirectory(QString path);
     QString getDirectoryPathInput();
     QStringList getFiles();
-    QStringList getFilesWithoutExtension();
-    QStringList getFiles(QString extension);
+    QStringList getFilesWithoutSuffix();
+    QStringList getFiles(QString suffix);
     QStringList getFilesSuffix();
     int getFoundSeason();
 };
