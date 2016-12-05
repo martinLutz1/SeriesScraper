@@ -33,7 +33,8 @@ SOURCES += main.cpp \
     error.cpp \
     settings.cpp \
     jsonloader.cpp \
-    seriesparser.cpp
+    seriesparser.cpp \
+    seriesfilesaver.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -55,7 +56,8 @@ HEADERS  += mainwindow.h \
     error.h \
     settings.h \
     jsonloader.h \
-    seriesparser.h
+    seriesparser.h \
+    seriesfilesaver.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

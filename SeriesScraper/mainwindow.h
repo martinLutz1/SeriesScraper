@@ -9,6 +9,7 @@
 #include <QProgressBar>
 #include <QGraphicsBlurEffect>
 #include <QStyleFactory>
+#include <QMessageBox>
 #include "aboutdialog.h"
 #include "message.h"
 
@@ -28,6 +29,7 @@ private:
     QLabel *seriesStatusLabel;
     QProgressBar *seriesProgressBar;
     QGraphicsBlurEffect *blur;
+    QMessageBox *renameConfirmationMessageBox;
 
     QMenu *helpMenu;
     QMenu *viewMenu;
@@ -52,6 +54,7 @@ private:
 
     void setUpTable();
     void setUpMenuBar();
+    void setUpRenameConfirmationMessageBox();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);

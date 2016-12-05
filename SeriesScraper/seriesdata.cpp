@@ -68,14 +68,24 @@ void SeriesData::setSelectedSeason(int newSelectedSeason)
         selectedSeason = newSelectedSeason;
 }
 
-void SeriesData::setOldFileNames(QStringList oldFileNamesSortedWithSpaces)
+void SeriesData::setNewFileNames(QStringList newFileNames)
 {
-    this->oldFileNamesSortedWithSpaces = oldFileNamesSortedWithSpaces;
+    this->newFileNames = newFileNames;
 }
 
-void SeriesData::setOldFileNamesWithoutExtionsions(QStringList oldFileNameListWithoutSuffix)
+void SeriesData::setNewFileNamesWithoutSuffix(QStringList newFileNamesWithoutSuffix)
 {
-    this->oldFileNamesWithoutSuffix = oldFileNameListWithoutSuffix;
+    this->newFileNamesWithoutSuffix = newFileNamesWithoutSuffix;
+}
+
+void SeriesData::setOldFileNames(QStringList oldFileNames)
+{
+    this->oldFileNames = oldFileNames;
+}
+
+void SeriesData::setOldFileNamesWithoutSuffix(QStringList oldFileNamesWithoutSuffix)
+{
+    this->oldFileNamesWithoutSuffix = oldFileNamesWithoutSuffix;
 }
 
 void SeriesData::setWorkingDirectory(QDir directory)
@@ -83,12 +93,6 @@ void SeriesData::setWorkingDirectory(QDir directory)
     if (directory.exists())
         workingDirectory = directory;
 }
-
-void SeriesData::setNewFileNames(QStringList newFileNames)
-{
-    this->newFileNames = newFileNames;
-}
-
 //----------------------- Getter -----------------------//
 
 QString SeriesData::getSeries()
@@ -147,9 +151,14 @@ QStringList SeriesData::getNewFileNames()
     return newFileNames;
 }
 
+QStringList SeriesData::getNewFileNamesWithoutSuffix()
+{
+    return newFileNamesWithoutSuffix;
+}
+
 QStringList SeriesData::getOldFileNames()
 {
-    return oldFileNamesSortedWithSpaces;
+    return oldFileNames;
 }
 
 QStringList SeriesData::getOldFileNamesWithoutSuffix()

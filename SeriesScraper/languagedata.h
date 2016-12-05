@@ -25,6 +25,7 @@ public:
         season,
         nameScheme,
         rename,
+        forceRename,
         about,
         settings,
         fullscreen,

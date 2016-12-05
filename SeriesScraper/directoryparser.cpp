@@ -8,8 +8,11 @@ QStringList DirectoryParser::sortFiles(QStringList files)
     QStringList sortedFiles;
     std::vector<int> position = getEpisodePositions(files);
 
-    if (int(position.size()) != files.size())  // Name scheme not found, let QT sort
+    if (int(position.size()) != files.size()) // Name scheme not found, let QT sort
+    {
+        foundSeason = 0;
         return files;
+    }
 
     for (int i = 0; i < files.size(); i++)
     {
@@ -31,8 +34,11 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 
     std::vector<int> position = getEpisodePositions(filesQs);
 
-    if (int(position.size()) < files.size())  // Name scheme not found, let QT sort
+    if (int(position.size()) < files.size()) // Name scheme not found, let QT sort
+    {
+        foundSeason = 0;
         return files;
+    }
 
     for (int i = 0; i < files.size(); i++)
     {
@@ -47,21 +53,42 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 {
     std::vector<int> episodePosition;
-    QRegularExpressionMatch match;
-    QRegularExpressionMatch matchEpisodeNumber;
+    QRegularExpressionMatch seasonAndEpisodeMatch;
+    QRegularExpressionMatch episodeNumberMatch;
+    QRegularExpressionMatch seasonNumberMatch;
 
+    // Set season
+    if (episodeList.size() > 0)
+    {
+        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
+                (episodeList.at(0).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
+
+        if (seasonAndEpisodeMatch.hasMatch())
+        {
+            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
+
+            seasonNumberMatch = seasonNumberExpression.match(seasonAndEpisodeText, 0);
+            QString seasonNumberText = seasonNumberMatch.captured();
+            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
+            foundSeason = seasonNumberMatch.captured().toInt();
+        }
+    }
+
+    // Get episode positions
     for (int i = 0; i < episodeList.size(); i++)
     {
-        match = episodeNumberExpression.match
+        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
                 (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
 
-        if (match.hasMatch())
+        if (seasonAndEpisodeMatch.hasMatch())
         {
-            QString capturedEpisodeString = match.captured();
-            matchEpisodeNumber = numberFromEpisodeNumberExpression.match
-                    (capturedEpisodeString, 0, QRegularExpression::PartialPreferCompleteMatch);
-            int actualPosition = matchEpisodeNumber.captured().toInt() - 1;
-            episodePosition.push_back(actualPosition);
+            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
+
+            episodeNumberMatch = episodeNumberExpression.match(seasonAndEpisodeText, 0);
+            QString episodeNumberText = episodeNumberMatch.captured();
+            episodeNumberMatch = numberExpression.match(episodeNumberText, 0);
+            int foundEpisodePosition = episodeNumberMatch.captured().toInt() - 1;
+            episodePosition.push_back(foundEpisodePosition);
         }
     }
     return episodePosition;
@@ -73,15 +100,17 @@ void DirectoryParser::setNameFilterToAll()
     filter << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
 }
 
-DirectoryParser::DirectoryParser()
+DirectoryParser::DirectoryParser() : foundSeason(0)
 {
     directory.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     directory.setSorting(QDir::NoSort);
     directory.setPath("");
     setNameFilterToAll();
 
-    episodeNumberExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
-    numberFromEpisodeNumberExpression.setPattern("[0-9]*$");
+    seasonAndEpisodeExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
+    seasonNumberExpression.setPattern("(s)[0-9]*");
+    episodeNumberExpression.setPattern("(e)[0-9]*");
+    numberExpression.setPattern("[0-9]*$");
 }
 
 bool DirectoryParser::initializeDirectory(QString path)
@@ -116,23 +145,23 @@ QStringList DirectoryParser::getFiles()
     return filesToReturn;
 }
 
-QStringList DirectoryParser::getFilesWithoutExtension()
+QStringList DirectoryParser::getFilesWithoutSuffix()
 {
     QFileInfo fileInfo;
     QStringList fileList = getFiles();
-    QStringList fileWithoutExtension;
+    QStringList fileWithoutSuffix;
 
     for (int i = 0; i < fileList.size(); i++)
     {
         fileInfo.setFile(fileList.at(i));
-        fileWithoutExtension << fileInfo.completeBaseName();
+        fileWithoutSuffix << fileInfo.completeBaseName();
     }
-    return fileWithoutExtension;
+    return fileWithoutSuffix;
 }
 
-QStringList DirectoryParser::getFiles(QString extension)
+QStringList DirectoryParser::getFiles(QString suffix)
 {
-    filter = QStringList(extension);
+    filter = QStringList(suffix);
     QStringList fileList = getFiles();
     setNameFilterToAll();
     return fileList;
@@ -159,4 +188,9 @@ QStringList DirectoryParser::getFilesSuffix()
         suffixes << "";
 
     return suffixes;
+}
+
+int DirectoryParser::getFoundSeason()
+{
+    return foundSeason;
 }

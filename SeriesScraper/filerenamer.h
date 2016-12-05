@@ -12,11 +12,9 @@ public:
     void setOldFileNames(QStringList oldfileNameList);
     void setNewFileNames(QStringList newFileNameList);
     void setDirectory(QDir directory);
-    void setSuffixes(QStringList suffixList);
     bool rename();
 
 private:
-    QStringList suffixes;
     QStringList oldFileNameList;
     QStringList newFileNameList;
     QDir workingDirectory;
