@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
     QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
-    QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onCellChanged(int,int)));
+    QObject::connect(ui->episodeNameTable, SIGNAL(cellActivated(int,int)), this, SLOT(onCellClicked(int,int)));
     QObject::connect(ui->seriesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSeriesTextChangeTimer()));
     QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChanged()));
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
@@ -135,6 +135,7 @@ void MainWindow::setUpMenuBar()
     QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
     QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));
+    ui->episodeLineEdit->hide();
 }
 
 void MainWindow::setUpRenameConfirmationMessageBox()
@@ -250,6 +251,11 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int episodeTableHeight = ui->episodeNameTable->height();
     int episodeTableX = ui->episodeNameTable->x();
     int episodeTableY = ui->episodeNameTable->y();
+
+    // Move and resize episode edit
+    //QTableWidgetItem* tableItem = ui->episodeNameTable->item(row, coloumn);
+    //QRect position = ui->episodeNameTable->visualItemRect(tableItem;);
+    //ui->episodeLineEdit->move(position.x() + 50, position.y() + 50);
 
     int seriesProgressbarX = episodeTableX + episodeTableWidth / 2 - seriesProgressBar->width() / 2;
     int seriesProgressbarY = episodeTableY + episodeTableHeight / 2 - seriesProgressBar->height() / 2;
@@ -547,11 +553,18 @@ void MainWindow::onSeriesLanguageChanged(int index)
     emit(sendMessage(msgChangeSeriesLanguage));
 }
 
-void MainWindow::onCellChanged(int row, int coloumn)
+void MainWindow::onCellClicked(int row, int coloumn)
 {
-    if (coloumn == 0) { // Only Episode names
-        QString newEpisodeName = ui->episodeNameTable->item(row, coloumn)->text();
-        //app->changeEpisodeName(row, newEpisodeName);
+    if (coloumn == 1) { // Only Episode names
+        ui->episodeLineEdit->show();
+        //qDebug() << position;
+        //QWi
+        QTableWidgetItem* tableItem = ui->episodeNameTable->item(row, coloumn);
+        QRect position = ui->episodeNameTable->visualItemRect(tableItem);
+        ui->episodeLineEdit->move(position.x() + 50, position.y() + 50);
+        ui->episodeLineEdit->resize(position.width() - 200, position.height());
+
+
     }
 }
 
@@ -734,6 +747,7 @@ bool MainWindow::setRow(int row, QString oldFileName, QString newFileName)
         QTableWidgetItem *oldFile = new QTableWidgetItem(oldFileName);
         QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
         oldFile->setFlags(oldFile->flags() & ~Qt::ItemIsEditable);
+        newFile->setFlags(newFile->flags() & ~Qt::ItemIsEditable);
 
         ui->episodeNameTable->setRowCount(tableRows);
         ui->episodeNameTable->setItem(row, 0, oldFile);

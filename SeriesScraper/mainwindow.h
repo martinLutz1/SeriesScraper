@@ -67,17 +67,17 @@ private:
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    bool setRow(int row, QString oldFileName, QString newFileName);
-    void clearTable();
 
 private slots:
+    bool setRow(int row, QString oldFileName, QString newFileName);
+    void clearTable();
     void openDirectory();
     void setPath();
     void startSetPathTimer();
     void startSeriesTextChangeTimer();
     void disableSeriesProgressbar();
     void updateProgressbar();
-    void onCellChanged(int row, int coloumn);
+    void onCellClicked(int row, int coloumn);
     void onSeriesTextChanged();
     void onSeasonChanged(int index);
     void onSeriesLanguageChanged(int index);

@@ -311,6 +311,19 @@
      </property>
     </widget>
    </widget>
+   <widget class="QLineEdit" name="episodeLineEdit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>150</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">
@@ -326,7 +339,7 @@
      <x>0</x>
      <y>0</y>
      <width>740</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
