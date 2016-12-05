@@ -34,22 +34,28 @@ void SeriesData::setSuffixes(QStringList newSuffixList)
 
 void SeriesData::setEpisode(int index, QString newEpisode)
 {
-    if (episodesList.length() > index) {
+    if (index == episodesList.size() - 1 && newEpisode == "") // Last item
+        episodesList.removeLast();
+    else
+    {
+        while (index >= episodesList.size())
+            episodesList.push_back(" ");
+
         QString newEpisodeWithoutSpecialCharacters = removeSpecialCharacters(newEpisode);
         episodesList[index] = newEpisodeWithoutSpecialCharacters;
     }
+    amountEpisodes = episodesList.size();
 }
 
 void SeriesData::setEpisodes(QStringList newEpisodeList)
 {
     int numberEpisodes = newEpisodeList.size();
     QStringList epiosodeListWithoutSpecialCharacters;
-    for (int i = 0; i < numberEpisodes; i++) {
+    for (int i = 0; i < numberEpisodes; i++)
         epiosodeListWithoutSpecialCharacters << removeSpecialCharacters(newEpisodeList.at(i));
-    }
 
     episodesList = epiosodeListWithoutSpecialCharacters;
-    amountEpisodes = episodesList.length();
+    amountEpisodes = episodesList.size();
 }
 
 void SeriesData::setSelectedLanguage(QString languageShortName)
@@ -118,7 +124,7 @@ QString SeriesData::getEpisode(int index)
     if (episodesList.length() > index)
         return episodesList.at(index);
     else
-        return QString("No episode available at index " + QString::number(index));
+        return QString("");
 }
 
 QStringList SeriesData::getEpisodes()

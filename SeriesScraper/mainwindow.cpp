@@ -349,6 +349,7 @@ void MainWindow::changeToDarkTheme()
             + QString("background-repeat: no-repeat; ")
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
+    shadow->setColor(QColor(255, 255, 255, 80));
 
     qApp->setPalette(darkPalette);
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
