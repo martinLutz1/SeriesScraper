@@ -141,7 +141,7 @@ void MainWindow::setUpRenameConfirmationMessageBox()
 {
     renameConfirmationMessageBox = new QMessageBox;
     renameConfirmationMessageBox->setWindowTitle("Are you sure?");
-    renameConfirmationMessageBox->setText("The selected season seams to differ from the season found in your series directory. Do you really want to continue?");
+    renameConfirmationMessageBox->setText("The selected season seems to differ from the season found in your series directory. Do you really want to continue?");
     renameConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
     renameConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
     renameConfirmationMessageBox->setDefaultButton(QMessageBox::No);
