@@ -44,11 +44,14 @@ bool FileRenamer::rename()
         for (int i = 0; i < amountToRename; i++)
         {
             QString fileToRename = oldFileNameList.at(i);
+            QString newFileName = newFileNameList.at(i) + "." + suffixes.at(i);
 
-            if (fileToRename.isEmpty()) // Do not rename empty files
+            bool emptyFileName = fileToRename.isEmpty();
+            bool hasAlreadyNewName = (newFileName == fileToRename);
+            // Do not rename empty file names and files with the same name
+            if (emptyFileName || hasAlreadyNewName)
                 continue;
 
-            QString newFileName = newFileNameList.at(i) + "." + suffixes.at(i);
             bool renameSuccess = workingDirectory.rename(fileToRename, newFileName);
             if (!renameSuccess)
                 renamingSucceded = renameSuccess;
