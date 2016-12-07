@@ -38,7 +38,7 @@ void SeriesData::setEpisode(int index, QString newEpisode)
         episodesList.removeLast();
     else
     {
-        while (index >= episodesList.size())
+       while (index >= episodesList.size())
             episodesList.push_back(" ");
 
         QString newEpisodeWithoutSpecialCharacters = removeSpecialCharacters(newEpisode);

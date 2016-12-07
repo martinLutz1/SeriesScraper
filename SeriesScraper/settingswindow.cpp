@@ -13,6 +13,17 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     ui->setupUi(this);
     createResetConfirmationDialog();;
     windowSize = this->size();
+
+    keyPressEaterDelete = new KeyPressEater;
+    keyPressEaterDelete->setKey(Qt::Key_Delete);
+#if defined (Q_OS_MACX)
+    keyPressEaterDelete->setKey(Qt::Key_Backspace);
+#endif
+    ui->nameSchemeListWidget->installEventFilter(keyPressEaterDelete);
+
+    ui->newNameSchemeAddButton->setEnabled(false);
+    ui->nameSchemeRemoveButton->setEnabled(false);
+
     QObject::connect(ui->doneButton, SIGNAL(clicked()), this, SLOT(hide()));
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
     QObject::connect(ui->tmdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
@@ -21,12 +32,20 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
     QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
     QObject::connect(ui->darkThemeCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDarkThemeChanged(bool)));
+
     QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
+    QObject::connect(ui->nameSchemeListWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onNameSchemeChanged(QListWidgetItem*)));
+    QObject::connect(ui->nameSchemeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveNameScheme()));
+    QObject::connect(keyPressEaterDelete, SIGNAL(keyPressed()), this, SLOT(onRemoveNameScheme()));
+    QObject::connect(ui->nameSchemeListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onNameSchemeSelectionChanged(int)));
+    QObject::connect(ui->newNameSchemeAddButton, SIGNAL(pressed()), this, SLOT(onAddNameScheme()));
+    QObject::connect(ui->newNameSchemeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onNameSchemeLineEditChanged()));
 }
 
 SettingsWindow::~SettingsWindow()
 {
     delete ui;
+    delete keyPressEaterDelete;
 }
 
 void SettingsWindow::notify(Message &msg)
@@ -237,9 +256,9 @@ void SettingsWindow::onDarkThemeChanged(bool useDarkTheme)
 
 void SettingsWindow::onTabChanged(int index)
 {
-    if (index == 2)
+    if (index == 2) // Name Scheme tab
     {
-        int windowWidth = ui->nameSchemeListWidget->sizeHintForColumn(0);
+        int windowWidth = ui->nameSchemeListWidget->sizeHintForColumn(0) + 2 * UNIVERSAL_SPACER;
         if (windowWidth > 800)
             windowWidth = 800;
         else if (windowWidth < windowSize.width())
@@ -260,4 +279,44 @@ void SettingsWindow::onTabChanged(int index)
     int doneButtonX = this->width() - ui->doneButton->width() - UNIVERSAL_SPACER;
     int doneButtonY = ui->doneButton->y();
     ui->doneButton->move(doneButtonX, doneButtonY);
+}
+
+void SettingsWindow::onNameSchemeChanged(QListWidgetItem *item)
+{
+    int index = ui->nameSchemeListWidget->currentIndex().row();
+    if (index >= 0)
+    {
+        QString changedNameScheme = item->text();
+        // Message
+    }
+}
+
+void SettingsWindow::onNameSchemeSelectionChanged(int index)
+{
+    bool positiveIndex = (index >= 0);
+    ui->nameSchemeRemoveButton->setEnabled(positiveIndex);
+}
+
+void SettingsWindow::onRemoveNameScheme()
+{
+    int index = ui->nameSchemeListWidget->currentIndex().row();
+    if (index >= 0)
+    {
+        QListWidgetItem *item = ui->nameSchemeListWidget->takeItem(index);
+        delete item;
+        // Message
+    }
+}
+
+void SettingsWindow::onAddNameScheme()
+{
+    QString newNameScheme = ui->newNameSchemeLineEdit->text();
+    ui->newNameSchemeLineEdit->clear();
+    // Message
+}
+
+void SettingsWindow::onNameSchemeLineEditChanged()
+{
+    bool lineEditIsEmpty = ui->newNameSchemeLineEdit->text().isEmpty();
+    ui->newNameSchemeAddButton->setEnabled(!lineEditIsEmpty);
 }

@@ -2,8 +2,10 @@
 #define SETTINGSWINDOW_H
 
 #include <QWidget>
+#include <QListWidgetItem>
 #include <QMessageBox>
 #include "message.h"
+#include "keypresseater.h"
 
 namespace Ui {
 class SettingsWindow;
@@ -25,6 +27,7 @@ private:
     void changeLocalization(QStringList translationList);
     QMessageBox resetConfirmationMessageBox;
     QSize windowSize;
+    KeyPressEater *keyPressEaterDelete;
     void createResetConfirmationDialog();
     void resizeNameSchemeTab();
 
@@ -36,6 +39,11 @@ private slots:
     void onResetClicked();
     void onDarkThemeChanged(bool useDarkTheme);
     void onTabChanged(int index);
+    void onNameSchemeChanged(QListWidgetItem *item);
+    void onNameSchemeSelectionChanged(int index);
+    void onRemoveNameScheme();
+    void onAddNameScheme();
+    void onNameSchemeLineEditChanged();
 
 signals:
     void sendMessage(Message &msg);

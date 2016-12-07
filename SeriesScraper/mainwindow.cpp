@@ -808,7 +808,6 @@ bool MainWindow::setRow(int row, QString oldFileName, QString newFileName)
         QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
         oldFile->setFlags(oldFile->flags() & ~Qt::ItemIsEditable);
         newFile->setFlags(newFile->flags() & ~Qt::ItemIsEditable);
-        //QObject::connect(keyPressEaterEscape, SIGNAL(keyPressed()), ui->episodeNameTable->item(row, 1), SLOT(hide()));
 
         ui->episodeNameTable->setRowCount(tableRows);
         ui->episodeNameTable->setItem(row, 0, oldFile);
