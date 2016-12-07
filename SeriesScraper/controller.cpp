@@ -615,6 +615,21 @@ void Controller::notify(Message &msg)
         settings.setDarkTheme(useDarkTheme);
         break;
     }
+    case Message::settings_addNameScheme_controller:
+    {
+        QString nameScheme = *msg.data[0].qsPointer;
+        nameSchemeHandler.addNameScheme(nameScheme);
+        int lastIndex = nameSchemeHandler.getAmountNameSchemes() - 1;
+        nameSchemeHandler.setNameScheme(lastIndex);
+        QString nameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
+
+        Message msgAddNameScheme;
+        msgAddNameScheme.type = Message::controller_addNameScheme_view;
+        msgAddNameScheme.data[0].qsPointer = &nameSchemeRepresentation;
+        emit(sendMessage(msgAddNameScheme));
+
+        break;
+    }
     default:
         break;
     }

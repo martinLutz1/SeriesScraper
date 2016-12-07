@@ -27,6 +27,9 @@ public:
         settings_savePath_controller,
         settings_reset_controller,
         settings_useDarkTheme_controller,
+        settings_addNameScheme_controller,
+        settings_changeNameScheme_controller,
+        settings_removeNameScheme_controller,
 
         controller_updateView_view,
         controller_seriesSet_view,
@@ -36,6 +39,7 @@ public:
         controller_startSeriesLoading_view,
         controller_successSeriesLoading_view,
         controller_failureSeriesLoading_view,
+        controller_addNameScheme_view,
         controller_addNameSchemes_view,
         controller_addSeriesLanguages_view,
         controller_changeLocalization_view,

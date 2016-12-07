@@ -287,7 +287,12 @@ void SettingsWindow::onNameSchemeChanged(QListWidgetItem *item)
     if (index >= 0)
     {
         QString changedNameScheme = item->text();
-        // Message
+
+        Message msgChangeNameScheme;
+        msgChangeNameScheme.type = Message::settings_changeNameScheme_controller;
+        msgChangeNameScheme.data[0].i = index;
+        msgChangeNameScheme.data[1].qsPointer = &changedNameScheme;
+        emit(sendMessage(msgChangeNameScheme));
     }
 }
 
@@ -304,7 +309,11 @@ void SettingsWindow::onRemoveNameScheme()
     {
         QListWidgetItem *item = ui->nameSchemeListWidget->takeItem(index);
         delete item;
-        // Message
+
+        Message msgRemoveNameScheme;
+        msgRemoveNameScheme.type = Message::settings_removeNameScheme_controller;
+        msgRemoveNameScheme.data[0].i = index;
+        emit(sendMessage(msgRemoveNameScheme));
     }
 }
 
@@ -312,7 +321,11 @@ void SettingsWindow::onAddNameScheme()
 {
     QString newNameScheme = ui->newNameSchemeLineEdit->text();
     ui->newNameSchemeLineEdit->clear();
-    // Message
+
+    Message msgAddNameScheme;
+    msgAddNameScheme.type = Message::settings_addNameScheme_controller;
+    msgAddNameScheme.data[0].qsPointer = &newNameScheme;
+    emit(sendMessage(msgAddNameScheme));
 }
 
 void SettingsWindow::onNameSchemeLineEditChanged()

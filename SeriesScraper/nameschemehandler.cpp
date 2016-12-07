@@ -28,7 +28,7 @@ bool NameSchemeHandler::readNameSchemeFile()
 
 bool NameSchemeHandler::addNameScheme(QString nameScheme)
 {
-    successReading = nameSchemeFile.open(QIODevice::ReadWrite | QIODevice::Text);
+    successReading = nameSchemeFile.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append);
     if (!successReading)
         return false;
 
