@@ -24,7 +24,9 @@ private:
     Ui::SettingsWindow *ui;
     void changeLocalization(QStringList translationList);
     QMessageBox resetConfirmationMessageBox;
+    QSize windowSize;
     void createResetConfirmationDialog();
+    void resizeNameSchemeTab();
 
 private slots:
     void onGUILanguageChanged(QString language);
@@ -33,6 +35,7 @@ private slots:
     void onSavePathChanged(bool savePath);
     void onResetClicked();
     void onDarkThemeChanged(bool useDarkTheme);
+    void onTabChanged(int index);
 
 signals:
     void sendMessage(Message &msg);

@@ -5,6 +5,7 @@
 void Controller::initializeNameSchemes()
 {
     QStringList nameSchemeRepresentationList;
+    QStringList nameSchemeList;
     bool fileRead = nameSchemeHandler.readNameSchemeFile();
     int amountNameSchemes = nameSchemeHandler.getAmountNameSchemes();
 
@@ -15,6 +16,7 @@ void Controller::initializeNameSchemes()
         {
             nameSchemeHandler.setNameScheme(i);
             nameSchemeRepresentationList <<  nameSchemeHandler.getNameSchemeRepresentation();
+            nameSchemeList << nameSchemeHandler.getNameScheme(i);
 
         }
     } else // Add default entry if name scheme list not found or empty
@@ -31,6 +33,12 @@ void Controller::initializeNameSchemes()
     msgAddNameSchemes.type = Message::controller_addNameSchemes_view;
     msgAddNameSchemes.data[0].qsListPointer = &nameSchemeRepresentationList;
     emit(sendMessage(msgAddNameSchemes));
+
+    // Send raw name scheme list to settings
+    Message msgSetRawNameSchemes;
+    msgSetRawNameSchemes.type = Message::controller_setRawNameSchemes_settings;
+    msgSetRawNameSchemes.data[0].qsListPointer = &nameSchemeList;
+    emit(sendMessage(msgSetRawNameSchemes));
 }
 
 void Controller::initializeSeriesLanguages()

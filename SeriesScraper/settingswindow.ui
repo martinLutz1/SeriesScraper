@@ -374,11 +374,20 @@
        <height>150</height>
       </rect>
      </property>
+     <property name="movement">
+      <enum>QListView::Static</enum>
+     </property>
+     <property name="resizeMode">
+      <enum>QListView::Fixed</enum>
+     </property>
      <property name="layoutMode">
       <enum>QListView::SinglePass</enum>
      </property>
      <property name="viewMode">
-      <enum>QListView::IconMode</enum>
+      <enum>QListView::ListMode</enum>
+     </property>
+     <property name="currentRow">
+      <number>-1</number>
      </property>
     </widget>
    </widget>

@@ -52,7 +52,8 @@ public:
         controller_noGUILanguagesFound_settings,
         controller_saveSeries_settings,
         controller_savePath_settings,
-        controller_useDarkTheme_settings
+        controller_useDarkTheme_settings,
+        controller_setRawNameSchemes_settings
     };
 
     union MessageData {

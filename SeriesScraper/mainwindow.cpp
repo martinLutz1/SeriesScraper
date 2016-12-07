@@ -170,7 +170,7 @@ void MainWindow::setUpEpisodeEdit()
 {
     shadow->setBlurRadius(40.0);
     shadow->setDistance(6.0);
-    shadow->setColor(QColor(0, 0, 0, 80));
+    shadow->setColor(QColor(0, 0, 0, 150));
     ui->episodeLineEdit->setAutoFillBackground(true);
     ui->episodeLineEdit->setGraphicsEffect(shadow);
     ui->episodeLineEdit->installEventFilter(keyPressEaterEscape);
@@ -349,7 +349,7 @@ void MainWindow::changeToDarkTheme()
             + QString("background-repeat: no-repeat; ")
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
-    shadow->setColor(QColor(255, 255, 255, 80));
+    shadow->setColor(QColor(255, 255, 255, 150));
 
     qApp->setPalette(darkPalette);
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
