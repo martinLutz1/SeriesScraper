@@ -618,11 +618,14 @@ void Controller::notify(Message &msg)
     case Message::settings_addNameScheme_controller:
     {
         QString nameScheme = *msg.data[0].qsPointer;
+        int oldSelectedNameScheme = nameSchemeHandler.getSelectedNameSchemeIndex();
+
         nameSchemeHandler.addNameScheme(nameScheme);
         int lastIndex = nameSchemeHandler.getAmountNameSchemes() - 1;
         nameSchemeHandler.setNameScheme(lastIndex);
         QString nameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
         QString newNameScheme = nameSchemeHandler.getNameScheme();
+        nameSchemeHandler.setNameScheme(oldSelectedNameScheme);
 
         Message msgAddNameSchemeView;
         msgAddNameSchemeView.type = Message::controller_addNameScheme_view;
