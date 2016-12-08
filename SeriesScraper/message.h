@@ -28,8 +28,8 @@ public:
         settings_reset_controller,
         settings_useDarkTheme_controller,
         settings_addNameScheme_controller,
-        settings_changeNameScheme_controller,
         settings_removeNameScheme_controller,
+        settings_replaceNameScheme_controller,
 
         controller_updateView_view,
         controller_seriesSet_view,
@@ -47,9 +47,11 @@ public:
         controller_changeSeriesParser_view,
         controller_changeSeriesLanguage_view,
         controller_changeNameScheme_view,
+        controller_replaceNameScheme_view,
         controller_returnEpisodeName_view,
         controller_seasonMismatch_view,
         controller_useDarkTheme_view,
+        controller_removeNameScheme_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
         controller_addGUILanguages_settings,
@@ -57,6 +59,7 @@ public:
         controller_saveSeries_settings,
         controller_savePath_settings,
         controller_useDarkTheme_settings,
+        controller_addRawNameScheme_settings,
         controller_setRawNameSchemes_settings
     };
 

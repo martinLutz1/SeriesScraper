@@ -27,7 +27,8 @@ private:
     void changeLocalization(QStringList translationList);
     QMessageBox resetConfirmationMessageBox;
     QSize windowSize;
-    KeyPressEater *keyPressEaterDelete;
+    KeyPressEater *keyPressEaterDeleteNameScheme;
+    KeyPressEater *keyPressEaterEnterNameScheme;
     void createResetConfirmationDialog();
     void resizeNameSchemeTab();
 

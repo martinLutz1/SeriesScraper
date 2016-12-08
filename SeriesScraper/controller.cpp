@@ -16,7 +16,7 @@ void Controller::initializeNameSchemes()
         {
             nameSchemeHandler.setNameScheme(i);
             nameSchemeRepresentationList <<  nameSchemeHandler.getNameSchemeRepresentation();
-            nameSchemeList << nameSchemeHandler.getNameScheme(i);
+            nameSchemeList << nameSchemeHandler.getNameScheme();
 
         }
     } else // Add default entry if name scheme list not found or empty
@@ -622,11 +622,55 @@ void Controller::notify(Message &msg)
         int lastIndex = nameSchemeHandler.getAmountNameSchemes() - 1;
         nameSchemeHandler.setNameScheme(lastIndex);
         QString nameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
+        QString newNameScheme = nameSchemeHandler.getNameScheme();
 
-        Message msgAddNameScheme;
-        msgAddNameScheme.type = Message::controller_addNameScheme_view;
-        msgAddNameScheme.data[0].qsPointer = &nameSchemeRepresentation;
-        emit(sendMessage(msgAddNameScheme));
+        Message msgAddNameSchemeView;
+        msgAddNameSchemeView.type = Message::controller_addNameScheme_view;
+        msgAddNameSchemeView.data[0].qsPointer = &nameSchemeRepresentation;
+        emit(sendMessage(msgAddNameSchemeView));
+
+        Message msgAddRawNameSchemeSettings;
+        msgAddRawNameSchemeSettings.type = Message::controller_addRawNameScheme_settings;
+        msgAddRawNameSchemeSettings.data[0].qsPointer = &newNameScheme;
+        emit(sendMessage(msgAddRawNameSchemeSettings));
+
+        break;
+    }
+    case Message::settings_removeNameScheme_controller:
+    {
+        int indexToRemove = msg.data[0].i;
+        nameSchemeHandler.removeNameScheme(indexToRemove);
+
+        Message msgRemoveNameScheme;
+        msgRemoveNameScheme.type = Message::controller_removeNameScheme_view;
+        msgRemoveNameScheme.data[0].i = indexToRemove;
+        emit(sendMessage(msgRemoveNameScheme));
+
+        break;
+    }
+    case Message::settings_replaceNameScheme_controller:
+    {
+        int indexToChange = msg.data[0].i;
+        QString newNameScheme = *msg.data[1].qsPointer;
+        int oldSelectedNameSchemeIndex = nameSchemeHandler.getSelectedNameSchemeIndex();
+
+        nameSchemeHandler.replaceNameScheme(indexToChange, newNameScheme);
+        nameSchemeHandler.setNameScheme(indexToChange);
+        QString newNameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
+        nameSchemeHandler.setNameScheme(oldSelectedNameSchemeIndex);
+
+        Message msgReplaceNameScheme;
+        msgReplaceNameScheme.type = Message::controller_replaceNameScheme_view;
+        msgReplaceNameScheme.data[0].i = indexToChange;
+        msgReplaceNameScheme.data[1].qsPointer = &newNameSchemeRepresentation;
+        emit(sendMessage(msgReplaceNameScheme));
+
+        if (oldSelectedNameSchemeIndex == indexToChange)
+        {
+            changeNameScheme(oldSelectedNameSchemeIndex);
+            updateNewFileNames();
+            updateView();
+        }
 
         break;
     }

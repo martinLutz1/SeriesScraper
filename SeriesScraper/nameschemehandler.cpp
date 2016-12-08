@@ -3,7 +3,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-NameSchemeHandler::NameSchemeHandler() : successReading(false)
+NameSchemeHandler::NameSchemeHandler() :
+    selectedNameSchemeIndex(0),
+    successReading(false)
 {
     applicationDirectory = QCoreApplication::applicationDirPath();
     nameSchemeFile.setFileName(applicationDirectory.absoluteFilePath("namescheme.list"));
@@ -26,34 +28,14 @@ bool NameSchemeHandler::readNameSchemeFile()
     return true;
 }
 
-bool NameSchemeHandler::addNameScheme(QString nameScheme)
+bool NameSchemeHandler::saveNameSchemeFile()
 {
-    successReading = nameSchemeFile.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append);
-    if (!successReading)
-        return false;
-
-    nameSchemeList << nameScheme;
-    QTextStream inOut(&nameSchemeFile);
-    inOut << "\n" << nameScheme;
-
-    nameSchemeFile.close();
-    return true;
-}
-
-bool NameSchemeHandler::removeNameScheme(int index)
-{
-    int size = nameSchemeList.size();
-    if (!(index >= 0 && index < size))
-        return false;
-
-    successReading = nameSchemeFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    successReading = nameSchemeFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
     if (!successReading) // Reading failed
         return false;
 
-    nameSchemeList.removeAt(index);
-    size = nameSchemeList.size();
+    int size = nameSchemeList.size();
     QTextStream inOut(&nameSchemeFile);
-    inOut.flush();
 
     for (int i = 0; i < size; i++)
     {
@@ -63,17 +45,36 @@ bool NameSchemeHandler::removeNameScheme(int index)
             inOut << nameSchemeList.at(i) << "\n";
     }
     nameSchemeFile.close();
-    return true;
+    return successReading;
 }
 
-QString NameSchemeHandler::getNameScheme(int index)
+bool NameSchemeHandler::addNameScheme(QString nameScheme)
+{
+    nameSchemeList << nameScheme;
+    return saveNameSchemeFile();
+}
+
+bool NameSchemeHandler::removeNameScheme(int index)
 {
     int size = nameSchemeList.size();
+    if (!(index >= 0 && index < size))
+        return false;
 
-    if (index >= 0 && index < size)
-        return nameSchemeList.at(index);
-    else
-        return QString("");
+    nameSchemeList.removeAt(index);
+    if (index == selectedNameSchemeIndex)
+        selectedNameSchemeIndex = 0;
+    return saveNameSchemeFile();
+}
+
+bool NameSchemeHandler::replaceNameScheme(int index, QString newNameScheme)
+{
+    int size = nameSchemeList.size();
+    if (!(index >= 0 && index < size))
+        return false;
+
+    nameSchemeList[index] = newNameScheme;
+    saveNameSchemeFile();
+    return true;
 }
 
 bool NameSchemeHandler::setNameScheme(int index)
@@ -82,8 +83,14 @@ bool NameSchemeHandler::setNameScheme(int index)
     if (!(index >= 0 && index < size))
         return false;
 
+    selectedNameSchemeIndex = index;
     nameSchemeParser.parseNameScheme(nameSchemeList.at(index));
     return true;
+}
+
+QString NameSchemeHandler::getNameScheme()
+{
+    return nameSchemeList.at(selectedNameSchemeIndex);
 }
 
 QString NameSchemeHandler::getFileName(QString series, int season, int episode, QString episodeName)
@@ -112,4 +119,9 @@ QString NameSchemeHandler::getNameSchemeRepresentation()
 int NameSchemeHandler::getAmountNameSchemes()
 {
     return nameSchemeList.size();
+}
+
+int NameSchemeHandler::getSelectedNameSchemeIndex()
+{
+    return selectedNameSchemeIndex;
 }

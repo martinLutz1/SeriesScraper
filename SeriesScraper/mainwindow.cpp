@@ -396,10 +396,11 @@ void MainWindow::addNameSchemeItem(QString nameScheme)
 
 void MainWindow::removeNameSchemeItem(int itemIndex)
 {
-    int recentAmount = ui->nameSchemeComboBox->count();
+    int currentAmount = ui->nameSchemeComboBox->count();
+    int selectedIndex = ui->nameSchemeComboBox->currentIndex();
 
     // Discard impossible indexes
-    if (itemIndex >= 0 && itemIndex < recentAmount) {
+    if (itemIndex >= 0 && itemIndex < currentAmount) {
         nameSchemeItemList.removeAt(itemIndex);
         ui->nameSchemeComboBox->clear();
 
@@ -409,6 +410,11 @@ void MainWindow::removeNameSchemeItem(int itemIndex)
             ui->nameSchemeComboBox->addItem(nameSchemeEntry);
         }
     }
+    // Set selected name scheme back to old selection, if possible
+    if (selectedIndex < itemIndex)
+        ui->nameSchemeComboBox->setCurrentIndex(selectedIndex);
+    else if (selectedIndex > itemIndex && selectedIndex <= currentAmount - 1)
+        ui->nameSchemeComboBox->setCurrentIndex(selectedIndex - 1);
 }
 
 void MainWindow::changeLocalization(QStringList translationList)
@@ -684,6 +690,20 @@ void MainWindow::notify(Message &msg)
         // Make sure even the largest item can be displayed on dropdown
         int minimumWidth = ui->nameSchemeComboBox->minimumSizeHint().width();
         ui->nameSchemeComboBox->view()->setMinimumWidth(minimumWidth);
+        break;
+    }
+    case Message::controller_removeNameScheme_view:
+    {
+        int indexToRemove = msg.data[0].i;
+        removeNameSchemeItem(indexToRemove);
+        break;
+    }
+    case Message::controller_replaceNameScheme_view:
+    {
+        int indexToChange = msg.data[0].i;
+        QString newNameScheme = *msg.data[1].qsPointer;
+        QString newNameSchemeEntry = QString::number(indexToChange + 1) + ": " + newNameScheme;
+        ui->nameSchemeComboBox->setItemText(indexToChange, newNameSchemeEntry);
         break;
     }
     case Message::controller_changeLocalization_view:
