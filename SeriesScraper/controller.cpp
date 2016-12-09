@@ -2,6 +2,15 @@
 #include <QDebug>
 #include <vector>
 
+void Controller::initializeFileTypes()
+{
+    QStringList fileTypes;
+    fileTypes << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
+    directoryParser.setFileTypes(fileTypes); // Todo: read from file
+   // fileTypes =
+
+}
+
 void Controller::initializeNameSchemes()
 {
     QStringList nameSchemeRepresentationList;
@@ -24,7 +33,7 @@ void Controller::initializeNameSchemes()
         nameSchemeHandler.addNameScheme("%$series% - S%$season(2)%E%$episode(2)% - %$episodeName%");
         nameSchemeRepresentationList << nameSchemeHandler.getNameSchemeRepresentation();
         // Error message
-        QString nameSchemeFileNotFound = languageHandler.getTranslation(LanguageData::nameSchemeFileNotFound);
+        QString nameSchemeFileNotFound = interfaceLanguageHandler.getTranslation(LanguageData::nameSchemeFileNotFound);
         setStatusMessage(nameSchemeFileNotFound);
     }
 
@@ -43,15 +52,15 @@ void Controller::initializeNameSchemes()
 
 void Controller::initializeSeriesLanguages()
 {
-    bool fileRead = seriesLanguage.loadSeriesLanguageFile();
-    QStringList seriesLanguageList = seriesLanguage.getLanguageList();
+    bool fileRead = seriesLanguageHandler.loadSeriesLanguageFile();
+    QStringList seriesLanguageList = seriesLanguageHandler.getLanguageList();
 
     // Add default entry if series language file not found or empty
     if (!fileRead || seriesLanguageList.empty())
     {
         seriesLanguageList << QString("English");
         // Error message
-        QString languageFileReadingFailure = languageHandler.getTranslation(LanguageData::seriesLanguageNotFound);
+        QString languageFileReadingFailure = interfaceLanguageHandler.getTranslation(LanguageData::seriesLanguageNotFound);
         setStatusMessage(languageFileReadingFailure);
     }
 
@@ -61,16 +70,16 @@ void Controller::initializeSeriesLanguages()
     msgAddSeriesLanguages.data[0].qsListPointer = &seriesLanguageList;
     emit(sendMessage(msgAddSeriesLanguages));
 
-    QString languageShortName = seriesLanguage.getShortName(0); // Settings
+    QString languageShortName = seriesLanguageHandler.getShortName(0); // Settings
     seriesData.setSelectedLanguage(languageShortName); // Settings
 }
 
 void Controller::initializeGUILanguages()
 {
-    bool languageInitSuccess = languageHandler.initialize();
+    bool languageInitSuccess = interfaceLanguageHandler.initialize();
     if (languageInitSuccess)
     {
-        QStringList guiLanguageList = languageHandler.getLanguageList();
+        QStringList guiLanguageList = interfaceLanguageHandler.getLanguageList();
         // Send gui language list to settings
         Message msgAddGUILanguages;
         msgAddGUILanguages.type = Message::controller_addGUILanguages_settings;
@@ -179,10 +188,6 @@ void Controller::initialize()
         emit(sendMessage(msgUseDarkTheme));
     }
 
-    QStringList fileTypes;
-    fileTypes << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
-    directoryParser.setFileTypes(fileTypes); // Todo: read from file
-
     initializeGUILanguages();
     initializeNameSchemes();
     initializeSeriesLanguages();
@@ -248,12 +253,12 @@ bool Controller::changeSeason(int season)
 
 bool Controller::changeGuiLanguage(QString language)
 {
-    bool loadingSuccessful = languageHandler.loadLanguage(language);
+    bool loadingSuccessful = interfaceLanguageHandler.loadLanguage(language);
     QString guiLanguage = "English";
     if (loadingSuccessful)
     {
         guiLanguage = language;
-        QStringList translationList = languageHandler.getTranslationList();
+        QStringList translationList = interfaceLanguageHandler.getTranslationList();
         // Send translations to view, about and settings
         Message msgChangeLocalization;
         msgChangeLocalization.type = Message::controller_changeLocalization_view;
@@ -277,7 +282,7 @@ void Controller::changeSeriesLanguage(QString language)
     msgChangeSeriesLanguage.data[0].qsPointer = &language;
     emit(sendMessage(msgChangeSeriesLanguage));
 
-    QString selectedLanguage = seriesLanguage.getShortName(language);
+    QString selectedLanguage = seriesLanguageHandler.getShortName(language);
     seriesData.setSelectedLanguage(selectedLanguage);
     settings.setSeriesLanguage(language);
     QString series = seriesParser.getSeriesInput();
@@ -362,7 +367,7 @@ void Controller::changeNameScheme(int nameScheme)
         newNameScheme = nameScheme;
     else
     {
-        QString nameSchemeLineNotFound = languageHandler.getTranslation(LanguageData::nameSchemeLineNotFound);
+        QString nameSchemeLineNotFound = interfaceLanguageHandler.getTranslation(LanguageData::nameSchemeLineNotFound);
         setStatusMessage(nameSchemeLineNotFound + " " +  QString::number(nameScheme + 1));
     }
 
@@ -420,12 +425,12 @@ bool Controller::renameFiles()
         updateView();
 
         // Success Message
-        QString renameSuccessful = languageHandler.getTranslation(LanguageData::renameSuccess);
+        QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful);
     } else
     {
         // Failure Message
-        QString renameFailure = languageHandler.getTranslation(LanguageData::renameFailed);
+        QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);
         setStatusMessage(renameFailure);
     }
     return renameSuccess;
@@ -502,8 +507,8 @@ void Controller::notify(Message &msg)
     case Message::view_changeSeriesLanguage_controller:
     {
         int languageIndex = msg.data[0].i;
-        QString language = seriesLanguage.getLanguageList().at(languageIndex);
-        QString languageShortName = seriesLanguage.getShortName(languageIndex + 1);
+        QString language = seriesLanguageHandler.getLanguageList().at(languageIndex);
+        QString languageShortName = seriesLanguageHandler.getShortName(languageIndex + 1);
         QString oldLanguageShortName = seriesData.getSelectedLanguage();
         // Only write on change
         if (oldLanguageShortName != languageShortName)

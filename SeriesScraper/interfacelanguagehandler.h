@@ -1,12 +1,12 @@
-#ifndef LANGUAGERHANDLER_H
-#define LANGUAGERHANDLER_H
+#ifndef INTERFACELANGUAGEHANDLER_H
+#define INTERFACELANGUAGEHANDLER_H
 
 #include "languagedata.h"
 #include "jsonloader.h"
 #include <QDir>
 
 
-class LanguageHandler : public JsonLoader
+class InterfaceLanguageHandler : public JsonLoader
 {
 private:
    LanguageData languageData;
@@ -14,7 +14,7 @@ private:
    QFileInfoList languageFileList;
 
 public:
-    LanguageHandler();
+    InterfaceLanguageHandler();
     bool initialize();
     QStringList getLanguageList();
     bool loadLanguage(QString language);
@@ -22,4 +22,4 @@ public:
     QStringList getTranslationList();
 };
 
-#endif // LANGUAGERHANDLER_H
+#endif // INTERFACELANGUAGEHANDLER_H

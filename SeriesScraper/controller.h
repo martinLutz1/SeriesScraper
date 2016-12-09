@@ -1,17 +1,17 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <QObject>
-#include <QString>
+#include "message.h"
+#include "settings.h"
 #include "directoryparser.h"
 #include "seriesparser.h"
-#include "filerenamer.h"
 #include "seriesdata.h"
+#include "filerenamer.h"
+#include "serieslanguagehandler.h"
 #include "nameschemehandler.h"
-#include "message.h"
-#include "languagehandler.h"
-#include "serieslanguage.h"
-#include "settings.h"
+#include "interfacelanguagehandler.h"
+#include "filetypehandler.h"
+#include <QObject>
 
 class Controller : public QObject
 {
@@ -22,10 +22,11 @@ private:
     SeriesData seriesData;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
-    LanguageHandler languageHandler;
-    SeriesLanguage seriesLanguage;
+    InterfaceLanguageHandler interfaceLanguageHandler;
+    SeriesLanguageHandler seriesLanguageHandler;
     Settings settings;
 
+    void initializeFileTypes();
     void initializeNameSchemes();
     void initializeSeriesLanguages();
     void initializeGUILanguages();

@@ -97,7 +97,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     // Return empty vector, if multiple indexes with the same position exist
     std::vector<int> sortedEpisodePositions = episodePosition;
     std::sort(sortedEpisodePositions.begin(), sortedEpisodePositions.end());
-    for (int i = 1; i < sortedEpisodePositions.size(); i++)
+    for (int i = 1; i < int(sortedEpisodePositions.size()); i++)
     {
         if (sortedEpisodePositions.at(i - 1) == sortedEpisodePositions.at(i))
             return std::vector<int>();
@@ -107,6 +107,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 
 void DirectoryParser::setFileInformation()
 {
+    directory.setFilter(QDir::Files);
     QFileInfoList fileInfoList = directory.entryInfoList(filter);
     QFileInfoList sortedFileInfoList = sortFiles(fileInfoList);
 

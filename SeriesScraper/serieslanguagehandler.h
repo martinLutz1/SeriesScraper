@@ -1,15 +1,15 @@
-#ifndef SERIESLANGUAGE_H
-#define SERIESLANGUAGE_H
+#ifndef SERIESLANGUAGEHANDLER_H
+#define SERIESLANGUAGEHANDLER_H
 
-#include <QDir>
-#include <QFile>
-#include <QStringList>
 #include "jsonloader.h"
+#include <QStringList>
+#include <QFile>
+#include <QDir>
 
-class SeriesLanguage : public JsonLoader
+class SeriesLanguageHandler : public JsonLoader
 {
 public:
-    SeriesLanguage();
+    SeriesLanguageHandler();
     bool loadSeriesLanguageFile();
     QStringList getLanguageList();
     QString getShortName(QString language);
@@ -24,4 +24,4 @@ private:
 };
 
 
-#endif // SERIESLANGUAGE_H
+#endif // SERIESLANGUAGEHA NDLER_H

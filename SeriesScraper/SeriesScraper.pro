@@ -26,7 +26,6 @@ SOURCES += main.cpp \
     omdbseriesparser.cpp \
     tmdbseriesparser.cpp \
     jsonscraper.cpp \
-    serieslanguage.cpp \
     aboutdialog.cpp \
     settingswindow.cpp \
     error.cpp \
@@ -37,8 +36,9 @@ SOURCES += main.cpp \
     customshadoweffect.cpp \
     keypresseater.cpp \
     rawloader.cpp \
-    languagehandler.cpp \
-    filetypehandler.cpp
+    filetypehandler.cpp \
+    serieslanguagehandler.cpp \
+    interfacelanguagehandler.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -53,7 +53,6 @@ HEADERS  += mainwindow.h \
     omdbseriesparser.h \
     tmdbseriesparser.h \
     jsonscraper.h \
-    serieslanguage.h \
     aboutdialog.h \
     settingswindow.h \
     error.h \
@@ -64,8 +63,9 @@ HEADERS  += mainwindow.h \
     customshadoweffect.h \
     keypresseater.h \
     rawloader.h \
-    languagehandler.h \
-    filetypehandler.h
+    filetypehandler.h \
+    serieslanguagehandler.h \
+    interfacelanguagehandler.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

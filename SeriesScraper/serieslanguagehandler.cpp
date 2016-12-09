@@ -1,19 +1,17 @@
-#include "serieslanguage.h"
-
+#include "serieslanguagehandler.h"
 #include <QCoreApplication>
 #include <QByteArray>
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QIODevice>
 #include <QDebug>
 
-SeriesLanguage::SeriesLanguage()
+SeriesLanguageHandler::SeriesLanguageHandler()
 {
     applicationDirectory = QCoreApplication::applicationDirPath();
     filePath = applicationDirectory.absoluteFilePath("serieslanguages.json");
 }
 
-bool SeriesLanguage::loadSeriesLanguageFile()
+bool SeriesLanguageHandler::loadSeriesLanguageFile()
 {
     languageShortNameList.clear();
     seriesLanguageList.clear();
@@ -28,12 +26,12 @@ bool SeriesLanguage::loadSeriesLanguageFile()
     return loadingSuccessful;
 }
 
-QStringList SeriesLanguage::getLanguageList()
+QStringList SeriesLanguageHandler::getLanguageList()
 {
     return seriesLanguageList;
 }
 
-QString SeriesLanguage::getShortName(QString language)
+QString SeriesLanguageHandler::getShortName(QString language)
 {
     for (int i = 0; i < seriesLanguageList.size(); i++)
     {
@@ -44,7 +42,7 @@ QString SeriesLanguage::getShortName(QString language)
     return defaulEntry;
 }
 
-QString SeriesLanguage::getShortName(int language)
+QString SeriesLanguageHandler::getShortName(int language)
 {
     if (language > 0 && language <= languageShortNameList.size())
         return languageShortNameList.at(language - 1);
