@@ -1,4 +1,4 @@
-#include "languagecontrol.h"
+#include "languagehandler.h"
 #include <QDebug>
 #include <QCoreApplication>
 #include <QFile>
@@ -7,11 +7,11 @@
 #include <QJsonObject>
 #include <QIODevice>
 
-LanguageControl::LanguageControl()
+LanguageHandler::LanguageHandler()
 {
 }
 
-bool LanguageControl::initialize()
+bool LanguageHandler::initialize()
 {
     bool languageFilesExist = false;
     languageFileDirectory.setPath(QCoreApplication::applicationDirPath());
@@ -26,7 +26,7 @@ bool LanguageControl::initialize()
     return languageFilesExist;
 }
 
-QStringList LanguageControl::getLanguageList()
+QStringList LanguageHandler::getLanguageList()
 {
     QStringList languageListWithoutExtensions;
     for (int i = 0; i < languageFileList.size(); i++)
@@ -35,7 +35,7 @@ QStringList LanguageControl::getLanguageList()
     return languageListWithoutExtensions;
 }
 
-bool LanguageControl::loadLanguage(QString language)
+bool LanguageHandler::loadLanguage(QString language)
 {
     QString filePath =  languageFileDirectory.absoluteFilePath(language.append(".json"));
     bool loadingSuccessful = loadJsonObject(filePath);
@@ -93,7 +93,7 @@ bool LanguageControl::loadLanguage(QString language)
     return loadingSuccessful;
 }
 
-QString LanguageControl::getTranslation(int translateThis)
+QString LanguageHandler::getTranslation(int translateThis)
 {
     if (translateThis < languageData.getTranslationList().size())
         return languageData.getTranslation(translateThis);
@@ -101,7 +101,7 @@ QString LanguageControl::getTranslation(int translateThis)
         return QString("");
 }
 
-QStringList LanguageControl::getTranslationList()
+QStringList LanguageHandler::getTranslationList()
 {
     return languageData.getTranslationList();
 }
