@@ -93,6 +93,15 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
             episodePosition.push_back(foundEpisodePosition);
         }
     }
+
+    // Return empty vector, if multiple indexes with the same position exist
+    std::vector<int> sortedEpisodePositions = episodePosition;
+    std::sort(sortedEpisodePositions.begin(), sortedEpisodePositions.end());
+    for (int i = 1; i < sortedEpisodePositions.size(); i++)
+    {
+        if (sortedEpisodePositions.at(i - 1) == sortedEpisodePositions.at(i))
+            return std::vector<int>();
+    }
     return episodePosition;
 }
 
