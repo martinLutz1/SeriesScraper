@@ -10,6 +10,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+#if defined (Q_OS_MACX)
+    ui->outputTextEdit->setFontPointSize(13);
+#endif
     QObject::connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(hide()));
 }
 
