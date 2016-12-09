@@ -6,7 +6,7 @@ FileTypeHandler::FileTypeHandler()
 {
     QDir applicationDirectory = QCoreApplication::applicationDirPath();
     fileTypeFile = new QFile;
-    fileTypeFile->setFileName(applicationDirectory.absoluteFilePath("fileType.list"));
+    fileTypeFile->setFileName(applicationDirectory.absoluteFilePath("filetype.list"));
 }
 
 FileTypeHandler::~FileTypeHandler()
@@ -16,7 +16,15 @@ FileTypeHandler::~FileTypeHandler()
 
 bool FileTypeHandler::loadFileTypeFile()
 {
-    return loadFile(fileTypeFile);
+    bool loadingSuccessful = loadFile(fileTypeFile);
+    if (!loadingSuccessful)
+    {
+        QStringList defaultFileTypes;
+        defaultFileTypes << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
+        loadedFile = defaultFileTypes;
+        saveFileTypeFile();
+    }
+    return loadingSuccessful;
 }
 
 bool FileTypeHandler::saveFileTypeFile()

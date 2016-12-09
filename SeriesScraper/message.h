@@ -60,7 +60,8 @@ public:
         controller_savePath_settings,
         controller_useDarkTheme_settings,
         controller_addRawNameScheme_settings,
-        controller_setRawNameSchemes_settings
+        controller_setRawNameSchemes_settings,
+        controller_setFileTypes_settings
     };
 
     union MessageData {

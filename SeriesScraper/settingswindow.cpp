@@ -140,6 +140,7 @@ void SettingsWindow::notify(Message &msg)
     case Message::controller_setRawNameSchemes_settings:
     {
         QStringList nameSchemes = *msg.data[0].qsListPointer;
+        ui->nameSchemeListWidget->clear();
         ui->nameSchemeListWidget->addItems(nameSchemes);
         for (int i = 0; i < nameSchemes.size(); i++)
         {
@@ -153,7 +154,13 @@ void SettingsWindow::notify(Message &msg)
         int index = msg.data[0].i;
         QListWidgetItem *item = ui->nameSchemeListWidget->takeItem(index);
         delete item;
-
+        break;
+    }
+    case Message::controller_setFileTypes_settings:
+    {
+        QStringList fileTypes = *msg.data[0].qsListPointer;
+        ui->fileTypeListWidget->clear();
+        ui->fileTypeListWidget->addItems(fileTypes);
         break;
     }
     default:

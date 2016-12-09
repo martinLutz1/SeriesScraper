@@ -4,11 +4,15 @@
 
 void Controller::initializeFileTypes()
 {
-    QStringList fileTypes;
-    fileTypes << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
-    directoryParser.setFileTypes(fileTypes); // Todo: read from file
-   // fileTypes =
+    // Todo: Error message
+    fileTypeHandler.loadFileTypeFile();
+    QStringList fileTypes = fileTypeHandler.getFileTypes();
+    directoryParser.setFileTypes(fileTypes);
 
+    Message msgSetFileTypes;
+    msgSetFileTypes.type = Message::controller_setFileTypes_settings;
+    msgSetFileTypes.data[0].qsListPointer = &fileTypes;
+    emit(sendMessage(msgSetFileTypes));
 }
 
 void Controller::initializeNameSchemes()
@@ -74,16 +78,16 @@ void Controller::initializeSeriesLanguages()
     seriesData.setSelectedLanguage(languageShortName); // Settings
 }
 
-void Controller::initializeGUILanguages()
+void Controller::initializeInterfaceLanguages()
 {
     bool languageInitSuccess = interfaceLanguageHandler.initialize();
     if (languageInitSuccess)
     {
-        QStringList guiLanguageList = interfaceLanguageHandler.getLanguageList();
+        QStringList interfaceLanguageList = interfaceLanguageHandler.getLanguageList();
         // Send gui language list to settings
         Message msgAddGUILanguages;
         msgAddGUILanguages.type = Message::controller_addGUILanguages_settings;
-        msgAddGUILanguages.data[0].qsListPointer = &guiLanguageList;
+        msgAddGUILanguages.data[0].qsListPointer = &interfaceLanguageList;
         emit(sendMessage(msgAddGUILanguages));
     } else // No language files found
     {
@@ -99,13 +103,13 @@ void Controller::initializeSettings()
 {
     int selectedSeriesParser = settings.getSeriesDatabase();
     int selectedNameScheme = settings.getNameScheme();
-    QString selectedGuiLanguage = settings.getGuiLanguage();
+    QString selectedInterfaceLanguage = settings.getGuiLanguage();
     QString selectedSeriesLanguage = settings.getSeriesLanguage();
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
     bool useDarkTheme = settings.getDarkTheme();
 
-    changeGuiLanguage(selectedGuiLanguage);
+    changeInterfaceLanguage(selectedInterfaceLanguage);
     changeSeriesParser(selectedSeriesParser);
     changeNameScheme(selectedNameScheme);
     changeSeriesLanguage(selectedSeriesLanguage);
@@ -188,9 +192,10 @@ void Controller::initialize()
         emit(sendMessage(msgUseDarkTheme));
     }
 
-    initializeGUILanguages();
-    initializeNameSchemes();
+    initializeFileTypes();
     initializeSeriesLanguages();
+    initializeInterfaceLanguages();
+    initializeNameSchemes();
     initializeSettings();
 }
 
@@ -251,13 +256,13 @@ bool Controller::changeSeason(int season)
     return loadSeries(series, season);
 }
 
-bool Controller::changeGuiLanguage(QString language)
+bool Controller::changeInterfaceLanguage(QString language)
 {
     bool loadingSuccessful = interfaceLanguageHandler.loadLanguage(language);
-    QString guiLanguage = "English";
+    QString interfaceLanguage = "English";
     if (loadingSuccessful)
     {
-        guiLanguage = language;
+        interfaceLanguage = language;
         QStringList translationList = interfaceLanguageHandler.getTranslationList();
         // Send translations to view, about and settings
         Message msgChangeLocalization;
@@ -271,7 +276,7 @@ bool Controller::changeGuiLanguage(QString language)
         setStatusMessage("Could not read language file " + language + ".json");
     }
 
-    settings.setGuiLanguage(guiLanguage);
+    settings.setGuiLanguage(interfaceLanguage);
     return loadingSuccessful;
 }
 
@@ -578,7 +583,7 @@ void Controller::notify(Message &msg)
     case Message::settings_changeGUILanguage_controller:
     {
         QString language = *msg.data[0].qsPointer;
-        changeGuiLanguage(language);
+        changeInterfaceLanguage(language);
         break;
     }
     case Message::view_showAboutDialog_controller:

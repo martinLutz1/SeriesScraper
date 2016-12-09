@@ -18,29 +18,26 @@ class Controller : public QObject
     Q_OBJECT
 private:
     SeriesParser seriesParser;
-    DirectoryParser directoryParser;
     SeriesData seriesData;
+    DirectoryParser directoryParser;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
-    InterfaceLanguageHandler interfaceLanguageHandler;
+    FileTypeHandler fileTypeHandler;
     SeriesLanguageHandler seriesLanguageHandler;
+    InterfaceLanguageHandler interfaceLanguageHandler;
     Settings settings;
 
     void initializeFileTypes();
     void initializeNameSchemes();
     void initializeSeriesLanguages();
-    void initializeGUILanguages();
+    void initializeInterfaceLanguages();
     void initializeSettings();
     void updateNewFileNames();
     void setStatusMessage(QString status);
 
-public:
-    explicit Controller(QObject *parent = 0);
-    ~Controller();
-    void initialize();
-    bool loadSeries(QString series, int season); // Set series if existing and set table
+    bool loadSeries(QString series, int season);
     bool changeSeason(int season);
-    bool changeGuiLanguage(QString language);
+    bool changeInterfaceLanguage(QString language);
     void changeSeriesLanguage(QString language);
     void changeSeriesParser(int seriesParser);
     void changeSeries(QString series, int season);
@@ -51,6 +48,11 @@ public:
     bool renameFiles();
     void updateView();
     void updateRenameButton();
+
+public:
+    explicit Controller(QObject *parent = 0);
+    ~Controller();
+    void initialize();
 
 public slots:
     void notify(Message &msg);
