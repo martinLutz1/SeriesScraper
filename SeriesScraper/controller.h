@@ -9,7 +9,7 @@
 #include "seriesdata.h"
 #include "nameschemehandler.h"
 #include "message.h"
-#include "languagecontrol.h"
+#include "languagehandler.h"
 #include "serieslanguage.h"
 #include "settings.h"
 
@@ -22,7 +22,7 @@ private:
     SeriesData seriesData;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
-    LanguageControl languageControl;
+    LanguageHandler languageHandler;
     SeriesLanguage seriesLanguage;
     Settings settings;
 

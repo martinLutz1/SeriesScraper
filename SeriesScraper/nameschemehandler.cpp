@@ -1,66 +1,44 @@
 #include "nameschemehandler.h"
-
 #include <QCoreApplication>
+#include <QDir>
 #include <QDebug>
 
 NameSchemeHandler::NameSchemeHandler() :
-    selectedNameSchemeIndex(0),
-    successReading(false)
+    selectedNameSchemeIndex(0)
 {
-    applicationDirectory = QCoreApplication::applicationDirPath();
-    nameSchemeFile.setFileName(applicationDirectory.absoluteFilePath("namescheme.list"));
+    QDir applicationDirectory = QCoreApplication::applicationDirPath();
+    nameSchemeFile = new QFile;
+    nameSchemeFile->setFileName(applicationDirectory.absoluteFilePath("namescheme.list"));
+}
+
+NameSchemeHandler::~NameSchemeHandler()
+{
+    delete nameSchemeFile;
 }
 
 bool NameSchemeHandler::readNameSchemeFile()
 {
-    successReading = nameSchemeFile.open(QIODevice::ReadOnly);
-    if (!successReading)
-        return false;
-
-    QTextStream in(&nameSchemeFile);
-    while (!in.atEnd())
-    {
-        QString line = in.readLine();
-        if (!line.isEmpty())
-            nameSchemeList << line;
-    }
-    nameSchemeFile.close();
-    return true;
+    return loadFile(nameSchemeFile);
 }
 
 bool NameSchemeHandler::saveNameSchemeFile()
 {
-    successReading = nameSchemeFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
-    if (!successReading) // Reading failed
-        return false;
-
-    int size = nameSchemeList.size();
-    QTextStream inOut(&nameSchemeFile);
-
-    for (int i = 0; i < size; i++)
-    {
-        if (i - size == 0) // Last item
-            inOut << nameSchemeList.at(i);
-        else
-            inOut << nameSchemeList.at(i) << "\n";
-    }
-    nameSchemeFile.close();
-    return successReading;
+    return saveFile(nameSchemeFile);
 }
 
 bool NameSchemeHandler::addNameScheme(QString nameScheme)
 {
-    nameSchemeList << nameScheme;
+    loadedFile << nameScheme;
     return saveNameSchemeFile();
 }
 
 bool NameSchemeHandler::removeNameScheme(int index)
 {
-    int size = nameSchemeList.size();
+    int size = loadedFile.size();
     if (!(index >= 0 && index < size))
         return false;
 
-    nameSchemeList.removeAt(index);
+    loadedFile.removeAt(index);
     if (index == selectedNameSchemeIndex)
         selectedNameSchemeIndex = 0;
     return saveNameSchemeFile();
@@ -68,29 +46,31 @@ bool NameSchemeHandler::removeNameScheme(int index)
 
 bool NameSchemeHandler::replaceNameScheme(int index, QString newNameScheme)
 {
-    int size = nameSchemeList.size();
-    if (!(index >= 0 && index < size))
-        return false;
-
-    nameSchemeList[index] = newNameScheme;
-    saveNameSchemeFile();
-    return true;
+    int size = loadedFile.size();
+    bool validIndex = (index >= 0 && index < size);
+    if (validIndex)
+    {
+        loadedFile[index] = newNameScheme;
+        return saveNameSchemeFile();
+    }
+    return validIndex;
 }
 
 bool NameSchemeHandler::setNameScheme(int index)
 {
-    int size = nameSchemeList.size();
-    if (!(index >= 0 && index < size))
-        return false;
-
-    selectedNameSchemeIndex = index;
-    nameSchemeParser.parseNameScheme(nameSchemeList.at(index));
-    return true;
+    int size = loadedFile.size();
+    bool validIndex = (index >= 0 && index < size);
+    if (validIndex)
+    {
+        selectedNameSchemeIndex = index;
+        nameSchemeParser.parseNameScheme(loadedFile.at(index));
+    }
+    return validIndex;
 }
 
 QString NameSchemeHandler::getNameScheme()
 {
-    return nameSchemeList.at(selectedNameSchemeIndex);
+    return loadedFile.at(selectedNameSchemeIndex);
 }
 
 QString NameSchemeHandler::getFileName(QString series, int season, int episode, QString episodeName)
@@ -113,12 +93,12 @@ QStringList NameSchemeHandler::getFileNameList(QString series, int season, int a
 
 QString NameSchemeHandler::getNameSchemeRepresentation()
 {
-    return(nameSchemeParser.getNameSchemeRepresentation());
+    return nameSchemeParser.getNameSchemeRepresentation();
 }
 
 int NameSchemeHandler::getAmountNameSchemes()
 {
-    return nameSchemeList.size();
+    return loadedFile.size();
 }
 
 int NameSchemeHandler::getSelectedNameSchemeIndex()

@@ -24,7 +24,7 @@ void Controller::initializeNameSchemes()
         nameSchemeHandler.addNameScheme("%$series% - S%$season(2)%E%$episode(2)% - %$episodeName%");
         nameSchemeRepresentationList << nameSchemeHandler.getNameSchemeRepresentation();
         // Error message
-        QString nameSchemeFileNotFound = languageControl.getTranslation(LanguageData::nameSchemeFileNotFound);
+        QString nameSchemeFileNotFound = languageHandler.getTranslation(LanguageData::nameSchemeFileNotFound);
         setStatusMessage(nameSchemeFileNotFound);
     }
 
@@ -51,7 +51,7 @@ void Controller::initializeSeriesLanguages()
     {
         seriesLanguageList << QString("English");
         // Error message
-        QString languageFileReadingFailure = languageControl.getTranslation(LanguageData::seriesLanguageNotFound);
+        QString languageFileReadingFailure = languageHandler.getTranslation(LanguageData::seriesLanguageNotFound);
         setStatusMessage(languageFileReadingFailure);
     }
 
@@ -67,10 +67,10 @@ void Controller::initializeSeriesLanguages()
 
 void Controller::initializeGUILanguages()
 {
-    bool languageInitSuccess = languageControl.initialize();
+    bool languageInitSuccess = languageHandler.initialize();
     if (languageInitSuccess)
     {
-        QStringList guiLanguageList = languageControl.getLanguageList();
+        QStringList guiLanguageList = languageHandler.getLanguageList();
         // Send gui language list to settings
         Message msgAddGUILanguages;
         msgAddGUILanguages.type = Message::controller_addGUILanguages_settings;
@@ -179,6 +179,10 @@ void Controller::initialize()
         emit(sendMessage(msgUseDarkTheme));
     }
 
+    QStringList fileTypes;
+    fileTypes << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
+    directoryParser.setFileTypes(fileTypes); // Todo: read from file
+
     initializeGUILanguages();
     initializeNameSchemes();
     initializeSeriesLanguages();
@@ -244,12 +248,12 @@ bool Controller::changeSeason(int season)
 
 bool Controller::changeGuiLanguage(QString language)
 {
-    bool loadingSuccessful = languageControl.loadLanguage(language);
+    bool loadingSuccessful = languageHandler.loadLanguage(language);
     QString guiLanguage = "English";
     if (loadingSuccessful)
     {
         guiLanguage = language;
-        QStringList translationList = languageControl.getTranslationList();
+        QStringList translationList = languageHandler.getTranslationList();
         // Send translations to view, about and settings
         Message msgChangeLocalization;
         msgChangeLocalization.type = Message::controller_changeLocalization_view;
@@ -358,7 +362,7 @@ void Controller::changeNameScheme(int nameScheme)
         newNameScheme = nameScheme;
     else
     {
-        QString nameSchemeLineNotFound = languageControl.getTranslation(LanguageData::nameSchemeLineNotFound);
+        QString nameSchemeLineNotFound = languageHandler.getTranslation(LanguageData::nameSchemeLineNotFound);
         setStatusMessage(nameSchemeLineNotFound + " " +  QString::number(nameScheme + 1));
     }
 
@@ -408,6 +412,7 @@ bool Controller::renameFiles()
 
     if (renameSuccess)
     {
+        directoryParser.initializeDirectory(directory.absolutePath());
         QStringList renamedFiles = directoryParser.getFiles();
         QStringList renamedFilesWithoutSuffix = directoryParser.getFilesWithoutSuffix();
         seriesData.setOldFileNames(renamedFiles);
@@ -415,12 +420,12 @@ bool Controller::renameFiles()
         updateView();
 
         // Success Message
-        QString renameSuccessful = languageControl.getTranslation(LanguageData::renameSuccess);
+        QString renameSuccessful = languageHandler.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful);
     } else
     {
         // Failure Message
-        QString renameFailure = languageControl.getTranslation(LanguageData::renameFailed);
+        QString renameFailure = languageHandler.getTranslation(LanguageData::renameFailed);
         setStatusMessage(renameFailure);
     }
     return renameSuccess;

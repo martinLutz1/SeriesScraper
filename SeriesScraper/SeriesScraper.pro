@@ -17,7 +17,6 @@ SOURCES += main.cpp \
     directoryparser.cpp \
     application.cpp \
     languagedata.cpp \
-    languagecontrol.cpp \
     controller.cpp \
     seriesdata.cpp \
     message.cpp \
@@ -36,13 +35,15 @@ SOURCES += main.cpp \
     seriesparser.cpp \
     seriesfilesaver.cpp \
     customshadoweffect.cpp \
-    keypresseater.cpp
+    keypresseater.cpp \
+    rawloader.cpp \
+    languagehandler.cpp \
+    filetypehandler.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
     application.h \
     languagedata.h \
-    languagecontrol.h \
     controller.h \
     seriesdata.h \
     message.h \
@@ -61,7 +62,10 @@ HEADERS  += mainwindow.h \
     seriesparser.h \
     seriesfilesaver.h \
     customshadoweffect.h \
-    keypresseater.h
+    keypresseater.h \
+    rawloader.h \
+    languagehandler.h \
+    filetypehandler.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

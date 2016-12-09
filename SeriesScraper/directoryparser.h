@@ -11,28 +11,33 @@ class DirectoryParser
 private:
     QDir directory;
     QString directoryPathInput;
+    QStringList filter;
     QRegularExpression seasonAndEpisodeExpression;
     QRegularExpression episodeNumberExpression;
     QRegularExpression seasonNumberExpression;
     QRegularExpression numberExpression;
-    QStringList filter;
 
     int foundSeason;
+    QStringList sortedFiles;
+    QStringList sortedFileWithoutSuffix;
+    QStringList suffixes;
 
-    QStringList sortFiles(QStringList files);
     QFileInfoList sortFiles(QFileInfoList files);
+    QFileInfoList naturalSort(QFileInfoList files);
     std::vector<int> getEpisodePositions(QStringList episodeList);
-    void setNameFilterToAll();
+    void setFileInformation();
 
 public:
     DirectoryParser();
+    void setFileTypes(QStringList fileTypes);
     bool initializeDirectory(QString path);
+
     QString getDirectoryPathInput();
+    int getFoundSeason();
     QStringList getFiles();
     QStringList getFilesWithoutSuffix();
-    QStringList getFiles(QString suffix);
     QStringList getFilesSuffix();
-    int getFoundSeason();
+
 };
 
 #endif // DIRECTORYPARSER_H

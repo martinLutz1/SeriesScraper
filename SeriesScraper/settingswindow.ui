@@ -44,7 +44,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideRight</enum>
@@ -234,7 +234,7 @@
     <attribute name="title">
      <string>Video</string>
     </attribute>
-    <widget class="QListWidget" name="videoFomatsListWidget">
+    <widget class="QListWidget" name="fileTypeListWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -250,7 +250,7 @@
       <enum>QListView::IconMode</enum>
      </property>
     </widget>
-    <widget class="QGroupBox" name="newFormatGroupBox">
+    <widget class="QGroupBox" name="videoGroupBox">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -262,7 +262,7 @@
      <property name="title">
       <string>New format</string>
      </property>
-     <widget class="QLineEdit" name="newFomatLineEdit">
+     <widget class="QLineEdit" name="newFileTypeLineEdit">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -272,9 +272,9 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="newFormatAddButton">
+     <widget class="QPushButton" name="newFileTypeAddButton">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>
@@ -288,9 +288,9 @@
        <string>Add</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="formatRemoveButton">
+     <widget class="QPushButton" name="fileTypeRemoveButton">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>

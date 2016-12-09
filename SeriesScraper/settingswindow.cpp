@@ -36,8 +36,11 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
     QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
     QObject::connect(ui->darkThemeCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDarkThemeChanged(bool)));
-
     QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
+
+    // Connections of file type section
+    //QObject::connect(ui->fileType)
+    // Connections of name scheme section
     QObject::connect(ui->nameSchemeListWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onNameSchemeChanged(QListWidgetItem*)));
     QObject::connect(ui->nameSchemeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveNameScheme()));
     QObject::connect(keyPressEaterDeleteNameScheme, SIGNAL(keyPressed()), this, SLOT(onRemoveNameScheme()));
@@ -175,9 +178,9 @@ void SettingsWindow::changeLocalization(QStringList translationList)
     ui->saveSeriesCheckBox->setText(translationList.at(LanguageData::series));
     ui->seriesDatabaseGroupBox->setTitle(translationList.at(LanguageData::seriesDatabase));
     ui->recommendLabel->setText(translationList.at(LanguageData::recommended));
-    ui->newFormatGroupBox->setTitle(translationList.at(LanguageData::newFormat));
-    ui->newFormatAddButton->setText(translationList.at(LanguageData::add));
-    ui->formatRemoveButton->setText(translationList.at(LanguageData::remove));
+    ui->videoGroupBox->setTitle(translationList.at(LanguageData::newFormat));
+    ui->newFileTypeAddButton->setText(translationList.at(LanguageData::add));
+    ui->fileTypeRemoveButton->setText(translationList.at(LanguageData::remove));
     ui->newNameSchemeGroupBox->setTitle(translationList.at(LanguageData::newNameScheme));
     ui->newNameSchemeAddButton->setText(translationList.at(LanguageData::add));
     ui->nameSchemeRemoveButton->setText(translationList.at(LanguageData::remove));

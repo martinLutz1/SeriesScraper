@@ -1,14 +1,15 @@
 #ifndef NAMESCHEMEHANDLER_H
 #define NAMESCHEMEHANDLER_H
 
-#include <QStringList>
-#include <QDir>
+#include "rawloader.h"
 #include "nameschemeparser.h"
+#include <QFile>
 
-class NameSchemeHandler
+class NameSchemeHandler : public RawLoader
 {
 public:
     NameSchemeHandler();
+    ~NameSchemeHandler();
     bool readNameSchemeFile();
     bool saveNameSchemeFile();
     bool addNameScheme(QString nameScheme);
@@ -26,11 +27,8 @@ public:
 
 private:
     int selectedNameSchemeIndex;
-    bool successReading;
-    QStringList nameSchemeList;
-    QDir applicationDirectory;
-    QFile nameSchemeFile;
     NameSchemeParser nameSchemeParser;
+    QFile *nameSchemeFile;
 };
 
 #endif // NAMESCHEMEHANDLER_H
