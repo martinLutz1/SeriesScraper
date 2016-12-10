@@ -1,9 +1,9 @@
-$series% - S%$season(2)%E%$episode(2)% - %$episodeName
-$series% - s%$season%e%$episode% - %$episodeName
-$series% S%$season(2)%E%$episode(2)% %$episodeName
-[%$series%] - S%$season(2)%E%$episode(2)% - %$episodeName
-[%$series%] S%$season(2)%E%$episode(2)% %$episodeName
-$series% s%$season(2)% e%$episode(2)% %$episodeName%$replace( =.)
-$series%.%$season%$episode(2)
-$series% S%$season% Episode %$episode
-$series% - s%$season%e%$episode(2)% - %$episodeName%$replace(ö=oe)%$replace(Ö=Oe)%$replace(ü=ue)%$replace(Ü=Ue)%$replace(ä=ae)%$replace(Ä=Ae)%$replace(ß=ss)
+|Simple| <series> - S<season(2)>E<episode(2)> - <episodeName>
+|Simple alt.| <series> - s<season(2)>e<episode(2)> - <episodeName>
+|Simple removed umlauts| <series> - S<season(2)>E<episode(2)> - <episodeName> |replace(ä=ae|ü=ue|ö=oe|Ä=Ae|U=Ue|Ö=Oe|ß=ss)|
+|No separation| <series> S<season(2)>E<episode(2)> <episodeName>
+|No separation alt.| <series> s<season(2)>e<episode(2)> <episodeName>
+|[] Decoration| [<series>] - S<season(2)>E<episode(2)> - <episodeName>
+|[] Decoration, no separation| [<series>] S<season(2)>E<episode(2)> <episodeName>
+|Dot separated| <series> s<season(2)>e<episode(2)> <episodeName> |replace( =.)|
+|Number| <series> <season><episode(2)>

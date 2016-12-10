@@ -63,7 +63,7 @@ bool NameSchemeHandler::setNameScheme(int index)
     if (validIndex)
     {
         selectedNameSchemeIndex = index;
-        nameSchemeParser.parseNameScheme(loadedFile.at(index));
+        nameSchemeParser.setNameScheme(loadedFile.at(index));
     }
     return validIndex;
 }

@@ -3,32 +3,28 @@
 
 NameSchemeParser::NameSchemeParser()
 {
-    seriesNameExpression.setPattern("\\$series");
-    seasonNumberExpression.setPattern("\\$season");
-    seasonNumberAdvancedExpression.setPattern("\\$season\\((\\d+)\\)");
-    episodeNumberExpression.setPattern("\\$episode");
-    episodeNumberAdvancedExpression.setPattern("\\$episode\\((\\d+)\\)");
-    episodeNameExpression.setPattern("\\$episodeName");
+    nameSchemeNameExpression.setPattern("^\\|.+?\\|");
+    replaceExpression.setPattern("\\|(replace)\\(.+\\)\\|$");
+    seriesNameExpression.setPattern("<series>");
+    seasonNumberExpression.setPattern("<season>");
+    seasonNumberAdvancedExpression.setPattern("<season\\((\\d+)\\)>");
+    episodeNumberExpression.setPattern("<episode>");
+    episodeNumberAdvancedExpression.setPattern("<episode\\((\\d+)\\)>");
+    episodeNameExpression.setPattern("\\<episodeName>");
     numberExpression.setPattern("\\d+");
-    nextVariableExpression.setPattern("%");
-    replaceExpression.setPattern("\\$replace\\((.+)=(.+)\\)");
+    generalVariableExpression.setPattern("<(.+?)>");
 }
 
-void NameSchemeParser::parseNameScheme(QString nameScheme)
+void NameSchemeParser::setNameScheme(QString nameScheme)
 {
-    // Split scheme at %
-    QStringList nameSchemeList = nameScheme.split(nextVariableExpression);
-    // Remove empty subsets
-    while(nameSchemeList.removeOne(""));
-
-    parsedNameSchemeList = nameSchemeList;
+    QString preParsedNameScheme = preParseNameScheme(nameScheme);
+    parsedNameSchemeList = parseNameScheme(preParsedNameScheme);
 }
 
 QString NameSchemeParser::getFileName(QString series, QString season, QString episode, QString episodeName)
 {
     QStringList variables = {series, season, episode, episodeName};
     QString fileName;
-    QStringList replaceFrom, replaceTo;
 
     for (int i = 0; i < parsedNameSchemeList.size(); i++)
     {
@@ -37,14 +33,15 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
 
         if (variableType == episodeNumber || variableType == seasonNumber)
         {
-            numberExpression.indexIn(currentString, 0);
+            QRegularExpressionMatch numberMatch = numberExpression.match(currentString);
+            QString foundNumber = numberMatch.captured();
             // Simple format
-            if (numberExpression.cap(0).isEmpty())
+            if (foundNumber.isEmpty())
                 fileName += variables[variableType];
             // Advanced format (leading zeros)
             else
             {
-                int numberLenght = numberExpression.cap(0).toInt();
+                int numberLenght = foundNumber.toInt();
                 QString number;
                 if (variableType == episodeNumber)
                     number = QString("%1").arg(episode.toInt(), numberLenght, 10, QChar('0'));
@@ -53,26 +50,13 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
 
                 fileName += number;
             }
-        } else if (variableType == replace) // Doesnt operate on RegExp, change me if you change replace operation
+        } else if (variableType != none)
         {
-            // Remove everything thats not inside the brackets
-            QString replaceTerm = currentString.remove(0, 9);
-            replaceTerm = replaceTerm.left(replaceTerm.size() - 1);
-
-            QStringList replaceTermSplitted = replaceTerm.split("=");
-            if (replaceTermSplitted.size() != 2) // Error message
-                continue;
-            else
-            { // Two terms found
-                replaceFrom << replaceTermSplitted.at(0);
-                replaceTo << replaceTermSplitted.at(1);
-            }
-
-        }
-        else if (variableType != none)
             fileName += variables[variableType];
-        else
+        } else
+        {
             fileName += currentString;
+        }
     }
 
     int replaceCount = replaceFrom.size();
@@ -87,66 +71,112 @@ QString NameSchemeParser::getFileName(QString series, QString season, QString ep
 
 QString NameSchemeParser::getNameSchemeRepresentation()
 {
-    QStringList variables = {"<series>", "<season", "<episode", "<episode name>", "$replace("};
     QString nameSchemeRepresentation;
-    QStringList replaceOperationList;
-
-    for (int i = 0; i < parsedNameSchemeList.size(); i++)
+    if (nameSchemeName.isEmpty())
     {
-        QString currentString = parsedNameSchemeList.at(i);
-        int variableType = getVariableType(currentString);
-        if (variableType == episodeNumber || variableType == seasonNumber)
-        {
-            numberExpression.indexIn(currentString, 0);
-            nameSchemeRepresentation += variables.at(variableType);
+        for (int i = 0; i < parsedNameSchemeList.size(); i++)
+            nameSchemeRepresentation += parsedNameSchemeList.at(i);
 
-            // Simple format
-            if (numberExpression.cap(0).isEmpty())
-                nameSchemeRepresentation.append(">");
-            // Advanced format (leading zeros)
+        int numberReplaceOperations = replaceFrom.size();
+        if (numberReplaceOperations > 0)
+            nameSchemeRepresentation += " |replace(" + QString::number(numberReplaceOperations) + ")|";
+    }
+    else
+    {
+        nameSchemeRepresentation = nameSchemeName;
+    }
+    return nameSchemeRepresentation;
+}
+
+QString NameSchemeParser::preParseNameScheme(QString nameScheme)
+{
+    // Determine name
+    QRegularExpressionMatch nameSchemeNameMatch = nameSchemeNameExpression.match(nameScheme);
+    QString name = nameSchemeNameMatch.captured();
+    nameSchemeName = name.remove("|");
+    nameScheme.remove(nameSchemeNameExpression);
+
+    // Parse replace operation
+    QRegularExpressionMatch replaceMatch = replaceExpression.match(nameScheme);
+    QString replace = replaceMatch.captured();
+
+    if (replace.size() > 0)
+    {
+        replace.chop(2); // Last 2 chars
+        replace.remove(0, 9); // First 9 chars
+
+        QStringList replaceTerms = replace.split("|");
+        for (int i = 0; i < replaceTerms.size(); i++)
+        {
+            QStringList replaceTermSplitted = replaceTerms.at(i).split("=");
+            if (replaceTermSplitted.size() != 2) // Error message
+                continue;
             else
             {
-                int numberLenght = numberExpression.cap(0).toInt();
-                nameSchemeRepresentation += "(" + QString::number(numberLenght) + ")>";
+                replaceFrom << replaceTermSplitted.at(0);
+                replaceTo << replaceTermSplitted.at(1);
             }
-        } else if (variableType == replace)
-        {
-            QString replaceOperationWithoutDollar = currentString.remove(0, 1);
-            replaceOperationList << replaceOperationWithoutDollar;
-        } else if (variableType != none)
-            nameSchemeRepresentation += variables.at(variableType);
-        else
-            nameSchemeRepresentation += currentString;
+        }
+        nameScheme.remove(replaceExpression);
+    } else
+    {
+        replaceFrom.clear();
+        replaceTo.clear();
     }
+    int lastNameSchemeCharPosition = nameScheme.length() - 1;
+    if (nameScheme.at(lastNameSchemeCharPosition) == ' ') // Remove last empty space, if existing
+        nameScheme.chop(1);
+    if (nameScheme.at(0) == ' ') // Remove first empty space, if existing
+        nameScheme.remove(0,1);
 
-    int replaceCount = replaceOperationList.size();
-    // Add counted replace operations to representation
-    if (replaceCount == 1)  // Show replace string if only one replace operation
-        nameSchemeRepresentation += "$" + replaceOperationList.at(0) + "$";
-    else if (replaceCount > 1)
-        nameSchemeRepresentation += variables.at(replace) + QString::number(replaceCount) + ")$";
+    return nameScheme;
+}
 
-    return nameSchemeRepresentation;
+QStringList NameSchemeParser::parseNameScheme(QString nameScheme)
+{
+    QStringList parsedNameScheme;
+    bool moreVariablesExist = false;
+    do
+    {
+        QRegularExpressionMatch variableMatch = generalVariableExpression.match(nameScheme);
+        moreVariablesExist = variableMatch.hasMatch();
+        if (moreVariablesExist)
+        {
+            QString foundVariable = variableMatch.captured();
+            int variableStartPosition = variableMatch.capturedStart();
+            int variableEndPosition = variableMatch.capturedEnd();
+
+            if (variableStartPosition > 0)
+            {
+                QString textInFrontOfVariable = nameScheme.left(variableStartPosition);
+                parsedNameScheme << textInFrontOfVariable;
+            }
+            parsedNameScheme << foundVariable;
+            nameScheme.remove(0, variableEndPosition);
+        } else
+        {
+            parsedNameScheme << nameScheme;
+        }
+    } while (moreVariablesExist);
+
+    return parsedNameScheme;
 }
 
 int NameSchemeParser::getVariableType(QString toCheck)
 {
-    if (seriesNameExpression.exactMatch(toCheck)) {
+    if (seriesNameExpression.match(toCheck).hasMatch()) {
         return seriesName;
     }
-    else if (seasonNumberExpression.exactMatch(toCheck)
-             || seasonNumberAdvancedExpression.exactMatch(toCheck)) {
+    else if (seasonNumberExpression.match(toCheck).hasMatch()
+             || seasonNumberAdvancedExpression.match(toCheck).hasMatch()) {
         return seasonNumber;
     }
-    else if (episodeNumberExpression.exactMatch(toCheck)
-             || episodeNumberAdvancedExpression.exactMatch(toCheck)) {
+    else if (episodeNumberExpression.match(toCheck).hasMatch()
+             || episodeNumberAdvancedExpression.match(toCheck).hasMatch()) {
         return episodeNumber;
     }
-    else if (episodeNameExpression.exactMatch(toCheck)) {
+    else if (episodeNameExpression.match(toCheck).hasMatch()) {
         return episodeName;
-    }
-    else if (replaceExpression.exactMatch(toCheck)) {
-        return replace;
     }
     else {
         return none;

@@ -1,37 +1,43 @@
 #ifndef NAMESCHEMEPARSER_H
 #define NAMESCHEMEPARSER_H
 #include <QStringList>
-#include <QRegExp>
+#include <QRegularExpression>
 
 class NameSchemeParser
 {
 public:
     NameSchemeParser();
-    void parseNameScheme(QString nameScheme);
+    void setNameScheme(QString nameScheme);
     QString getFileName(QString series, QString season, QString episode, QString episodeName);
     QString getNameSchemeRepresentation();
 
 private:
-    QRegExp seriesNameExpression;
-    QRegExp seasonNumberExpression;
-    QRegExp seasonNumberAdvancedExpression;
-    QRegExp episodeNumberAdvancedExpression;
-    QRegExp episodeNumberExpression;
-    QRegExp episodeNameExpression;
-    QRegExp numberExpression;
-    QRegExp nextVariableExpression;
-    QRegExp replaceExpression;
+    QRegularExpression nameSchemeNameExpression;
+    QRegularExpression replaceExpression;
+    QRegularExpression generalVariableExpression;
+
+    QRegularExpression seriesNameExpression;
+    QRegularExpression seasonNumberExpression;
+    QRegularExpression seasonNumberAdvancedExpression;
+    QRegularExpression episodeNumberAdvancedExpression;
+    QRegularExpression episodeNumberExpression;
+    QRegularExpression episodeNameExpression;
+    QRegularExpression numberExpression;
 
     QStringList parsedNameSchemeList;
+    QString nameSchemeName;
+    QStringList replaceFrom, replaceTo;
+
     enum VariableType {
         seriesName,
         seasonNumber,
         episodeNumber,
         episodeName,
-        replace,
         none
     };
 
+    QString preParseNameScheme(QString nameScheme);
+    QStringList parseNameScheme(QString nameScheme);
     int getVariableType(QString toCheck);
 };
 
