@@ -90,6 +90,9 @@ QString NameSchemeParser::getNameSchemeRepresentation()
 
 QString NameSchemeParser::preParseNameScheme(QString nameScheme)
 {
+    replaceFrom.clear();
+    replaceTo.clear();
+
     // Determine name
     QRegularExpressionMatch nameSchemeNameMatch = nameSchemeNameExpression.match(nameScheme);
     QString name = nameSchemeNameMatch.captured();
