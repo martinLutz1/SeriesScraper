@@ -695,14 +695,15 @@ void Controller::notify(Message &msg)
     case Message::settings_addFileType_controller:
     {
         QString fileType = *msg.data[0].qsPointer;
+        int position = fileTypeHandler.addFileType(fileType);
 
-        fileTypeHandler.addFileType(fileType);
         QStringList fileTypes = fileTypeHandler.getFileTypes();
         directoryParser.setFileTypes(fileTypes);
 
         Message msgAddFileTypeSettings;
         msgAddFileTypeSettings.type = Message::controller_addFileType_settings;
-        msgAddFileTypeSettings.data[0].qsPointer = &fileType;
+        msgAddFileTypeSettings.data[0].i = position;
+        msgAddFileTypeSettings.data[1].qsListPointer = &fileTypes;
         emit(sendMessage(msgAddFileTypeSettings));
 
         break;

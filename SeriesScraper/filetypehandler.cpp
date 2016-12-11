@@ -1,6 +1,7 @@
 #include "filetypehandler.h"
 #include <QCoreApplication>
 #include <QDir>
+#include <QDebug>
 
 FileTypeHandler::FileTypeHandler()
 {
@@ -22,8 +23,9 @@ bool FileTypeHandler::loadFileTypeFile()
         QStringList defaultFileTypes;
         defaultFileTypes << "avi" << "mkv" << "mp4" << "m4v" << "mpg" << "flv" << "webm" << "ogv" << "mov" << "wmv";
         loadedFile = defaultFileTypes;
-        saveFileTypeFile();
     }
+    sort();
+    saveFileTypeFile();
     return loadingSuccessful;
 }
 
@@ -37,14 +39,26 @@ QStringList FileTypeHandler::getFileTypes()
     return loadedFile;
 }
 
-void FileTypeHandler::addFileType(QString newFileType)
+int FileTypeHandler::addFileType(QString newFileType)
 {
     loadedFile << newFileType;
+    loadedFile.removeDuplicates();
+    sort();
     saveFileTypeFile();
+
+    int positionInList = loadedFile.indexOf(newFileType);
+    return positionInList;
 }
 
 void FileTypeHandler::removeFileType(int index)
 {
     loadedFile.removeAt(index);
     saveFileTypeFile();
+}
+
+void FileTypeHandler::sort()
+{
+    std::sort(loadedFile.begin(), loadedFile.end(),
+               [](const QString &s1, const QString &s2) {
+                   return s1.toLower() < s2.toLower(); });
 }

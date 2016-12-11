@@ -183,10 +183,11 @@ void SettingsWindow::notify(Message &msg)
     }
     case Message::controller_addFileType_settings:
     {
-        QString fileType = *msg.data[0].qsPointer;
-        ui->fileTypeListWidget->addItem(fileType);
-        int lastIndex = ui->fileTypeListWidget->count() - 1;
-        ui->fileTypeListWidget->setCurrentRow(lastIndex);
+        int index = msg.data[0].i;
+        QStringList fileTypes = *msg.data[1].qsListPointer;
+        ui->fileTypeListWidget->clear();
+        ui->fileTypeListWidget->addItems(fileTypes);
+        ui->fileTypeListWidget->setCurrentRow(index);
         break;
     }
     case Message::controller_removeFileType_settings:
