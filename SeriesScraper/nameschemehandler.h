@@ -18,8 +18,8 @@ public:
     bool setNameScheme(int index);
     QString getNameScheme();
     // Only run if setNameScheme(index) returned true before
-    QString getFileName(QString series, int season, int episode, QString episodeName);
-    QStringList getFileNameList(QString series, int amountEpisodes, int season, QStringList episodeName);
+    QString getFileName(QString series, QString airDate, int season, int episode, QString episodeName);
+    QStringList getFileNameList(QString series, QString airDate, int amountEpisodes, int season, QStringList episodeName);
     QString getNameSchemeRepresentation();
 
     int getAmountNameSchemes();

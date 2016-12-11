@@ -99,6 +99,12 @@ void SeriesData::setWorkingDirectory(QDir directory)
     if (directory.exists())
         workingDirectory = directory;
 }
+
+void SeriesData::setAirDate(QString airDate)
+{
+    this->airDate = airDate;
+}
+
 //----------------------- Getter -----------------------//
 
 QString SeriesData::getSeries()
@@ -175,6 +181,11 @@ QStringList SeriesData::getOldFileNamesWithoutSuffix()
 QDir SeriesData::getWorkingDirectory()
 {
     return workingDirectory;
+}
+
+QString SeriesData::getAirDate()
+{
+    return airDate;
 }
 
 QString SeriesData::removeSpecialCharacters(QString string)

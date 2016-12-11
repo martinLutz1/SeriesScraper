@@ -29,7 +29,7 @@ bool SeriesParser::scrapeSeries(QString series)
     }
     case omdb:
     {
-        return omdbSeriesParser.scrapeSeries(series, 1);
+        return omdbSeriesParser.scrapeSeries(series);
         break;
     }
     }
@@ -47,7 +47,25 @@ QString SeriesParser::getSeriesName()
     }
     case omdb:
     {
-        return seriesInput;
+        return omdbSeriesParser.getSeriesName();
+        break;
+    }
+    }
+}
+
+QString SeriesParser::getSeriesYear()
+{
+    switch(selectedSeriesParser)
+    {
+    default:
+    case tmdb:
+    {
+        return tmdbSeriesParser.getYear();
+        break;
+    }
+    case omdb:
+    {
+        return omdbSeriesParser.getYear();
         break;
     }
     }
@@ -83,8 +101,7 @@ QStringList SeriesParser::getEpisodeList(int season, QString language)
     }
     case omdb:
     {
-        omdbSeriesParser.scrapeSeries(seriesInput, season);
-        return omdbSeriesParser.getEpisodeList();
+        return omdbSeriesParser.getSeason(season);
         break;
     }
     }

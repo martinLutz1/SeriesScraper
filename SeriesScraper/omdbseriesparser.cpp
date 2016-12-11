@@ -9,40 +9,55 @@ OMDbSeriesParser::OMDbSeriesParser()
     QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
 }
 
-bool OMDbSeriesParser::scrapeSeries(QString series, int season)
+bool OMDbSeriesParser::scrapeSeries(QString series)
 {
+    seriesFullName.clear();
+    amountSeasons = 0;
+    year.clear();
+
     if (series.isEmpty())
-    {
-        amountSeasons = 0;
-        episodeList = QStringList();
         return false;
-    }
-    bool scrapingSuccessful = false;
-    // Create request string
-    QString requestUrl = "http://www.omdbapi.com/?t=" + series + "&season=" + QString::number(season);
 
-
-    if (scrapeJsonObject(requestUrl))
+    QString requestUrl = "http://www.omdbapi.com/?t=" + series + "&r=json";
+    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    if (scrapingSuccessful)
     {
         amountSeasons = parsedObject.value("totalSeasons").toString().toInt();
-        QStringList episodes;
-        QJsonArray episodeArray = parsedObject.value("Episodes").toArray();
-        for (int i = 0; i < episodeArray.size(); i++)
-            episodes << episodeArray[i].toObject().value("Title").toString();
-        episodeList = episodes;
+        seriesFullName = parsedObject.value("Title").toString();
+        year = parsedObject.value("Year").toString();
 
-        scrapingSuccessful = !episodeArray.isEmpty(); // True if we got any elements
+        scrapingSuccessful = !seriesFullName.isEmpty();
     }
     return scrapingSuccessful;
 }
 
-QStringList OMDbSeriesParser::getEpisodeList()
+QStringList OMDbSeriesParser::getSeason(int season)
 {
+    QStringList episodeList;
+    QString requestUrl = "http://www.omdbapi.com/?t=" + seriesFullName + "&season=" + QString::number(season);
+
+    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    if (scrapingSuccessful)
+    {
+        QJsonArray episodeArray = parsedObject.value("Episodes").toArray();
+        for (int i = 0; i < episodeArray.size(); i++)
+            episodeList << episodeArray[i].toObject().value("Title").toString();
+    }
     return episodeList;
 }
 
 int OMDbSeriesParser::getAmountSeasons()
 {
     return amountSeasons;
+}
+
+QString OMDbSeriesParser::getYear()
+{
+    return year;
+}
+
+QString OMDbSeriesParser::getSeriesName()
+{
+    return seriesFullName;
 }
 

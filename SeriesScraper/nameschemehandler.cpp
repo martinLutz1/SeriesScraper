@@ -73,19 +73,19 @@ QString NameSchemeHandler::getNameScheme()
     return loadedFile.at(selectedNameSchemeIndex);
 }
 
-QString NameSchemeHandler::getFileName(QString series, int season, int episode, QString episodeName)
+QString NameSchemeHandler::getFileName(QString series, QString airDate, int season, int episode, QString episodeName)
 {
-    QString fileName = nameSchemeParser.getFileName(series, QString::number(season),
+    QString fileName = nameSchemeParser.getFileName(series, airDate, QString::number(season),
                                                     QString::number(episode + 1), episodeName);
     return fileName;
 }
 
-QStringList NameSchemeHandler::getFileNameList(QString series, int season, int amountEpisodes, QStringList episodeName)
+QStringList NameSchemeHandler::getFileNameList(QString series, QString airDate, int season, int amountEpisodes, QStringList episodeName)
 {
     QStringList fileNameList;
     for (int i = 0; i < amountEpisodes; i++)
     {
-        QString fileName = getFileName(series, season, i, episodeName.at(i));
+        QString fileName = getFileName(series, airDate, season, i, episodeName.at(i));
         fileNameList << fileName;
     }
     return fileNameList;

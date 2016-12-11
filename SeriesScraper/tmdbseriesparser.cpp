@@ -9,16 +9,16 @@ TMDbSeriesParser::TMDbSeriesParser()
     QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
 }
 
-bool TMDbSeriesParser::scrapeSeries(QString seriesName)
+bool TMDbSeriesParser::scrapeSeries(QString series)
 {
     seriesID.clear();
     seriesFullName.clear();
     amountSeasons = 0;
-    if (seriesName.isEmpty()) {
-        return false;
-    }
 
-    QString searchFor = seriesName.replace(" ", "+");
+    if (series.isEmpty())
+        return false;
+
+    QString searchFor = series.replace(" ", "+");
     // Create request string
     QString requestUrl = tmdbUrl  + "search/tv?api_key=" + authentificationKey + "&query=" + searchFor;
 
@@ -61,6 +61,11 @@ int TMDbSeriesParser::getAmountSeasons()
     return amountSeasons;
 }
 
+QString TMDbSeriesParser::getYear()
+{
+    return year;
+}
+
 QString TMDbSeriesParser::getSeriesName()
 {
     return seriesFullName;
@@ -74,17 +79,31 @@ bool TMDbSeriesParser::setSeriesInformation(QString language)
     if (scrapingSuccessful) {
         QJsonValue numberOfSeasons = parsedObject.value("number_of_seasons");
         QJsonValue seriesName = parsedObject.value("name");
+        QJsonValue firstAirDateValue = parsedObject.value("first_air_date");
+        QJsonValue lastAirDateValue = parsedObject.value("last_air_date");
 
-        if (numberOfSeasons.isUndefined() || seriesName.isUndefined()) {
+        if (numberOfSeasons.isUndefined() || seriesName.isUndefined()
+                || firstAirDateValue.isUndefined() || lastAirDateValue.isUndefined()) {
             return false;
         }
         else {
+            QString firstAirDate = firstAirDateValue.toString();
+            QString lastAirDate = lastAirDateValue.toString();
+
             amountSeasons = numberOfSeasons.toInt();
             seriesFullName = seriesName.toString();
+            year = getYear(firstAirDate, lastAirDate);
+
             return true;
         }
     }
     else {
         return false;
     }
+}
+
+QString TMDbSeriesParser::getYear(QString firstAirDate, QString lastAirDate)
+{
+    QString year = firstAirDate.left(4) + "-" + lastAirDate.left(4);
+    return year;
 }

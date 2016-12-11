@@ -4,6 +4,7 @@
 NameSchemeParser::NameSchemeParser()
 {
     nameSchemeNameExpression.setPattern("^\\|.+?\\|");
+    airDateExpression.setPattern("<airDate>");
     replaceExpression.setPattern("\\|(replace)\\(.+\\)\\|$");
     seriesNameExpression.setPattern("<series>");
     seasonNumberExpression.setPattern("<season>");
@@ -21,9 +22,9 @@ void NameSchemeParser::setNameScheme(QString nameScheme)
     parsedNameSchemeList = parseNameScheme(preParsedNameScheme);
 }
 
-QString NameSchemeParser::getFileName(QString series, QString season, QString episode, QString episodeName)
+QString NameSchemeParser::getFileName(QString series, QString airDate, QString season, QString episode, QString episodeName)
 {
-    QStringList variables = {series, season, episode, episodeName};
+    QStringList variables = {series, airDate, season, episode, episodeName};
     QString fileName;
 
     for (int i = 0; i < parsedNameSchemeList.size(); i++)
@@ -169,6 +170,9 @@ int NameSchemeParser::getVariableType(QString toCheck)
 {
     if (seriesNameExpression.match(toCheck).hasMatch()) {
         return seriesName;
+    }
+    if (airDateExpression.match(toCheck).hasMatch()) {
+        return airDate;
     }
     else if (seasonNumberExpression.match(toCheck).hasMatch()
              || seasonNumberAdvancedExpression.match(toCheck).hasMatch()) {

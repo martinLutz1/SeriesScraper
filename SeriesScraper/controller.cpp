@@ -34,7 +34,7 @@ void Controller::initializeNameSchemes()
         }
     } else // Add default entry if name scheme list not found or empty
     {
-        nameSchemeHandler.addNameScheme("%$series% - S%$season(2)%E%$episode(2)% - %$episodeName%");
+        nameSchemeHandler.addNameScheme("|Simple| <series> - S<season(2)>E<episode(2)> - <episodeName>");
         nameSchemeRepresentationList << nameSchemeHandler.getNameSchemeRepresentation();
         // Error message
         QString nameSchemeFileNotFound = interfaceLanguageHandler.getTranslation(LanguageData::nameSchemeFileNotFound);
@@ -125,13 +125,14 @@ void Controller::initializeSettings()
 void Controller::updateNewFileNames()
 {
     QString series = seriesData.getSeries();
+    QString airDate = seriesData.getAirDate();
     int season = seriesData.getSelectedSeason();
     int amountEpisodes = seriesData.getAmountEpisodes();
     QStringList episodeList = seriesData.getEpisodes();
     QStringList suffixList = seriesData.getSuffixes();
 
     QStringList newFileNames;
-    QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, season, amountEpisodes, episodeList);
+    QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season, amountEpisodes, episodeList);
 
     int minimumSize = std::min(newFileNamesWithoutSuffix.size(), suffixList.size());
     for (int i = 0; i < minimumSize; i++)
@@ -203,6 +204,7 @@ bool Controller::loadSeries(QString series, int season)
 {
     // Set default values
     QString newSeriesName("");
+    QString newAirDate("");
     int newSelectedSeason = 1;
     int newAmountSeasons = 0;
     QStringList newEpisodeList;
@@ -223,6 +225,7 @@ bool Controller::loadSeries(QString series, int season)
             QString seriesLanguage = seriesData.getSelectedLanguage();
             newSelectedSeason = season;
             newSeriesName = seriesParser.getSeriesName();
+            newAirDate = seriesParser.getSeriesYear();
             newAmountSeasons = seriesParser.getAmountSeasons();
             newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
 
@@ -242,6 +245,7 @@ bool Controller::loadSeries(QString series, int season)
         seriesParser.scrapeSeries(series); // Reset
 
     seriesData.setSeries(newSeriesName);
+    seriesData.setAirDate(newAirDate);
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);

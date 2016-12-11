@@ -8,7 +8,7 @@ class NameSchemeParser
 public:
     NameSchemeParser();
     void setNameScheme(QString nameScheme);
-    QString getFileName(QString series, QString season, QString episode, QString episodeName);
+    QString getFileName(QString series, QString airDate, QString season, QString episode, QString episodeName);
     QString getNameSchemeRepresentation();
 
 private:
@@ -17,6 +17,7 @@ private:
     QRegularExpression generalVariableExpression;
 
     QRegularExpression seriesNameExpression;
+    QRegularExpression airDateExpression;
     QRegularExpression seasonNumberExpression;
     QRegularExpression seasonNumberAdvancedExpression;
     QRegularExpression episodeNumberAdvancedExpression;
@@ -30,6 +31,7 @@ private:
 
     enum VariableType {
         seriesName,
+        airDate,
         seasonNumber,
         episodeNumber,
         episodeName,

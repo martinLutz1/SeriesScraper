@@ -23,6 +23,7 @@ public:
     void setOldFileNames(QStringList oldFileNames);
     void setOldFileNamesWithoutSuffix(QStringList oldFileNamesWithoutSuffix);
     void setWorkingDirectory(QDir directory);
+    void setAirDate(QString airDate);
 
     QString getSeries();
     QString getSuffix(int index);
@@ -38,6 +39,7 @@ public:
     QStringList getOldFileNames();
     QStringList getOldFileNamesWithoutSuffix();
     QDir getWorkingDirectory();
+    QString getAirDate();
 
 private:
     QString series;
@@ -52,6 +54,7 @@ private:
     int amountSeasons;
     int selectedSeason;
     QString selectedLanguage;
+    QString airDate;
 
     QStringList specialCharacterList;
     QString removeSpecialCharacters(QString string);

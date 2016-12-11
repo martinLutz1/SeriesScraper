@@ -6,16 +6,19 @@
 
 class OMDbSeriesParser : public JsonScraper
 {
-private:
-    QStringList episodeList;
-    int amountSeasons;
-
 public:
     OMDbSeriesParser();
-    bool scrapeSeries(QString series, int season);
+    bool scrapeSeries(QString series);
 
-    QStringList getEpisodeList();
+    QStringList getSeason(int season);
     int getAmountSeasons();
+    QString getYear();
+    QString getSeriesName();
+
+private:
+    QString seriesFullName;
+    QString year;
+    int amountSeasons;
 };
 
 #endif // OMDBSERIESPARSER_H
