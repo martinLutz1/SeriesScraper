@@ -485,6 +485,23 @@ void Controller::updateRenameButton()
     emit(sendMessage(msgEnableButton));
 }
 
+void Controller::removeFileType(int index)
+{
+    fileTypeHandler.removeFileType(index);
+    QStringList fileTypes = fileTypeHandler.getFileTypes();
+
+    directoryParser.setFileTypes(fileTypes);
+    QDir directory = seriesData.getWorkingDirectory();
+    setDirectory(directory.absolutePath());
+    updateView();
+
+    Message msgRemoveFileType;
+    msgRemoveFileType.type = Message::controller_removeFileType_settings;
+    msgRemoveFileType.data[0].i = index;
+    emit(sendMessage(msgRemoveFileType));
+
+}
+
 void Controller::notify(Message &msg)
 {
     switch (msg.type)
@@ -670,26 +687,38 @@ void Controller::notify(Message &msg)
     {
         int indexToChange = msg.data[0].i;
         QString newNameScheme = *msg.data[1].qsPointer;
-        int oldSelectedNameSchemeIndex = nameSchemeHandler.getSelectedNameSchemeIndex();
 
-        nameSchemeHandler.replaceNameScheme(indexToChange, newNameScheme);
-        nameSchemeHandler.setNameScheme(indexToChange);
-        QString newNameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
-        nameSchemeHandler.setNameScheme(oldSelectedNameSchemeIndex);
-
-        Message msgReplaceNameScheme;
-        msgReplaceNameScheme.type = Message::controller_replaceNameScheme_view;
-        msgReplaceNameScheme.data[0].i = indexToChange;
-        msgReplaceNameScheme.data[1].qsPointer = &newNameSchemeRepresentation;
-        emit(sendMessage(msgReplaceNameScheme));
-
-        if (oldSelectedNameSchemeIndex == indexToChange)
+        if (newNameScheme.isEmpty()) // Remove
         {
-            changeNameScheme(oldSelectedNameSchemeIndex);
-            updateNewFileNames();
-            updateView();
-        }
+            nameSchemeHandler.removeNameScheme(indexToChange);
 
+            Message msgRemoveNameScheme;
+            msgRemoveNameScheme.type = Message::controller_removeNameScheme_view;
+            msgRemoveNameScheme.data[0].i = indexToChange;
+            emit(sendMessage(msgRemoveNameScheme));
+        }
+        else // Replace
+        {
+            int oldSelectedNameSchemeIndex = nameSchemeHandler.getSelectedNameSchemeIndex();
+
+            nameSchemeHandler.replaceNameScheme(indexToChange, newNameScheme);
+            nameSchemeHandler.setNameScheme(indexToChange);
+            QString newNameSchemeRepresentation = nameSchemeHandler.getNameSchemeRepresentation();
+            nameSchemeHandler.setNameScheme(oldSelectedNameSchemeIndex);
+
+            Message msgReplaceNameScheme;
+            msgReplaceNameScheme.type = Message::controller_replaceNameScheme_view;
+            msgReplaceNameScheme.data[0].i = indexToChange;
+            msgReplaceNameScheme.data[1].qsPointer = &newNameSchemeRepresentation;
+            emit(sendMessage(msgReplaceNameScheme));
+
+            if (oldSelectedNameSchemeIndex == indexToChange)
+            {
+                changeNameScheme(oldSelectedNameSchemeIndex);
+                updateNewFileNames();
+                updateView();
+            }
+        }
         break;
     }
     case Message::settings_addFileType_controller:
@@ -699,6 +728,9 @@ void Controller::notify(Message &msg)
 
         QStringList fileTypes = fileTypeHandler.getFileTypes();
         directoryParser.setFileTypes(fileTypes);
+        QDir directory = seriesData.getWorkingDirectory();
+        setDirectory(directory.absolutePath());
+        updateView();
 
         Message msgAddFileTypeSettings;
         msgAddFileTypeSettings.type = Message::controller_addFileType_settings;
@@ -711,16 +743,29 @@ void Controller::notify(Message &msg)
     case Message::settings_removeFileType_controller:
     {
         int indexToRemove = msg.data[0].i;
+        removeFileType(indexToRemove);
+        break;
+    }
+    case Message::settings_replaceFileType_controller:
+    {
+        int indexToChange = msg.data[0].i;
+        QString newNameScheme = *msg.data[1].qsPointer;
 
-        fileTypeHandler.removeFileType(indexToRemove);
-        QStringList fileTypes = fileTypeHandler.getFileTypes();
-        directoryParser.setFileTypes(fileTypes);
+        if (newNameScheme.isEmpty()) // Remove
+        {
+            removeFileType(indexToChange);
+        }
+        else // Replace
+        {
+            int position = fileTypeHandler.setFileType(indexToChange, newNameScheme);
+            QStringList fileTypes = fileTypeHandler.getFileTypes();
 
-        Message msgRemoveFileType;
-        msgRemoveFileType.type = Message::controller_removeFileType_settings;
-        msgRemoveFileType.data[0].i = indexToRemove;
-        emit(sendMessage(msgRemoveFileType));
-
+            Message msgChangeFileType;
+            msgChangeFileType.type = Message::controller_replaceFileType_settings;
+            msgChangeFileType.data[0].i = position;
+            msgChangeFileType.data[1].qsListPointer = &fileTypes;
+            emit(sendMessage(msgChangeFileType));
+        }
         break;
     }
     default:

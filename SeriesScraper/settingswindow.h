@@ -33,6 +33,7 @@ private:
     KeyPressEater *keyPressEaterEnterFileType;
     void createResetConfirmationDialog();
     void resizeNameSchemeTab();
+    void setFileTypeList(QStringList fileTypes);
 
 private slots:
     void onGUILanguageChanged(QString language);
@@ -42,14 +43,15 @@ private slots:
     void onResetClicked();
     void onDarkThemeChanged(bool useDarkTheme);
     void onTabChanged(int index);
+    void onAddNameScheme();
+    void onRemoveNameScheme();
     void onNameSchemeChanged(QListWidgetItem *item);
     void onNameSchemeSelectionChanged(int index);
-    void onRemoveNameScheme();
-    void onAddNameScheme();
     void onNameSchemeLineEditChanged();
-    void onFileTypeSelectionChanged(int index);
-    void onRemoveFileType();
     void onAddFileType();
+    void onRemoveFileType();
+    void onFileTypeChanged(QListWidgetItem *item);
+    void onFileTypeSelectionChanged(int index);
     void onFileTypeLineEditChanged();
 
 signals:

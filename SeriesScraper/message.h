@@ -29,6 +29,7 @@ public:
         settings_useDarkTheme_controller,
         settings_addFileType_controller,
         settings_removeFileType_controller,
+        settings_replaceFileType_controller,
         settings_addNameScheme_controller,
         settings_removeNameScheme_controller,
         settings_replaceNameScheme_controller,
@@ -66,6 +67,7 @@ public:
         controller_setFileTypes_settings,
         controller_addFileType_settings,
         controller_removeFileType_settings,
+        controller_replaceFileType_settings,
     };
 
     union MessageData {

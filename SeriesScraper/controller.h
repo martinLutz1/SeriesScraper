@@ -48,6 +48,7 @@ private:
     bool renameFiles();
     void updateView();
     void updateRenameButton();
+    void removeFileType(int index);
 
 public:
     explicit Controller(QObject *parent = 0);

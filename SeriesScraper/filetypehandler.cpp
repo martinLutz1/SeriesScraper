@@ -29,11 +29,6 @@ bool FileTypeHandler::loadFileTypeFile()
     return loadingSuccessful;
 }
 
-bool FileTypeHandler::saveFileTypeFile()
-{
-    return saveFile(fileTypeFile);
-}
-
 QStringList FileTypeHandler::getFileTypes()
 {
     return loadedFile;
@@ -56,9 +51,29 @@ void FileTypeHandler::removeFileType(int index)
     saveFileTypeFile();
 }
 
+int FileTypeHandler::setFileType(int index, QString newFileType)
+{
+    if (index >= 0 && index < loadedFile.size())
+    {
+        loadedFile[index] = newFileType;
+        loadedFile.removeDuplicates();
+        sort();
+        saveFileTypeFile();
+        int positionInList = loadedFile.indexOf(newFileType);
+        return positionInList;
+    }
+    else
+        return -1;
+}
+
+bool FileTypeHandler::saveFileTypeFile()
+{
+    return saveFile(fileTypeFile);
+}
+
 void FileTypeHandler::sort()
 {
     std::sort(loadedFile.begin(), loadedFile.end(),
-               [](const QString &s1, const QString &s2) {
-                   return s1.toLower() < s2.toLower(); });
+              [](const QString &s1, const QString &s2) {
+        return s1.toLower() < s2.toLower(); });
 }

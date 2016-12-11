@@ -264,11 +264,11 @@
       <enum>QListView::Batched</enum>
      </property>
      <property name="spacing">
-      <number>0</number>
+      <number>10</number>
      </property>
      <property name="gridSize">
       <size>
-       <width>80</width>
+       <width>90</width>
        <height>18</height>
       </size>
      </property>
@@ -279,7 +279,10 @@
       <number>0</number>
      </property>
      <property name="uniformItemSizes">
-      <bool>true</bool>
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QGroupBox" name="videoGroupBox">

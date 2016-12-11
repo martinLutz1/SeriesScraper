@@ -49,20 +49,21 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
 
     // Connections of file type section
-    QObject::connect(ui->fileTypeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveFileType()));
-    QObject::connect(keyPressEaterDeleteFileType, SIGNAL(keyPressed()), this, SLOT(onRemoveFileType()));
-    QObject::connect(ui->fileTypeListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onFileTypeSelectionChanged(int)));
     QObject::connect(ui->newFileTypeAddButton, SIGNAL(pressed()), this, SLOT(onAddFileType()));
     QObject::connect(keyPressEaterEnterFileType, SIGNAL(keyPressed()), this, SLOT(onAddFileType()));
+    QObject::connect(ui->fileTypeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveFileType()));
+    QObject::connect(keyPressEaterDeleteFileType, SIGNAL(keyPressed()), this, SLOT(onRemoveFileType()));
+    QObject::connect(ui->fileTypeListWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onFileTypeChanged(QListWidgetItem*)));
+    QObject::connect(ui->fileTypeListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onFileTypeSelectionChanged(int)));
     QObject::connect(ui->newFileTypeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onFileTypeLineEditChanged()));
 
     // Connections of name scheme section
-    QObject::connect(ui->nameSchemeListWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onNameSchemeChanged(QListWidgetItem*)));
-    QObject::connect(ui->nameSchemeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveNameScheme()));
-    QObject::connect(keyPressEaterDeleteNameScheme, SIGNAL(keyPressed()), this, SLOT(onRemoveNameScheme()));
-    QObject::connect(ui->nameSchemeListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onNameSchemeSelectionChanged(int)));
     QObject::connect(ui->newNameSchemeAddButton, SIGNAL(pressed()), this, SLOT(onAddNameScheme()));
     QObject::connect(keyPressEaterEnterNameScheme, SIGNAL(keyPressed()), this, SLOT(onAddNameScheme()));
+    QObject::connect(ui->nameSchemeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveNameScheme()));
+    QObject::connect(keyPressEaterDeleteNameScheme, SIGNAL(keyPressed()), this, SLOT(onRemoveNameScheme()));
+    QObject::connect(ui->nameSchemeListWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onNameSchemeChanged(QListWidgetItem*)));
+    QObject::connect(ui->nameSchemeListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onNameSchemeSelectionChanged(int)));
     QObject::connect(ui->newNameSchemeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onNameSchemeLineEditChanged()));
 }
 
@@ -144,17 +145,6 @@ void SettingsWindow::notify(Message &msg)
         ui->darkThemeCheckBox->setChecked(useDarkTheme);
         break;
     }
-    case Message::controller_addRawNameScheme_settings:
-    {
-        QString nameScheme = *msg.data[0].qsPointer;
-        ui->nameSchemeListWidget->addItem(nameScheme);
-        int lastIndex = ui->nameSchemeListWidget->count() - 1;
-        QListWidgetItem *item = ui->nameSchemeListWidget->item(lastIndex);
-        item->setFlags(item->flags() | Qt::ItemIsEditable);
-
-        ui->nameSchemeListWidget->setCurrentItem(item);
-        break;
-    }
     case Message::controller_setRawNameSchemes_settings:
     {
         QStringList nameSchemes = *msg.data[0].qsListPointer;
@@ -167,6 +157,17 @@ void SettingsWindow::notify(Message &msg)
         }
         break;
     }
+    case Message::controller_addRawNameScheme_settings:
+    {
+        QString nameScheme = *msg.data[0].qsPointer;
+        ui->nameSchemeListWidget->addItem(nameScheme);
+        int lastIndex = ui->nameSchemeListWidget->count() - 1;
+        QListWidgetItem *item = ui->nameSchemeListWidget->item(lastIndex);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+
+        ui->nameSchemeListWidget->setCurrentItem(item);
+        break;
+    }
     case Message::controller_removeNameScheme_view:
     {
         int index = msg.data[0].i;
@@ -177,16 +178,15 @@ void SettingsWindow::notify(Message &msg)
     case Message::controller_setFileTypes_settings:
     {
         QStringList fileTypes = *msg.data[0].qsListPointer;
-        ui->fileTypeListWidget->clear();
-        ui->fileTypeListWidget->addItems(fileTypes);
+        setFileTypeList(fileTypes);
         break;
     }
     case Message::controller_addFileType_settings:
+    case Message::controller_replaceFileType_settings:
     {
         int index = msg.data[0].i;
         QStringList fileTypes = *msg.data[1].qsListPointer;
-        ui->fileTypeListWidget->clear();
-        ui->fileTypeListWidget->addItems(fileTypes);
+        setFileTypeList(fileTypes);
         ui->fileTypeListWidget->setCurrentRow(index);
         break;
     }
@@ -262,6 +262,20 @@ void SettingsWindow::resizeNameSchemeTab()
     ui->newNameSchemeLineEdit->resize(lineEditWidth, lineEditHeight);
     ui->nameSchemeRemoveButton->move(removeButtonX, removeButtonY);
     ui->newNameSchemeAddButton->move(addButtonX, addButtonY);
+}
+
+void SettingsWindow::setFileTypeList(QStringList fileTypes)
+{
+    ui->fileTypeListWidget->clear();
+    ui->fileTypeListWidget->addItems(fileTypes);
+
+    for (int i = 0; i < fileTypes.size(); i++)
+    {
+        QListWidgetItem *item = ui->fileTypeListWidget->item(i);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        item->setSizeHint(QSize(90,18));
+        item->setTextAlignment(Qt::AlignLeft);
+    }
 }
 
 void SettingsWindow::onGUILanguageChanged(QString language)
@@ -350,6 +364,31 @@ void SettingsWindow::onTabChanged(int index)
     ui->doneButton->move(doneButtonX, doneButtonY);
 }
 
+void SettingsWindow::onAddNameScheme()
+{
+    QString newNameScheme = ui->newNameSchemeLineEdit->text();
+    if (newNameScheme.isEmpty())
+        return;
+    ui->newNameSchemeLineEdit->clear();
+
+    Message msgAddNameScheme;
+    msgAddNameScheme.type = Message::settings_addNameScheme_controller;
+    msgAddNameScheme.data[0].qsPointer = &newNameScheme;
+    emit(sendMessage(msgAddNameScheme));
+}
+
+void SettingsWindow::onRemoveNameScheme()
+{
+    int index = ui->nameSchemeListWidget->currentIndex().row();
+    if (index >= 0)
+    {
+        Message msgRemoveNameScheme;
+        msgRemoveNameScheme.type = Message::settings_removeNameScheme_controller;
+        msgRemoveNameScheme.data[0].i = index;
+        emit(sendMessage(msgRemoveNameScheme));
+    }
+}
+
 void SettingsWindow::onNameSchemeChanged(QListWidgetItem *item)
 {
     if (ui->newNameSchemeLineEdit->hasFocus()) // Workaround: list widget catches all key events
@@ -374,30 +413,6 @@ void SettingsWindow::onNameSchemeSelectionChanged(int index)
     ui->nameSchemeRemoveButton->setEnabled(positiveIndex);
 }
 
-void SettingsWindow::onRemoveNameScheme()
-{
-    int index = ui->nameSchemeListWidget->currentIndex().row();
-    if (index >= 0)
-    {
-        Message msgRemoveNameScheme;
-        msgRemoveNameScheme.type = Message::settings_removeNameScheme_controller;
-        msgRemoveNameScheme.data[0].i = index;
-        emit(sendMessage(msgRemoveNameScheme));
-    }
-}
-
-void SettingsWindow::onAddNameScheme()
-{
-    QString newNameScheme = ui->newNameSchemeLineEdit->text();
-    if (newNameScheme.isEmpty())
-        return;
-    ui->newNameSchemeLineEdit->clear();
-
-    Message msgAddNameScheme;
-    msgAddNameScheme.type = Message::settings_addNameScheme_controller;
-    msgAddNameScheme.data[0].qsPointer = &newNameScheme;
-    emit(sendMessage(msgAddNameScheme));
-}
 
 void SettingsWindow::onNameSchemeLineEditChanged()
 {
@@ -405,10 +420,17 @@ void SettingsWindow::onNameSchemeLineEditChanged()
     ui->newNameSchemeAddButton->setEnabled(!lineEditIsEmpty);
 }
 
-void SettingsWindow::onFileTypeSelectionChanged(int index)
+void SettingsWindow::onAddFileType()
 {
-    bool positiveIndex = (index >= 0);
-    ui->fileTypeRemoveButton->setEnabled(positiveIndex);
+    QString newFileType = ui->newFileTypeLineEdit->text();
+    if (newFileType.isEmpty())
+        return;
+    ui->newFileTypeLineEdit->clear();
+
+    Message msgAddFileType;
+    msgAddFileType.type = Message::settings_addFileType_controller;
+    msgAddFileType.data[0].qsPointer = &newFileType;
+    emit(sendMessage(msgAddFileType));
 }
 
 void SettingsWindow::onRemoveFileType()
@@ -423,17 +445,28 @@ void SettingsWindow::onRemoveFileType()
     }
 }
 
-void SettingsWindow::onAddFileType()
+void SettingsWindow::onFileTypeChanged(QListWidgetItem *item)
 {
-    QString newFileType = ui->newFileTypeLineEdit->text();
-    if (newFileType.isEmpty())
+    if (ui->newFileTypeLineEdit->hasFocus()) // Workaround: list widget catches all key events
         return;
-    ui->newFileTypeLineEdit->clear();
 
-    Message msgAddFileType;
-    msgAddFileType.type = Message::settings_addFileType_controller;
-    msgAddFileType.data[0].qsPointer = &newFileType;
-    emit(sendMessage(msgAddFileType));
+    int index = ui->fileTypeListWidget->currentIndex().row();
+    if (index >= 0)
+    {
+        QString changedFileType = item->text();
+        qDebug() << changedFileType;
+        Message msgChangeFileType;
+        msgChangeFileType.type = Message::settings_replaceFileType_controller;
+        msgChangeFileType.data[0].i = index;
+        msgChangeFileType.data[1].qsPointer = &changedFileType;
+        emit(sendMessage(msgChangeFileType));
+    }
+}
+
+void SettingsWindow::onFileTypeSelectionChanged(int index)
+{
+    bool positiveIndex = (index >= 0);
+    ui->fileTypeRemoveButton->setEnabled(positiveIndex);
 }
 
 void SettingsWindow::onFileTypeLineEditChanged()

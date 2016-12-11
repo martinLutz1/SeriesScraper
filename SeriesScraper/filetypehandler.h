@@ -10,13 +10,15 @@ public:
     FileTypeHandler();
     ~FileTypeHandler();
     bool loadFileTypeFile();
-    bool saveFileTypeFile();
+
     QStringList getFileTypes();
     int addFileType(QString newFileType);
     void removeFileType(int index);
+    int setFileType(int index, QString newFileType);
 
 private:
     QFile *fileTypeFile;
+    bool saveFileTypeFile();
     void sort();
 };
 
