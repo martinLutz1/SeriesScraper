@@ -31,6 +31,7 @@ private:
     KeyPressEater *keyPressEaterEnterNameScheme;
     KeyPressEater *keyPressEaterDeleteFileType;
     KeyPressEater *keyPressEaterEnterFileType;
+    KeyPressEater *keyPressEaterEscapeSettings;
     void createResetConfirmationDialog();
     void resizeNameSchemeTab();
     void setFileTypeList(QStringList fileTypes);

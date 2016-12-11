@@ -14,11 +14,13 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     createResetConfirmationDialog();;
     windowSize = this->size();
 
+    keyPressEaterEscapeSettings = new KeyPressEater;
     keyPressEaterDeleteNameScheme = new KeyPressEater;
     keyPressEaterDeleteFileType = new KeyPressEater;
     keyPressEaterEnterNameScheme = new KeyPressEater;
     keyPressEaterEnterFileType = new KeyPressEater;
 
+    keyPressEaterEscapeSettings->setKey(Qt::Key_Escape);
     keyPressEaterDeleteNameScheme->setKey(Qt::Key_Delete);
     keyPressEaterDeleteFileType->setKey(Qt::Key_Delete);
 #if defined (Q_OS_MACX)
@@ -28,6 +30,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     keyPressEaterEnterNameScheme->setKey(16777220); // Enter key
     keyPressEaterEnterFileType->setKey(16777220);
 
+    this->installEventFilter(keyPressEaterEscapeSettings);
     ui->fileTypeListWidget->installEventFilter(keyPressEaterDeleteFileType);
     ui->newFileTypeLineEdit->installEventFilter(keyPressEaterEnterFileType);
     ui->nameSchemeListWidget->installEventFilter(keyPressEaterDeleteNameScheme);
@@ -38,6 +41,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     ui->newFileTypeAddButton->setEnabled(false);
     ui->fileTypeRemoveButton->setEnabled(false);
 
+    QObject::connect(keyPressEaterEscapeSettings, SIGNAL(keyPressed()), this, SLOT(hide()));
     QObject::connect(ui->doneButton, SIGNAL(clicked()), this, SLOT(hide()));
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
     QObject::connect(ui->tmdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
