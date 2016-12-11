@@ -74,7 +74,7 @@ macx {
     ICON = images/icon/macIcon.icns
     # Deploying
     QMAKE_POST_LINK += ~/Qt/5.7/clang_64/bin/macdeployqt SeriesScraper.app;
-    # Copy namescheme list, language folder and series language list
+    # Copy namescheme list, language folder, series language list and file type list
     QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./SeriesScraper.app/Contents/MacOs;
     # Copy info.plist
     QMAKE_POST_LINK += cp -Rf ./../deployment_files/mac/Info.plist ./SeriesScraper.app/Contents;
