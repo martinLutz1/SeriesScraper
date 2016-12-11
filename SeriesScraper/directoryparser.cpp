@@ -147,6 +147,8 @@ DirectoryParser::DirectoryParser() : foundSeason(0)
 
 void DirectoryParser::setFileTypes(QStringList fileTypes)
 {
+    for (int i = 0; i < fileTypes.size(); i++)
+        fileTypes[i] = "*." + fileTypes.at(i);
     filter = fileTypes;
     directory.setNameFilters(filter);
 }

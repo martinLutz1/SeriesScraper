@@ -27,6 +27,8 @@ public:
         settings_savePath_controller,
         settings_reset_controller,
         settings_useDarkTheme_controller,
+        settings_addFileType_controller,
+        settings_removeFileType_controller,
         settings_addNameScheme_controller,
         settings_removeNameScheme_controller,
         settings_replaceNameScheme_controller,
@@ -61,7 +63,9 @@ public:
         controller_useDarkTheme_settings,
         controller_addRawNameScheme_settings,
         controller_setRawNameSchemes_settings,
-        controller_setFileTypes_settings
+        controller_setFileTypes_settings,
+        controller_addFileType_settings,
+        controller_removeFileType_settings,
     };
 
     union MessageData {

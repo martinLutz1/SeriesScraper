@@ -20,7 +20,7 @@ bool FileTypeHandler::loadFileTypeFile()
     if (!loadingSuccessful)
     {
         QStringList defaultFileTypes;
-        defaultFileTypes << "*.avi" << "*.mkv" << "*.mp4" << "*.m4v" << "*.mpg" << "*.flv" << ".*webm" << "*.ogv" << "*.mov" << "*.wmv";
+        defaultFileTypes << "avi" << "mkv" << "mp4" << "m4v" << "mpg" << "flv" << "webm" << "ogv" << "mov" << "wmv";
         loadedFile = defaultFileTypes;
         saveFileTypeFile();
     }
@@ -35,4 +35,16 @@ bool FileTypeHandler::saveFileTypeFile()
 QStringList FileTypeHandler::getFileTypes()
 {
     return loadedFile;
+}
+
+void FileTypeHandler::addFileType(QString newFileType)
+{
+    loadedFile << newFileType;
+    saveFileTypeFile();
+}
+
+void FileTypeHandler::removeFileType(int index)
+{
+    loadedFile.removeAt(index);
+    saveFileTypeFile();
 }

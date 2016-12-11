@@ -12,6 +12,8 @@ public:
     bool loadFileTypeFile();
     bool saveFileTypeFile();
     QStringList getFileTypes();
+    void addFileType(QString newFileType);
+    void removeFileType(int index);
 
 private:
     QFile *fileTypeFile;

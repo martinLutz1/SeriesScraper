@@ -29,6 +29,8 @@ private:
     QSize windowSize;
     KeyPressEater *keyPressEaterDeleteNameScheme;
     KeyPressEater *keyPressEaterEnterNameScheme;
+    KeyPressEater *keyPressEaterDeleteFileType;
+    KeyPressEater *keyPressEaterEnterFileType;
     void createResetConfirmationDialog();
     void resizeNameSchemeTab();
 
@@ -45,6 +47,10 @@ private slots:
     void onRemoveNameScheme();
     void onAddNameScheme();
     void onNameSchemeLineEditChanged();
+    void onFileTypeSelectionChanged(int index);
+    void onRemoveFileType();
+    void onAddFileType();
+    void onFileTypeLineEditChanged();
 
 signals:
     void sendMessage(Message &msg);

@@ -15,18 +15,28 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     windowSize = this->size();
 
     keyPressEaterDeleteNameScheme = new KeyPressEater;
+    keyPressEaterDeleteFileType = new KeyPressEater;
     keyPressEaterEnterNameScheme = new KeyPressEater;
+    keyPressEaterEnterFileType = new KeyPressEater;
+
     keyPressEaterDeleteNameScheme->setKey(Qt::Key_Delete);
+    keyPressEaterDeleteFileType->setKey(Qt::Key_Delete);
 #if defined (Q_OS_MACX)
     keyPressEaterDeleteNameScheme->setKey(Qt::Key_Backspace);
+    keyPressEaterDeleteFileType->setKey(Qt::Key_Backspace);
 #endif
     keyPressEaterEnterNameScheme->setKey(16777220); // Enter key
+    keyPressEaterEnterFileType->setKey(16777220);
 
+    ui->fileTypeListWidget->installEventFilter(keyPressEaterDeleteFileType);
+    ui->newFileTypeLineEdit->installEventFilter(keyPressEaterEnterFileType);
     ui->nameSchemeListWidget->installEventFilter(keyPressEaterDeleteNameScheme);
     ui->newNameSchemeLineEdit->installEventFilter(keyPressEaterEnterNameScheme);
 
     ui->newNameSchemeAddButton->setEnabled(false);
     ui->nameSchemeRemoveButton->setEnabled(false);
+    ui->newFileTypeAddButton->setEnabled(false);
+    ui->fileTypeRemoveButton->setEnabled(false);
 
     QObject::connect(ui->doneButton, SIGNAL(clicked()), this, SLOT(hide()));
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
@@ -39,7 +49,13 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
 
     // Connections of file type section
-    //QObject::connect(ui->fileType)
+    QObject::connect(ui->fileTypeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveFileType()));
+    QObject::connect(keyPressEaterDeleteFileType, SIGNAL(keyPressed()), this, SLOT(onRemoveFileType()));
+    QObject::connect(ui->fileTypeListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(onFileTypeSelectionChanged(int)));
+    QObject::connect(ui->newFileTypeAddButton, SIGNAL(pressed()), this, SLOT(onAddFileType()));
+    QObject::connect(keyPressEaterEnterFileType, SIGNAL(keyPressed()), this, SLOT(onAddFileType()));
+    QObject::connect(ui->newFileTypeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onFileTypeLineEditChanged()));
+
     // Connections of name scheme section
     QObject::connect(ui->nameSchemeListWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onNameSchemeChanged(QListWidgetItem*)));
     QObject::connect(ui->nameSchemeRemoveButton, SIGNAL(pressed()), this, SLOT(onRemoveNameScheme()));
@@ -55,6 +71,8 @@ SettingsWindow::~SettingsWindow()
     delete ui;
     delete keyPressEaterDeleteNameScheme;
     delete keyPressEaterEnterNameScheme;
+    delete keyPressEaterDeleteFileType;
+    delete keyPressEaterEnterFileType;
 }
 
 void SettingsWindow::notify(Message &msg)
@@ -161,6 +179,21 @@ void SettingsWindow::notify(Message &msg)
         QStringList fileTypes = *msg.data[0].qsListPointer;
         ui->fileTypeListWidget->clear();
         ui->fileTypeListWidget->addItems(fileTypes);
+        break;
+    }
+    case Message::controller_addFileType_settings:
+    {
+        QString fileType = *msg.data[0].qsPointer;
+        ui->fileTypeListWidget->addItem(fileType);
+        int lastIndex = ui->fileTypeListWidget->count() - 1;
+        ui->fileTypeListWidget->setCurrentRow(lastIndex);
+        break;
+    }
+    case Message::controller_removeFileType_settings:
+    {
+        int index = msg.data[0].i;
+        QListWidgetItem *item = ui->fileTypeListWidget->takeItem(index);
+        delete item;
         break;
     }
     default:
@@ -369,4 +402,41 @@ void SettingsWindow::onNameSchemeLineEditChanged()
 {
     bool lineEditIsEmpty = ui->newNameSchemeLineEdit->text().isEmpty();
     ui->newNameSchemeAddButton->setEnabled(!lineEditIsEmpty);
+}
+
+void SettingsWindow::onFileTypeSelectionChanged(int index)
+{
+    bool positiveIndex = (index >= 0);
+    ui->fileTypeRemoveButton->setEnabled(positiveIndex);
+}
+
+void SettingsWindow::onRemoveFileType()
+{
+    int index = ui->fileTypeListWidget->currentIndex().row();
+    if (index >= 0)
+    {
+        Message msgRemoveFileType;
+        msgRemoveFileType.type = Message::settings_removeFileType_controller;
+        msgRemoveFileType.data[0].i = index;
+        emit(sendMessage(msgRemoveFileType));
+    }
+}
+
+void SettingsWindow::onAddFileType()
+{
+    QString newFileType = ui->newFileTypeLineEdit->text();
+    if (newFileType.isEmpty())
+        return;
+    ui->newFileTypeLineEdit->clear();
+
+    Message msgAddFileType;
+    msgAddFileType.type = Message::settings_addFileType_controller;
+    msgAddFileType.data[0].qsPointer = &newFileType;
+    emit(sendMessage(msgAddFileType));
+}
+
+void SettingsWindow::onFileTypeLineEditChanged()
+{
+    bool lineEditIsEmpty = ui->newFileTypeLineEdit->text().isEmpty();
+    ui->newFileTypeAddButton->setEnabled(!lineEditIsEmpty);
 }

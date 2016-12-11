@@ -692,6 +692,36 @@ void Controller::notify(Message &msg)
 
         break;
     }
+    case Message::settings_addFileType_controller:
+    {
+        QString fileType = *msg.data[0].qsPointer;
+
+        fileTypeHandler.addFileType(fileType);
+        QStringList fileTypes = fileTypeHandler.getFileTypes();
+        directoryParser.setFileTypes(fileTypes);
+
+        Message msgAddFileTypeSettings;
+        msgAddFileTypeSettings.type = Message::controller_addFileType_settings;
+        msgAddFileTypeSettings.data[0].qsPointer = &fileType;
+        emit(sendMessage(msgAddFileTypeSettings));
+
+        break;
+    }
+    case Message::settings_removeFileType_controller:
+    {
+        int indexToRemove = msg.data[0].i;
+
+        fileTypeHandler.removeFileType(indexToRemove);
+        QStringList fileTypes = fileTypeHandler.getFileTypes();
+        directoryParser.setFileTypes(fileTypes);
+
+        Message msgRemoveFileType;
+        msgRemoveFileType.type = Message::controller_removeFileType_settings;
+        msgRemoveFileType.data[0].i = indexToRemove;
+        emit(sendMessage(msgRemoveFileType));
+
+        break;
+    }
     default:
         break;
     }
