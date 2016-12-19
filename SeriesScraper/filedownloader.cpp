@@ -11,6 +11,9 @@ FileDownloader::FileDownloader()
 
 bool FileDownloader::downloadFile(QString url)
 {
+    if (url.isEmpty())
+        return false;
+
     bool downloadingSuccessful = false;
     // Create custom temporary event loop on stack
     QEventLoop eventLoop;

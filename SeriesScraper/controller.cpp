@@ -156,6 +156,19 @@ void Controller::setStatusMessage(QString status)
     emit(sendMessage(msgSetStatus));
 }
 
+void Controller::setSeriesInformation()
+{
+    QString posterUrl = seriesData.getPosterUrl();
+    QByteArray *poster = NULL;
+    if (fileDownloader.downloadFile(posterUrl))
+        poster = fileDownloader.getDownloadedData();
+
+    Message msgSetSeriesInfo;
+    msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
+    msgSetSeriesInfo.data[0].qbPointer = poster;
+    emit(sendMessage(msgSetSeriesInfo));
+}
+
 Controller::Controller(QObject *parent) : QObject(parent)
 {
 }
@@ -237,17 +250,6 @@ bool Controller::loadSeries(QString series, int season)
             newAmountSeasons = seriesParser.getAmountSeasons();
             newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
 
-            //
-            if (settings.getShowSeriesInfo())
-            {
-                fileDownloader.downloadFile(newPosterUrl);
-                Message msgSetSeriesInfo;
-                msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
-                msgSetSeriesInfo.data[0].qbPointer = fileDownloader.getDownloadedData();
-                emit(sendMessage(msgSetSeriesInfo));
-            }
-            //
-
             // Finish loading animation
             Message msgSuccessLoading;
             msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
@@ -259,9 +261,8 @@ bool Controller::loadSeries(QString series, int season)
             msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
             emit(sendMessage(msgFailureLoading));
         }
-    }
-    else
-        seriesParser.scrapeSeries(series); // Reset
+    } else
+        seriesParser.scrapeSeries(""); // Reset
 
     seriesData.setSeries(newSeriesName);
     seriesData.setAirDate(newAirDate);
@@ -269,6 +270,10 @@ bool Controller::loadSeries(QString series, int season)
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
+
+    if (settings.getShowSeriesInfo())
+        setSeriesInformation();
+
     updateNewFileNames();
     updateView();
     return seriesFound;

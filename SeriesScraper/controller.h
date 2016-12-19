@@ -36,6 +36,7 @@ private:
     void initializeSettings();
     void updateNewFileNames();
     void setStatusMessage(QString status);
+    void setSeriesInformation();
 
     bool loadSeries(QString series, int season);
     bool changeSeason(int season);

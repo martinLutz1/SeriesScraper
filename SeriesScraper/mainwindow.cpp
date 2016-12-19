@@ -269,17 +269,22 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         int imageLabelWidth = additionalInfoWidth - 2 * UNIVERSAL_SPACER;
         int imageLabelHeight = additionalInfoHeight * 0.8;
 
+
+        if (!seriesImage.isNull())
+        {
+            ui->imageLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
+            ui->imageLabel->setFixedSize(ui->imageLabel->pixmap()->size());
+            int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->imageLabel->pixmap()->width() / 2);
+            int imageLabelY = UNIVERSAL_SPACER;
+
+            ui->imageLabel->move(imageLabelX, imageLabelY);
+        }
+
         // Resize
         ui->additionalInfoScrollArea->setFixedSize(additionalInfoWidth, additionalInfoHeight);
-        ui->imageLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
-        ui->imageLabel->setFixedSize(ui->imageLabel->pixmap()->size());
-
-        int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->imageLabel->pixmap()->width() / 2);
-        int imageLabelY = UNIVERSAL_SPACER;
 
         // Move
         ui->additionalInfoScrollArea->move(additionalInfoX, additionalInfoY);
-        ui->imageLabel->move(imageLabelX, imageLabelY);
     }
 
     int seriesProgressbarWidth = episodeTableWidth / 2;
@@ -836,9 +841,17 @@ void MainWindow::notify(Message &msg)
     }
     case Message::controller_setSeriesInfo_view:
     {
-        QByteArray imageByteArray = *msg.data[0].qbPointer;
-        seriesImage.loadFromData(imageByteArray);
-        ui->imageLabel->setPixmap(seriesImage.scaled(ui->imageLabel->width(), ui->imageLabel->height(), Qt::KeepAspectRatio));
+        QByteArray *imageByteArray = msg.data[0].qbPointer;
+        if (imageByteArray != NULL)
+        {
+            seriesImage.loadFromData(*imageByteArray);
+            ui->imageLabel->setPixmap(seriesImage.scaled(ui->imageLabel->width(), ui->imageLabel->height(), Qt::KeepAspectRatio));
+            resizeEvent(NULL);
+        } else
+        {
+            seriesImage.loadFromData(NULL);
+            ui->imageLabel->clear();
+        }
         break;
     }
     default:
