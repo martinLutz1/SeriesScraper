@@ -264,12 +264,22 @@ void MainWindow::resizeEvent(QResizeEvent *event)
             additionalInfoWidth = 250;
             episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER - additionalInfoWidth;
         }
-
         int additionalInfoX = episodeTableX + episodeTableWidth - 1;
         int additionalInfoY = UNIVERSAL_SPACER;
+        int imageLabelWidth = additionalInfoWidth - 2 * UNIVERSAL_SPACER;
+        int imageLabelHeight = additionalInfoHeight * 0.8;
 
-        ui->additionalInfoScrollArea->move(additionalInfoX, additionalInfoY);
+        // Resize
         ui->additionalInfoScrollArea->setFixedSize(additionalInfoWidth, additionalInfoHeight);
+        ui->imageLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
+        ui->imageLabel->setFixedSize(ui->imageLabel->pixmap()->size());
+
+        int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->imageLabel->pixmap()->width() / 2);
+        int imageLabelY = UNIVERSAL_SPACER;
+
+        // Move
+        ui->additionalInfoScrollArea->move(additionalInfoX, additionalInfoY);
+        ui->imageLabel->move(imageLabelX, imageLabelY);
     }
 
     int seriesProgressbarWidth = episodeTableWidth / 2;
