@@ -56,21 +56,10 @@ QStringList TMDbSeriesParser::getSeason(int season, QString language)
     return episodeList;
 }
 
-int TMDbSeriesParser::getAmountSeasons()
-{
-    return amountSeasons;
-}
-
 QString TMDbSeriesParser::getYear()
 {
-    return year;
+    return BaseSeriesParser::getYear();
 }
-
-QString TMDbSeriesParser::getSeriesName()
-{
-    return seriesFullName;
-}
-
 
 bool TMDbSeriesParser::setSeriesInformation(QString language)
 {

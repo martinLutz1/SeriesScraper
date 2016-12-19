@@ -178,7 +178,7 @@
      </property>
      <widget class="QCheckBox" name="showSeriesInformationCheckBox">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>

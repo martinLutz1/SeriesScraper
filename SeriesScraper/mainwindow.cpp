@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QTimer>
+#include <QGraphicsPixmapItem>
 #include <QDebug>
 
 #define UNIVERSAL_SPACER 10
@@ -52,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // initialize view state
     ui->renameButton->setEnabled(false);
     ui->seasonComboBox->setEnabled(false);
+    ui->additionalInfoScrollArea->hide();
 
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
@@ -200,6 +202,7 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
+
     int windowHeight = this->centralWidget()->height();
     int windowWidth = this->centralWidget()->width();
     int pathBoxWidth = ui->pathGroupBox->width();
@@ -207,92 +210,96 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
     int buttonWidth = ui->renameButton->width();
     int episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER;
+    int episodeTableX = UNIVERSAL_SPACER;
+    int episodeTableY = UNIVERSAL_SPACER;
+
+    // To be defined in the layout differentiation
+    int spaceBetweenGroupboxes, spaceBetweenUpperGroupboxes;
+    int episodeTableHeight;
+    int seriesBoxX, seriesBoxY;
+    int nameSchemeBoxX, nameSchemeBoxY;
+    int pathBoxX, pathBoxY;
+    int renameButtonX, renameButtonY;
 
     // Define size to differentiate bewteen layouts
     int bigSize = pathBoxWidth + seriesBoxWidth +  nameSchemeBoxWidth + buttonWidth + 5 * UNIVERSAL_SPACER;
 
-    if (windowWidth >= bigSize) { // Representation for higher resolutions
-        int spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth
-                                      - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER) / 3;
-
-        // Resize table height
-        int episodeTableHeight = windowHeight - GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
-        ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
-
-        // Move series selector
-        int seriesBoxX = UNIVERSAL_SPACER;
-        int seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
-
-        // Move name scheme selector
-        int nameSchemeBoxX = UNIVERSAL_SPACER + seriesBoxWidth + spaceBetweenGroupboxes;
-        int nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
-
-        // Move path selector
-        int pathBoxX = seriesBoxWidth + nameSchemeBoxWidth + UNIVERSAL_SPACER + 2 * spaceBetweenGroupboxes;
-        int pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->pathGroupBox->move(pathBoxX, pathBoxY);
-
-        // Move rename button
-        int renameButtonX = windowWidth - buttonWidth - UNIVERSAL_SPACER;
-        int renameButtonY = windowHeight - GROUPBOX_HEIGHT;
-        ui->renameButton->move(renameButtonX, renameButtonY);
+    if (windowWidth >= bigSize) // Representation for higher resolutions
+    {
+        spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth
+                                  - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER) / 3;
+        episodeTableHeight = windowHeight - GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        seriesBoxX = UNIVERSAL_SPACER;
+        seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        nameSchemeBoxX = UNIVERSAL_SPACER + seriesBoxWidth + spaceBetweenGroupboxes;
+        nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        pathBoxX = seriesBoxWidth + nameSchemeBoxWidth + UNIVERSAL_SPACER + 2 * spaceBetweenGroupboxes;
+        pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        renameButtonX = windowWidth - buttonWidth - UNIVERSAL_SPACER;
+        renameButtonY = windowHeight - GROUPBOX_HEIGHT;
     }
-    else { // Standard representation
-        int spaceBetweenUpperGroupboxes = (windowWidth - seriesBoxWidth
-                                           - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
-        // Resize table height
-        int episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
-        ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
-
-        // Move series selector
-        int seriesBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
-        int seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
-
-        // Move name scheme selector
-        int nameSchemeBoxX = seriesBoxX + seriesBoxWidth + UNIVERSAL_SPACER;
-        int nameSchemeBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
-
-        // Move path selector
-        int pathBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
-        int pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        ui->pathGroupBox->move(pathBoxX, pathBoxY);
-
-        // Move rename button
-        int renameButtonX = nameSchemeBoxX + nameSchemeBoxWidth - buttonWidth;
-        int renameButtonY = windowHeight - GROUPBOX_HEIGHT;
-        ui->renameButton->move(renameButtonX, renameButtonY);
+    else // Standard representation
+    {
+        spaceBetweenUpperGroupboxes = (windowWidth - seriesBoxWidth
+                                       - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
+        episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
+        seriesBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
+        seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        nameSchemeBoxX = seriesBoxX + seriesBoxWidth + UNIVERSAL_SPACER;
+        nameSchemeBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        pathBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
+        pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
+        renameButtonX = nameSchemeBoxX + nameSchemeBoxWidth - buttonWidth;
+        renameButtonY = windowHeight - GROUPBOX_HEIGHT;
     }
 
-    // Resize table coloumns
-    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.45);
-    ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.47);
+    if (seriesInformationEnabled)
+    {
+        episodeTableWidth = 0.8 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        int additionalInfoWidth = 0.2 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        int additionalInfoHeight = episodeTableHeight;
 
-    // Resize series progressbar
+        if (additionalInfoWidth > 250)
+        {
+            additionalInfoWidth = 250;
+            episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER - additionalInfoWidth;
+        }
+
+        int additionalInfoX = episodeTableX + episodeTableWidth - 1;
+        int additionalInfoY = UNIVERSAL_SPACER;
+
+        ui->additionalInfoScrollArea->move(additionalInfoX, additionalInfoY);
+        ui->additionalInfoScrollArea->setFixedSize(additionalInfoWidth, additionalInfoHeight);
+    }
+
     int seriesProgressbarWidth = episodeTableWidth / 2;
-    seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
-
-    // Move series progressbar
-    int episodeTableHeight = ui->episodeNameTable->height();
-    int episodeTableX = ui->episodeNameTable->x();
-    int episodeTableY = ui->episodeNameTable->y();
-
-    // Move and resize episode edit
-    QRect activatedTableItemRect = ui->episodeNameTable->visualItemRect(ui->episodeNameTable->item(tableItemPoint->x(), tableItemPoint->y()));
-    ui->episodeLineEdit->move(activatedTableItemRect.x() + 100, activatedTableItemRect.y() + 40);
-    ui->episodeLineEdit->resize(activatedTableItemRect.width() - 150, activatedTableItemRect.height());
-
-    int seriesProgressbarX = episodeTableX + episodeTableWidth / 2 - seriesProgressBar->width() / 2;
+    int seriesProgressbarX = episodeTableX + episodeTableWidth / 2 - seriesProgressbarWidth / 2;
     int seriesProgressbarY = episodeTableY + episodeTableHeight / 2 - seriesProgressBar->height() / 2;
-    seriesProgressBar->move(seriesProgressbarX, seriesProgressbarY);
-
-    // Move series failure text
     int seriesStatusLabelX = episodeTableX + episodeTableWidth / 2 - seriesStatusLabel->width() / 2;
     int seriesStatusLabelY = episodeTableY + episodeTableHeight / 2 + seriesProgressBar->height();
+
+    QRect activatedTableItemRect = ui->episodeNameTable->visualItemRect(ui->episodeNameTable->item(tableItemPoint->x(), tableItemPoint->y()));
+    int episodeLineEditWidth = (activatedTableItemRect.width() - 150 > 0) ? activatedTableItemRect.width() - 150  : 0;
+    int episodeLineEditHeight = activatedTableItemRect.height();
+    int episodeLineEditX = activatedTableItemRect.x() + 100;
+    int episodeLineEditY = activatedTableItemRect.y() + 40;
+
+    // Move
+    ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
+    ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
+    ui->pathGroupBox->move(pathBoxX, pathBoxY);
+    ui->renameButton->move(renameButtonX, renameButtonY);
+    ui->episodeLineEdit->move(episodeLineEditX, episodeLineEditY);
+    seriesProgressBar->move(seriesProgressbarX, seriesProgressbarY);
     seriesStatusLabel->move(seriesStatusLabelX, seriesStatusLabelY);
+
+    //Resize
+    ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
+    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.45);
+    ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.47);
+    ui->additionalInfoScrollArea->setFixedHeight(episodeTableHeight);
+    ui->episodeLineEdit->setFixedSize(episodeLineEditWidth, episodeLineEditHeight);
+    seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
 }
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
@@ -616,7 +623,7 @@ void MainWindow::onCellClicked(int row, int coloumn)
         QRect activatedTableItemRect = ui->episodeNameTable->visualItemRect(ui->episodeNameTable->item(row, coloumn));
 
         ui->episodeLineEdit->move(activatedTableItemRect.x() + 100, activatedTableItemRect.y() + 40);
-        ui->episodeLineEdit->resize(activatedTableItemRect.width() - 150, activatedTableItemRect.height());
+        ui->episodeLineEdit->setFixedSize(activatedTableItemRect.width() - 150, activatedTableItemRect.height());
 
         Message msgGetEpisodeName;
         msgGetEpisodeName.type = Message::view_getEpisodeName_controller;
@@ -808,6 +815,19 @@ void MainWindow::notify(Message &msg)
         // Workaround for white table headers
         setRow(0, "", "");
         clearTable();
+        break;
+    }
+    case Message::controller_showSeriesInfo_view:
+    {
+        seriesInformationEnabled = msg.data[0].b;
+        ui->additionalInfoScrollArea->setVisible(seriesInformationEnabled);
+
+        if (seriesInformationEnabled)
+        {
+            // Todo add info
+        }
+
+        resizeEvent(NULL);
         break;
     }
     default:

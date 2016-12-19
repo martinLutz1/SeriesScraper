@@ -17,6 +17,7 @@ public:
     void setSavePath(bool savePathOnExit);
     void setSaveSeries(bool saveSeriesOnExit);
     void setDarkTheme(bool useDarkTheme);
+    void setShowSeriesInfo(bool showSeriesInfo);
     void setPath(QString path);
     void setSeries(QString series);
     void setSeason(int season);
@@ -27,6 +28,7 @@ public:
     bool getSavePath();
     bool getSaveSeries();
     bool getDarkTheme();
+    bool getShowSeriesInfo();
     QString getPath();
     QString getSeries();
     QString getGuiLanguage();
@@ -40,6 +42,7 @@ private:
     bool savePath;
     bool saveSeries;
     bool useDarkTheme;
+    bool showSeriesInfo;
     QString path;
     QString series;
     int season;
@@ -51,6 +54,7 @@ private:
     const QString jsonKeySavePath = "SavePath";
     const QString jsonKeySaveSeries = "SaveSeries";
     const QString jsonKeyDarkTheme = "DarkTheme";
+    const QString jsonKeyShowSeriesInfo = "ShowSeriesInfo";
     const QString jsonKeyPath= "Path";
     const QString jsonKeySeries = "Series";
     const QString jsonKeySeason = "Season";
@@ -62,6 +66,7 @@ private:
     const bool defaultSavePath = false;
     const bool defaultSaveSeries = false;
     const bool defaultUseDarkTheme = false;
+    const bool defaultShowSeriesInfo = true;
     const QString defaultPath = "";
     const QString defaultSeries = "";
     const int defaultSeason = 1;

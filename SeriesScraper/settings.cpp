@@ -9,6 +9,7 @@ Settings::Settings()
     savePath = defaultSavePath;
     saveSeries = defaultSaveSeries;
     useDarkTheme = defaultUseDarkTheme;
+    showSeriesInfo = defaultShowSeriesInfo;
     path = defaultPath;
     series = defaultSeries;
     season = defaultSeason;
@@ -26,6 +27,7 @@ bool Settings::loadSettingsFile()
         setSavePath(loadedObject.find(jsonKeySavePath).value().toBool());
         setSaveSeries(loadedObject.find(jsonKeySaveSeries).value().toBool());
         setDarkTheme(loadedObject.find(jsonKeyDarkTheme).value().toBool());
+        setShowSeriesInfo(loadedObject.find(jsonKeyShowSeriesInfo).value().toBool());
         setPath(loadedObject.find(jsonKeyPath).value().toString());
         setSeries(loadedObject.find(jsonKeySeries).value().toString());
         setSeason(loadedObject.find(jsonKeySeason).value().toInt());
@@ -45,6 +47,7 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeySavePath, savePath);
     jsonSettings.insert(jsonKeyPath, path);
     jsonSettings.insert(jsonKeyDarkTheme, useDarkTheme);
+    jsonSettings.insert(jsonKeyShowSeriesInfo, showSeriesInfo);
     jsonSettings.insert(jsonKeySaveSeries, saveSeries);
     jsonSettings.insert(jsonKeySeries, series);
     jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
@@ -66,6 +69,7 @@ bool Settings::resetSettingsFile()
     savePath = defaultSavePath;
     saveSeries = defaultSaveSeries;
     useDarkTheme = defaultUseDarkTheme;
+    showSeriesInfo = defaultShowSeriesInfo;
     path = defaultPath;
     series = defaultSeries;
     season = defaultSeason;
@@ -89,6 +93,11 @@ void Settings::setSaveSeries(bool saveSeriesOnExit)
 void Settings::setDarkTheme(bool useDarkTheme)
 {
     this->useDarkTheme = useDarkTheme;
+}
+
+void Settings::setShowSeriesInfo(bool showSeriesInfo)
+{
+    this->showSeriesInfo = showSeriesInfo;
 }
 
 void Settings::setPath(QString path)
@@ -142,6 +151,11 @@ bool Settings::getSaveSeries()
 bool Settings::getDarkTheme()
 {
     return useDarkTheme;
+}
+
+bool Settings::getShowSeriesInfo()
+{
+    return showSeriesInfo;
 }
 
 QString Settings::getSeries()

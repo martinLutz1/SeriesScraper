@@ -2,23 +2,14 @@
 #define OMDBSERIESPARSER_H
 
 #include <QStringList>
-#include "jsonscraper.h"
+#include "baseseriesparser.h"
 
-class OMDbSeriesParser : public JsonScraper
+class OMDbSeriesParser : public BaseSeriesParser
 {
 public:
     OMDbSeriesParser();
     bool scrapeSeries(QString series);
-
-    QStringList getSeason(int season);
-    int getAmountSeasons();
-    QString getYear();
-    QString getSeriesName();
-
-private:
-    QString seriesFullName;
-    QString year;
-    int amountSeasons;
+    QStringList getSeason(int season, QString language="en-EN");
 };
 
 #endif // OMDBSERIESPARSER_H

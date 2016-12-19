@@ -43,6 +43,7 @@ private slots:
     void onSavePathChanged(bool savePath);
     void onResetClicked();
     void onDarkThemeChanged(bool useDarkTheme);
+    void onShowSeriesInformationChanged(bool showInfo);
     void onTabChanged(int index);
     void onAddNameScheme();
     void onRemoveNameScheme();

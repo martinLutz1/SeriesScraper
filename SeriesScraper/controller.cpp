@@ -108,6 +108,7 @@ void Controller::initializeSettings()
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
     bool useDarkTheme = settings.getDarkTheme();
+    bool showSeriesInfo = settings.getShowSeriesInfo();
 
     changeInterfaceLanguage(selectedInterfaceLanguage);
     changeSeriesParser(selectedSeriesParser);
@@ -120,6 +121,11 @@ void Controller::initializeSettings()
     msgUseDarkTheme.type = Message::controller_useDarkTheme_settings;
     msgUseDarkTheme.data[0].b = useDarkTheme;
     emit(sendMessage(msgUseDarkTheme));
+
+    Message msgShowSeriesInfo;
+    msgShowSeriesInfo.type = Message::controller_showSeriesInfo_settings;
+    msgShowSeriesInfo.data[0].b = showSeriesInfo;
+    emit(sendMessage(msgShowSeriesInfo));
 }
 
 void Controller::updateNewFileNames()
@@ -649,6 +655,19 @@ void Controller::notify(Message &msg)
     {
         bool useDarkTheme = msg.data[0].b;
         settings.setDarkTheme(useDarkTheme);
+        break;
+    }
+    case Message::settings_showSeriesInfo_controller:
+    {
+        // Todo: get series info and image to send
+        bool showSeriesInfo = msg.data[0].b;
+        settings.setShowSeriesInfo(showSeriesInfo);
+
+        Message msgShowSeriesInfo;
+        msgShowSeriesInfo.type = Message::controller_showSeriesInfo_view;
+        msgShowSeriesInfo.data[0].b = showSeriesInfo;
+        emit(sendMessage(msgShowSeriesInfo));
+
         break;
     }
     case Message::settings_addNameScheme_controller:

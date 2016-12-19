@@ -50,6 +50,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
     QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
     QObject::connect(ui->darkThemeCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDarkThemeChanged(bool)));
+    QObject::connect(ui->showSeriesInformationCheckBox, SIGNAL(toggled(bool)), this, SLOT(onShowSeriesInformationChanged(bool)));
     QObject::connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
 
     // Connections of file type section
@@ -147,6 +148,12 @@ void SettingsWindow::notify(Message &msg)
     {
         bool useDarkTheme = msg.data[0].b;
         ui->darkThemeCheckBox->setChecked(useDarkTheme);
+        break;
+    }
+    case Message::controller_showSeriesInfo_settings:
+    {
+        bool showSeriesInfo = msg.data[0].b;
+        ui->showSeriesInformationCheckBox->setChecked(showSeriesInfo);
         break;
     }
     case Message::controller_setRawNameSchemes_settings:
@@ -339,6 +346,14 @@ void SettingsWindow::onDarkThemeChanged(bool useDarkTheme)
     msgChangeDarkTheme.type = Message::settings_useDarkTheme_controller;
     msgChangeDarkTheme.data[0].b = useDarkTheme;
     emit(sendMessage(msgChangeDarkTheme));
+}
+
+void SettingsWindow::onShowSeriesInformationChanged(bool showInfo)
+{
+    Message msgChangeShowSeriesInfo;
+    msgChangeShowSeriesInfo.type = Message::settings_showSeriesInfo_controller;
+    msgChangeShowSeriesInfo.data[0].b = showInfo;
+    emit(sendMessage(msgChangeShowSeriesInfo));
 }
 
 void SettingsWindow::onTabChanged(int index)

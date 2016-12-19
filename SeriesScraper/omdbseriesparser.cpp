@@ -31,7 +31,7 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
     return scrapingSuccessful;
 }
 
-QStringList OMDbSeriesParser::getSeason(int season)
+QStringList OMDbSeriesParser::getSeason(int season, QString language)
 {
     QStringList episodeList;
     QString requestUrl = "http://www.omdbapi.com/?t=" + seriesFullName + "&season=" + QString::number(season);
@@ -44,20 +44,5 @@ QStringList OMDbSeriesParser::getSeason(int season)
             episodeList << episodeArray[i].toObject().value("Title").toString();
     }
     return episodeList;
-}
-
-int OMDbSeriesParser::getAmountSeasons()
-{
-    return amountSeasons;
-}
-
-QString OMDbSeriesParser::getYear()
-{
-    return year;
-}
-
-QString OMDbSeriesParser::getSeriesName()
-{
-    return seriesFullName;
 }
 

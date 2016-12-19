@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     rawloader.cpp \
     filetypehandler.cpp \
     serieslanguagehandler.cpp \
-    interfacelanguagehandler.cpp
+    interfacelanguagehandler.cpp \
+    baseseriesparser.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -65,7 +66,8 @@ HEADERS  += mainwindow.h \
     rawloader.h \
     filetypehandler.h \
     serieslanguagehandler.h \
-    interfacelanguagehandler.h
+    interfacelanguagehandler.h \
+    baseseriesparser.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc
