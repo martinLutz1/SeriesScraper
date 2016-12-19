@@ -1,6 +1,7 @@
 #ifndef FILEDOWNLOADER_H
 #define FILEDOWNLOADER_H
 
+#include <QString>
 #include <QByteArray>
 
 class FileDownloader
@@ -11,6 +12,7 @@ public:
     QByteArray *getDownloadedData();
 
 private:
+    QString lastSuccessUrl;
     QByteArray downloadedData;
 };
 

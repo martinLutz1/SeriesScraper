@@ -162,10 +162,20 @@ void Controller::setSeriesInformation()
     QByteArray *poster = NULL;
     if (fileDownloader.downloadFile(posterUrl))
         poster = fileDownloader.getDownloadedData();
+    int totalEpisodes = seriesData.getAmountEpisodes();
+    int season = seriesData.getSelectedSeason();
+    int totalSeasons = seriesData.getAmountSeasons();
+    QString seriesName = seriesData.getSeries();
+    QString airDate = seriesData.getAirDate();
 
     Message msgSetSeriesInfo;
     msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
     msgSetSeriesInfo.data[0].qbPointer = poster;
+    msgSetSeriesInfo.data[1].i = totalEpisodes;
+    msgSetSeriesInfo.data[2].i = season;
+    msgSetSeriesInfo.data[3].i = totalSeasons;
+    msgSetSeriesInfo.data[4].qsPointer = &seriesName;
+    msgSetSeriesInfo.data[5].qsPointer = &airDate;
     emit(sendMessage(msgSetSeriesInfo));
 }
 

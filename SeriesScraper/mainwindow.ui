@@ -345,7 +345,7 @@
        <height>419</height>
       </rect>
      </property>
-     <widget class="QLabel" name="imageLabel">
+     <widget class="QLabel" name="posterInfoLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -358,43 +358,69 @@
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="seasonInfoLabel">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>280</y>
-        <width>60</width>
+        <x>30</x>
+        <y>290</y>
+        <width>41</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>season</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="totalEpisodesInfoLabel">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>310</y>
+        <x>110</x>
+        <y>380</y>
         <width>60</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>totalEp</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_4">
+     <widget class="QLabel" name="totalSeasonInfoLabel">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>350</y>
+        <x>80</x>
+        <y>290</y>
         <width>60</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>totalSe</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="airDateInfoLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>250</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>airDate</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="seriesNameInfoLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>230</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>seriesName</string>
       </property>
      </widget>
     </widget>

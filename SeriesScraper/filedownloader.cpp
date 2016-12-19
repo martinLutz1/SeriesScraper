@@ -13,6 +13,8 @@ bool FileDownloader::downloadFile(QString url)
 {
     if (url.isEmpty())
         return false;
+    else if (url == lastSuccessUrl) // Dont download twice
+        return true;
 
     bool downloadingSuccessful = false;
     // Create custom temporary event loop on stack
@@ -30,6 +32,7 @@ bool FileDownloader::downloadFile(QString url)
     if (reply->error() == QNetworkReply::NoError)
     {
         downloadedData = reply->readAll();
+        lastSuccessUrl = url;
         downloadingSuccessful = true;
     } else
         qDebug() << "Failure" << reply->errorString();
