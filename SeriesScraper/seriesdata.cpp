@@ -105,6 +105,11 @@ void SeriesData::setAirDate(QString airDate)
     this->airDate = airDate;
 }
 
+void SeriesData::setPosterUrl(QString posterUrl)
+{
+    this->posterUrl = posterUrl;
+}
+
 //----------------------- Getter -----------------------//
 
 QString SeriesData::getSeries()
@@ -186,6 +191,11 @@ QDir SeriesData::getWorkingDirectory()
 QString SeriesData::getAirDate()
 {
     return airDate;
+}
+
+QString SeriesData::getPosterUrl()
+{
+    return posterUrl;
 }
 
 QString SeriesData::removeSpecialCharacters(QString string)

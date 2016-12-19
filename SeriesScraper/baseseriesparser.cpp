@@ -18,3 +18,8 @@ QString BaseSeriesParser::getSeriesName()
 {
     return seriesFullName;
 }
+
+QString BaseSeriesParser::getPosterUrl()
+{
+    return posterUrl;
+}

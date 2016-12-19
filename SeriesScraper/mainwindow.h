@@ -55,6 +55,7 @@ private:
     QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
     QChar checkmark = QChar(0x13, 0x27);
     QChar times = QChar(0x15, 0x27);
+    QPixmap seriesImage;
     bool fullScreenEnabled = false;
     bool seriesInformationEnabled = false;
     QString directorySelectionText = "Directory selection";

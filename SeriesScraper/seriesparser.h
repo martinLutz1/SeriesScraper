@@ -14,6 +14,7 @@ public:
     bool scrapeSeries(QString series);
     QString getSeriesName();
     QString getSeriesYear();
+    QString getPosterUrl();
     int getAmountSeasons();
     QStringList getEpisodeList(int season, QString language);
     QString getSeriesInput();

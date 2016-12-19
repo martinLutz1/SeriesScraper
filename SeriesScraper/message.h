@@ -56,6 +56,7 @@ public:
         controller_seasonMismatch_view,
         controller_useDarkTheme_view,
         controller_showSeriesInfo_view,
+        controller_setSeriesInfo_view,
         controller_removeNameScheme_view,
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
@@ -76,6 +77,7 @@ public:
     union MessageData {
         QString* qsPointer;
         QStringList* qsListPointer;
+        QByteArray* qbPointer;
         int i;
         bool b;
     };

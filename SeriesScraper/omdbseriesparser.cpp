@@ -25,6 +25,7 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
         amountSeasons = parsedObject.value("totalSeasons").toString().toInt();
         seriesFullName = parsedObject.value("Title").toString();
         year = parsedObject.value("Year").toString();
+        posterUrl = parsedObject.value("Poster").toString();
 
         scrapingSuccessful = !seriesFullName.isEmpty();
     }

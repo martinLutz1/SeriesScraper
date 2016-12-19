@@ -13,6 +13,7 @@ public:
     int getAmountSeasons();
     QString getYear();
     QString getSeriesName();
+    QString getPosterUrl();
 
 protected:
     QString seriesFullName;

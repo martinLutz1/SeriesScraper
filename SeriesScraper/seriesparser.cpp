@@ -71,6 +71,24 @@ QString SeriesParser::getSeriesYear()
     }
 }
 
+QString SeriesParser::getPosterUrl()
+{
+    switch(selectedSeriesParser)
+    {
+    default:
+    case tmdb:
+    {
+        return tmdbSeriesParser.getPosterUrl();
+        break;
+    }
+    case omdb:
+    {
+        return omdbSeriesParser.getPosterUrl();
+        break;
+    }
+    }
+}
+
 int SeriesParser::getAmountSeasons()
 {
     switch(selectedSeriesParser)

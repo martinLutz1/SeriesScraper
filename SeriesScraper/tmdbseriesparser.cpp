@@ -70,9 +70,14 @@ bool TMDbSeriesParser::setSeriesInformation(QString language)
         QJsonValue seriesName = parsedObject.value("name");
         QJsonValue firstAirDateValue = parsedObject.value("first_air_date");
         QJsonValue lastAirDateValue = parsedObject.value("last_air_date");
+        QJsonValue posterUrlValue = parsedObject.value("poster_path");
 
-        if (numberOfSeasons.isUndefined() || seriesName.isUndefined()
-                || firstAirDateValue.isUndefined() || lastAirDateValue.isUndefined()) {
+        if (numberOfSeasons.isUndefined()
+                || seriesName.isUndefined()
+                || firstAirDateValue.isUndefined()
+                || lastAirDateValue.isUndefined()
+                || posterUrlValue.isUndefined())
+        {
             return false;
         }
         else {
@@ -82,6 +87,7 @@ bool TMDbSeriesParser::setSeriesInformation(QString language)
             amountSeasons = numberOfSeasons.toInt();
             seriesFullName = seriesName.toString();
             year = getYear(firstAirDate, lastAirDate);
+            posterUrl = basePosterUrl + posterUrlValue.toString();
 
             return true;
         }

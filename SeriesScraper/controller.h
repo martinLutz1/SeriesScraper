@@ -11,6 +11,7 @@
 #include "nameschemehandler.h"
 #include "interfacelanguagehandler.h"
 #include "filetypehandler.h"
+#include "filedownloader.h"
 #include <QObject>
 
 class Controller : public QObject
@@ -25,6 +26,7 @@ private:
     FileTypeHandler fileTypeHandler;
     SeriesLanguageHandler seriesLanguageHandler;
     InterfaceLanguageHandler interfaceLanguageHandler;
+    FileDownloader fileDownloader;
     Settings settings;
 
     void initializeFileTypes();

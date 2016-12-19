@@ -821,13 +821,14 @@ void MainWindow::notify(Message &msg)
     {
         seriesInformationEnabled = msg.data[0].b;
         ui->additionalInfoScrollArea->setVisible(seriesInformationEnabled);
-
-        if (seriesInformationEnabled)
-        {
-            // Todo add info
-        }
-
         resizeEvent(NULL);
+        break;
+    }
+    case Message::controller_setSeriesInfo_view:
+    {
+        QByteArray imageByteArray = *msg.data[0].qbPointer;
+        seriesImage.loadFromData(imageByteArray);
+        ui->imageLabel->setPixmap(seriesImage.scaled(ui->imageLabel->width(), ui->imageLabel->height(), Qt::KeepAspectRatio));
         break;
     }
     default:

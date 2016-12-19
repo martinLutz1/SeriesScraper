@@ -211,6 +211,7 @@ bool Controller::loadSeries(QString series, int season)
     // Set default values
     QString newSeriesName("");
     QString newAirDate("");
+    QString newPosterUrl("");
     int newSelectedSeason = 1;
     int newAmountSeasons = 0;
     QStringList newEpisodeList;
@@ -232,8 +233,20 @@ bool Controller::loadSeries(QString series, int season)
             newSelectedSeason = season;
             newSeriesName = seriesParser.getSeriesName();
             newAirDate = seriesParser.getSeriesYear();
+            newPosterUrl = seriesParser.getPosterUrl();
             newAmountSeasons = seriesParser.getAmountSeasons();
             newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
+
+            //
+            if (settings.getShowSeriesInfo())
+            {
+                fileDownloader.downloadFile(newPosterUrl);
+                Message msgSetSeriesInfo;
+                msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
+                msgSetSeriesInfo.data[0].qbPointer = fileDownloader.getDownloadedData();
+                emit(sendMessage(msgSetSeriesInfo));
+            }
+            //
 
             // Finish loading animation
             Message msgSuccessLoading;
@@ -252,6 +265,7 @@ bool Controller::loadSeries(QString series, int season)
 
     seriesData.setSeries(newSeriesName);
     seriesData.setAirDate(newAirDate);
+    seriesData.setPosterUrl(newPosterUrl);
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
