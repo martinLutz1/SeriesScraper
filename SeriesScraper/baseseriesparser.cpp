@@ -23,3 +23,8 @@ QString BaseSeriesParser::getPosterUrl()
 {
     return posterUrl;
 }
+
+QString BaseSeriesParser::getPlot()
+{
+    return plot;
+}

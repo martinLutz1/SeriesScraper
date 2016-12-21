@@ -167,6 +167,7 @@ void Controller::setSeriesInformation()
     int totalSeasons = seriesData.getAmountSeasons();
     QString seriesName = seriesData.getSeries();
     QString airDate = seriesData.getAirDate();
+    QString plot = seriesData.getPlot();
 
     Message msgSetSeriesInfo;
     msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
@@ -176,6 +177,7 @@ void Controller::setSeriesInformation()
     msgSetSeriesInfo.data[3].i = totalSeasons;
     msgSetSeriesInfo.data[4].qsPointer = &seriesName;
     msgSetSeriesInfo.data[5].qsPointer = &airDate;
+    msgSetSeriesInfo.data[6].qsPointer = &plot;
     emit(sendMessage(msgSetSeriesInfo));
 }
 
@@ -234,6 +236,7 @@ bool Controller::loadSeries(QString series, int season)
     // Set default values
     QString newSeriesName("");
     QString newAirDate("");
+    QString newPlot("");
     QString newPosterUrl("");
     int newSelectedSeason = 1;
     int newAmountSeasons = 0;
@@ -241,8 +244,7 @@ bool Controller::loadSeries(QString series, int season)
     bool seriesFound = false;
 
     // Dont scrape the empty string
-    bool seriesStringNotEmpty = !series.isEmpty();
-    if (seriesStringNotEmpty)
+    if (!series.isEmpty())
     {
         // Start loading animation
         Message msgStartLoading;
@@ -255,10 +257,11 @@ bool Controller::loadSeries(QString series, int season)
             QString seriesLanguage = seriesData.getSelectedLanguage();
             newSelectedSeason = season;
             newSeriesName = seriesParser.getSeriesName();
-            newAirDate = seriesParser.getSeriesYear();
             newPosterUrl = seriesParser.getPosterUrl();
+            newPlot = seriesParser.getPlot();
             newAmountSeasons = seriesParser.getAmountSeasons();
             newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
+            newAirDate = seriesParser.getSeriesYear();
 
             // Finish loading animation
             Message msgSuccessLoading;
@@ -277,6 +280,7 @@ bool Controller::loadSeries(QString series, int season)
     seriesData.setSeries(newSeriesName);
     seriesData.setAirDate(newAirDate);
     seriesData.setPosterUrl(newPosterUrl);
+    seriesData.setPlot(newPlot);
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
@@ -688,9 +692,11 @@ void Controller::notify(Message &msg)
     }
     case Message::settings_showSeriesInfo_controller:
     {
-        // Todo: get series info and image to send
         bool showSeriesInfo = msg.data[0].b;
         settings.setShowSeriesInfo(showSeriesInfo);
+
+        if (showSeriesInfo)
+            setSeriesInformation();
 
         Message msgShowSeriesInfo;
         msgShowSeriesInfo.type = Message::controller_showSeriesInfo_view;

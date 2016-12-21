@@ -14,11 +14,13 @@ public:
     QString getYear();
     QString getSeriesName();
     QString getPosterUrl();
+    QString getPlot();
 
 protected:
     QString seriesFullName;
     QString year;
     QString posterUrl;
+    QString plot;
     int amountSeasons;
 
 };

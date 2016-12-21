@@ -267,17 +267,22 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         int additionalInfoX = episodeTableX + episodeTableWidth - 1;
         int additionalInfoY = UNIVERSAL_SPACER;
         int imageLabelWidth = additionalInfoWidth - 2 * UNIVERSAL_SPACER;
-        int imageLabelHeight = additionalInfoHeight * 0.8;
-
+        int imageLabelHeight = additionalInfoHeight * 0.6;
 
         if (!seriesImage.isNull())
         {
             ui->posterInfoLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
             ui->posterInfoLabel->setFixedSize(ui->posterInfoLabel->pixmap()->size());
+
             int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->posterInfoLabel->pixmap()->width() / 2);
             int imageLabelY = UNIVERSAL_SPACER;
+            int seriesNameX = (additionalInfoWidth - ui->seriesNameInfoLabelData->sizeHint().width()) / 2;
+            int seriesNameY = ui->posterInfoLabel->y() + ui->posterInfoLabel->height() + UNIVERSAL_SPACER;
+            int infoBoxY = seriesNameY + ui->seriesNameInfoLabelData->height() + 2 * UNIVERSAL_SPACER;
 
             ui->posterInfoLabel->move(imageLabelX, imageLabelY);
+            ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
+            ui->infoBoxWidget->move(UNIVERSAL_SPACER, infoBoxY);
         }
 
         // Resize
@@ -847,6 +852,8 @@ void MainWindow::notify(Message &msg)
         int totalSeasons = msg.data[3].i;
         QString seriesName = *msg.data[4].qsPointer;
         QString airDate = *msg.data[5].qsPointer;
+        QString plot = *msg.data[6].qsPointer;
+        // Todo: integrate plot
 
         if (imageByteArray != NULL)
         {
@@ -858,11 +865,11 @@ void MainWindow::notify(Message &msg)
             ui->posterInfoLabel->clear();
         }
 
-        ui->totalEpisodesInfoLabel->setText(QString::number(totalEpisodes));
-        ui->seasonInfoLabel->setText(QString::number(season));
-        ui->totalSeasonInfoLabel->setText(QString::number(totalSeasons));
-        ui->seriesNameInfoLabel->setText(seriesName);
-        ui->airDateInfoLabel->setText(airDate);
+        ui->totalEpisodesInfoLabelData->setText(QString::number(totalEpisodes));
+        ui->seasonInfoLabelData->setText(QString::number(season));
+        ui->totalSeasonInfoLabelData->setText(QString::number(totalSeasons));
+        ui->seriesNameInfoLabelData->setText(seriesName);
+        ui->airDateInfoLabelData->setText(airDate);
 
         resizeEvent(NULL);
         break;

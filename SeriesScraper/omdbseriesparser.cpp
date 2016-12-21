@@ -24,8 +24,8 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
     {
         amountSeasons = parsedObject.value("totalSeasons").toString().toInt();
         seriesFullName = parsedObject.value("Title").toString();
-        year = parsedObject.value("Year").toString();
         posterUrl = parsedObject.value("Poster").toString();
+        plot = parsedObject.value("Plot").toString();
 
         scrapingSuccessful = !seriesFullName.isEmpty();
     }
@@ -43,6 +43,8 @@ QStringList OMDbSeriesParser::getSeason(int season, QString language)
         QJsonArray episodeArray = parsedObject.value("Episodes").toArray();
         for (int i = 0; i < episodeArray.size(); i++)
             episodeList << episodeArray[i].toObject().value("Title").toString();
+        if (!episodeArray.isEmpty())
+            year = episodeArray[0].toObject().value("Released").toString().left(4);
     }
     return episodeList;
 }

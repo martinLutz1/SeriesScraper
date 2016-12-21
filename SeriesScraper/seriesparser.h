@@ -15,6 +15,7 @@ public:
     QString getSeriesName();
     QString getSeriesYear();
     QString getPosterUrl();
+    QString getPlot();
     int getAmountSeasons();
     QStringList getEpisodeList(int season, QString language);
     QString getSeriesInput();

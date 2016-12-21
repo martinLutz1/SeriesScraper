@@ -10,7 +10,6 @@ public:
     TMDbSeriesParser();
     bool scrapeSeries(QString series);
     QStringList getSeason(int season, QString language);
-    QString getYear();
 
 private:
     const QString authentificationKey = "020a07e5192867b0bbae8ffb841498e5";
@@ -19,7 +18,6 @@ private:
     QString seriesID;
 
     bool setSeriesInformation(QString language);
-    QString getYear(QString firstAirDate, QString lastAirDate);
 };
 
 #endif // TMDBSERIESPARSER_H

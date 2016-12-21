@@ -83,7 +83,7 @@ public:
     };
 
     MessageType type;
-    MessageData data[6];
+    MessageData data[7];
 
     Message();
 };

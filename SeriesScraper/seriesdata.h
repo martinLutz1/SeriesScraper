@@ -25,6 +25,7 @@ public:
     void setWorkingDirectory(QDir directory);
     void setAirDate(QString airDate);
     void setPosterUrl(QString posterUrl);
+    void setPlot(QString plot);
 
     QString getSeries();
     QString getSuffix(int index);
@@ -42,6 +43,7 @@ public:
     QDir getWorkingDirectory();
     QString getAirDate();
     QString getPosterUrl();
+    QString getPlot();
 
 private:
     QString series;
@@ -58,6 +60,7 @@ private:
     QString selectedLanguage;
     QString airDate;
     QString posterUrl;
+    QString plot;
 
     QStringList specialCharacterList;
     QString removeSpecialCharacters(QString string);
