@@ -6,5 +6,6 @@
         <file>images/button_grey.png</file>
         <file>images/application_logos/tmdb.png</file>
         <file>images/icon/macIcon.icns</file>
+        <file>images/default_poster.jpg</file>
     </qresource>
 </RCC>

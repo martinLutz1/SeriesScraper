@@ -60,6 +60,8 @@ private:
     bool seriesInformationEnabled = false;
     QString directorySelectionText = "Directory selection";
 
+    void setUpGUI();
+    void setUpKeyEvents();
     void setUpTable();
     void setUpMenuBar();
     void setUpRenameConfirmationMessageBox();

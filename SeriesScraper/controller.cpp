@@ -162,19 +162,31 @@ void Controller::setSeriesInformation()
     QByteArray *poster = NULL;
     if (fileDownloader.downloadFile(posterUrl))
         poster = fileDownloader.getDownloadedData();
-    int totalEpisodes = seriesData.getAmountEpisodes();
-    int season = seriesData.getSelectedSeason();
-    int totalSeasons = seriesData.getAmountSeasons();
+    QString totalEpisodes = QString::number(seriesData.getAmountEpisodes());
+    QString season = QString::number(seriesData.getSelectedSeason());
+    QString totalSeasons = QString::number(seriesData.getAmountSeasons());
     QString seriesName = seriesData.getSeries();
     QString airDate = seriesData.getAirDate();
     QString plot = seriesData.getPlot();
 
+    // Set default values for view, if no series set
+    if (seriesName.isEmpty() && totalSeasons == "0")
+    {
+        poster = NULL;
+        totalEpisodes = "-";
+        season = "-";
+        totalSeasons = "-";
+        seriesName = "";
+        airDate = "-";
+        plot = "";
+    }
+
     Message msgSetSeriesInfo;
     msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
     msgSetSeriesInfo.data[0].qbPointer = poster;
-    msgSetSeriesInfo.data[1].i = totalEpisodes;
-    msgSetSeriesInfo.data[2].i = season;
-    msgSetSeriesInfo.data[3].i = totalSeasons;
+    msgSetSeriesInfo.data[1].qsPointer = &totalEpisodes;
+    msgSetSeriesInfo.data[2].qsPointer = &season;
+    msgSetSeriesInfo.data[3].qsPointer = &totalSeasons;
     msgSetSeriesInfo.data[4].qsPointer = &seriesName;
     msgSetSeriesInfo.data[5].qsPointer = &airDate;
     msgSetSeriesInfo.data[6].qsPointer = &plot;

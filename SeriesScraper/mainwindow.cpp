@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QTimer>
 #include <QGraphicsPixmapItem>
+#include <QPainter>
 #include <QDebug>
 
 #define UNIVERSAL_SPACER 10
@@ -25,35 +26,16 @@ MainWindow::MainWindow(QWidget *parent) :
     disableSeriesProgressbarTimer = new QTimer(this);
     seriesProgressBar = new QProgressBar(this);
     seriesStatusLabel = new QLabel(this);
-
-    blur = new QGraphicsBlurEffect;
-    shadow = new CustomShadowEffect;
+    blur = new QGraphicsBlurEffect(ui->episodeNameTable);
+    shadow = new CustomShadowEffect(ui->episodeLineEdit);
     tableItemPoint = new QPoint;
-    keyPressEaterEscape = new KeyPressEater;
-    keyPressEaterEnter = new KeyPressEater;
-    keyPressEaterEscape->setKey(16777216);
-    keyPressEaterEnter->setKey(16777220);
 
-
-    // Define minimum of the window size to display everything correctly
-    int pathBoxWidth = ui->pathGroupBox->width();
-    int seriesBoxWidth = ui->seriesGroupBox->width();
-    int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
-    int buttonWidth = ui->renameButton->width();
-
-    int upperWidth = seriesBoxWidth + nameSchemeBoxWidth + 3 * UNIVERSAL_SPACER;
-    int lowerWidth = pathBoxWidth + buttonWidth + 3 * UNIVERSAL_SPACER;
-    this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
-
+    setUpGUI();
+    setUpKeyEvents();
     setUpTable();
     setUpMenuBar();
     setUpRenameConfirmationMessageBox();
     setUpEpisodeEdit();
-
-    // initialize view state
-    ui->renameButton->setEnabled(false);
-    ui->seasonComboBox->setEnabled(false);
-    ui->additionalInfoScrollArea->hide();
 
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
@@ -67,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(seriesTextChangeTimer, SIGNAL(timeout()), this, SLOT(onSeriesTextChanged()));
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
     QObject::connect(ui->seriesLanguageComboBox, SIGNAL(activated(int)), this, SLOT(onSeriesLanguageChanged(int)));
-    QObject::connect(ui->renameButton, SIGNAL(pressed()), this , SLOT(onRenameButtonPressed()));
+    QObject::connect(ui->renameButton, SIGNAL(clicked(bool)), this , SLOT(onRenameButtonPressed()));
     QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
     QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
@@ -92,6 +74,36 @@ MainWindow::~MainWindow()
     delete fullScreenAction;
     delete keyPressEaterEscape;
     delete keyPressEaterEnter;
+}
+
+void MainWindow::setUpGUI()
+{
+    // Define minimum of the window size to display everything correctly
+    int pathBoxWidth = ui->pathGroupBox->width();
+    int seriesBoxWidth = ui->seriesGroupBox->width();
+    int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
+    int buttonWidth = ui->renameButton->width();
+
+    int upperWidth = seriesBoxWidth + nameSchemeBoxWidth + 3 * UNIVERSAL_SPACER;
+    int lowerWidth = pathBoxWidth + buttonWidth + 3 * UNIVERSAL_SPACER;
+    this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
+
+    ui->seriesInfohorizontalLayout->setStretch(0, 3);
+    ui->seriesInfohorizontalLayout->setStretch(1, 1);
+    ui->infoGroupBox->setLayout(ui->seriesInfohorizontalLayout);
+
+    // initialize view state
+    ui->renameButton->setEnabled(false);
+    ui->seasonComboBox->setEnabled(false);
+    ui->additionalInfoScrollArea->hide();
+}
+
+void MainWindow::setUpKeyEvents()
+{
+    keyPressEaterEscape = new KeyPressEater;
+    keyPressEaterEnter = new KeyPressEater;
+    keyPressEaterEscape->setKey(16777216);
+    keyPressEaterEnter->setKey(16777220);
 }
 
 void MainWindow::setUpTable()
@@ -264,32 +276,30 @@ void MainWindow::resizeEvent(QResizeEvent *event)
             additionalInfoWidth = 250;
             episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER - additionalInfoWidth;
         }
-        int additionalInfoX = episodeTableX + episodeTableWidth - 1;
-        int additionalInfoY = UNIVERSAL_SPACER;
         int imageLabelWidth = additionalInfoWidth - 2 * UNIVERSAL_SPACER;
         int imageLabelHeight = additionalInfoHeight * 0.6;
 
-        if (!seriesImage.isNull())
-        {
-            ui->posterInfoLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
-            ui->posterInfoLabel->setFixedSize(ui->posterInfoLabel->pixmap()->size());
+        // Scale before further movements to make sure we have the correct image size
+        ui->posterInfoLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
+        ui->posterInfoLabel->setFixedSize(ui->posterInfoLabel->pixmap()->size());
 
-            int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->posterInfoLabel->pixmap()->width() / 2);
-            int imageLabelY = UNIVERSAL_SPACER;
-            int seriesNameX = (additionalInfoWidth - ui->seriesNameInfoLabelData->sizeHint().width()) / 2;
-            int seriesNameY = ui->posterInfoLabel->y() + ui->posterInfoLabel->height() + UNIVERSAL_SPACER;
-            int infoBoxY = seriesNameY + ui->seriesNameInfoLabelData->height() + 2 * UNIVERSAL_SPACER;
-
-            ui->posterInfoLabel->move(imageLabelX, imageLabelY);
-            ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
-            ui->infoBoxWidget->move(UNIVERSAL_SPACER, infoBoxY);
-        }
+        int additionalInfoX = episodeTableX + episodeTableWidth - 1;
+        int additionalInfoY = UNIVERSAL_SPACER;
+        int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->posterInfoLabel->pixmap()->width() / 2);
+        int imageLabelY = UNIVERSAL_SPACER;
+        int seriesNameX = (additionalInfoWidth - ui->seriesNameInfoLabelData->sizeHint().width()) / 2;
+        int seriesNameY = ui->posterInfoLabel->y() + ui->posterInfoLabel->height() + UNIVERSAL_SPACER;
+        int infoBoxY = seriesNameY + ui->seriesNameInfoLabelData->height() + 2 * UNIVERSAL_SPACER;
 
         // Resize
         ui->additionalInfoScrollArea->setFixedSize(additionalInfoWidth, additionalInfoHeight);
+        ui->infoGroupBox->setFixedSize(additionalInfoWidth - 2 * UNIVERSAL_SPACER, ui->infoGroupBox->height());
 
         // Move
         ui->additionalInfoScrollArea->move(additionalInfoX, additionalInfoY);
+        ui->posterInfoLabel->move(imageLabelX, imageLabelY);
+        ui->infoGroupBox->move(UNIVERSAL_SPACER, infoBoxY);
+        ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
     }
 
     int seriesProgressbarWidth = episodeTableWidth / 2;
@@ -847,27 +857,23 @@ void MainWindow::notify(Message &msg)
     case Message::controller_setSeriesInfo_view:
     {
         QByteArray *imageByteArray = msg.data[0].qbPointer;
-        int totalEpisodes = msg.data[1].i;
-        int season = msg.data[2].i;
-        int totalSeasons = msg.data[3].i;
+        QString totalEpisodes = *msg.data[1].qsPointer;
+        QString season = *msg.data[2].qsPointer;
+        QString totalSeasons = *msg.data[3].qsPointer;
         QString seriesName = *msg.data[4].qsPointer;
         QString airDate = *msg.data[5].qsPointer;
         QString plot = *msg.data[6].qsPointer;
         // Todo: integrate plot
 
         if (imageByteArray != NULL)
-        {
             seriesImage.loadFromData(*imageByteArray);
-            ui->posterInfoLabel->setPixmap(seriesImage.scaled(ui->posterInfoLabel->width(), ui->posterInfoLabel->height(), Qt::KeepAspectRatio));
-        } else
-        {
-            seriesImage.loadFromData(NULL);
-            ui->posterInfoLabel->clear();
-        }
+        else
+            seriesImage.load(":/images/default_poster.jpg");
+        ui->posterInfoLabel->setPixmap(seriesImage.scaled(ui->posterInfoLabel->width(), ui->posterInfoLabel->height(), Qt::KeepAspectRatio));
 
-        ui->totalEpisodesInfoLabelData->setText(QString::number(totalEpisodes));
-        ui->seasonInfoLabelData->setText(QString::number(season));
-        ui->totalSeasonInfoLabelData->setText(QString::number(totalSeasons));
+        ui->totalEpisodesInfoLabelData->setText(totalEpisodes);
+        ui->seasonInfoLabelData->setText(season);
+        ui->totalSeasonInfoLabelData->setText(totalSeasons);
         ui->seriesNameInfoLabelData->setText(seriesName);
         ui->airDateInfoLabelData->setText(airDate);
 

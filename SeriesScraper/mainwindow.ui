@@ -38,6 +38,11 @@
 #renameButton:!enabled {
 	color: rgb(200, 200, 200);
 	background-image: url(:/images/button_grey.png);
+}
+
+#posterInfoLabel {
+	border-radius: 5px;
+    border: 2px solid #8c8c8c;
 }</string>
    </property>
    <widget class="QTableWidget" name="episodeNameTable">
@@ -354,6 +359,9 @@
         <height>211</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -371,25 +379,31 @@
        <string>seriesName</string>
       </property>
      </widget>
-     <widget class="QWidget" name="infoBoxWidget" native="true">
+     <widget class="QGroupBox" name="infoGroupBox">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>270</y>
+        <y>250</y>
         <width>181</width>
-        <height>61</height>
+        <height>82</height>
        </rect>
+      </property>
+      <property name="title">
+       <string>Series info</string>
       </property>
       <widget class="QWidget" name="horizontalLayoutWidget_2">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>20</y>
          <width>151</width>
          <height>61</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="seriesInfohorizontalLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <property name="leftMargin">
