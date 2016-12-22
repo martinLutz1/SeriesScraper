@@ -73,6 +73,7 @@ HEADERS  += mainwindow.h \
 
 win32 {
     RC_FILE = images/icon/winIcon.rc
+    LIBS += -L"_PRO_FILE_PWD_\libraries" -llibeay32
 }
 macx {
     ICON = images/icon/macIcon.icns
