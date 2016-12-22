@@ -11,6 +11,7 @@
 
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
+#define MINIMUM_WINDOW_WIDTH 860
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -78,19 +79,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::setUpGUI()
 {
-    // Define minimum of the window size to display everything correctly
-    int pathBoxWidth = ui->pathGroupBox->width();
-    int seriesBoxWidth = ui->seriesGroupBox->width();
-    int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
-    int buttonWidth = ui->renameButton->width();
-
-    int upperWidth = seriesBoxWidth + nameSchemeBoxWidth + 3 * UNIVERSAL_SPACER;
-    int lowerWidth = pathBoxWidth + buttonWidth + 3 * UNIVERSAL_SPACER;
-    this->centralWidget()->setMinimumWidth(std::max(upperWidth, lowerWidth));
+    this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
 
     ui->seriesInfohorizontalLayout->setStretch(0, 3);
     ui->seriesInfohorizontalLayout->setStretch(1, 1);
+    ui->seriesSelectionHorizontalLayout->setStretch(0, 8);
+    ui->seriesSelectionHorizontalLayout->setStretch(1, 2);
+    ui->seriesSelectionHorizontalLayout->setStretch(2, 3);
+    ui->seriesSelectionHorizontalLayout->setStretch(3, 4);
+
     ui->infoGroupBox->setLayout(ui->seriesInfohorizontalLayout);
+    ui->pathGroupBox->setLayout(ui->directorySelectionHorizontalLayout);
+    ui->seriesGroupBox->setLayout(ui->seriesSelectionHorizontalLayout);
+    ui->centralControlElementWidget->setLayout(ui->controlElementshorizontalLayout);
 
     // initialize view state
     ui->renameButton->setEnabled(false);
@@ -217,53 +218,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     int windowHeight = this->centralWidget()->height();
     int windowWidth = this->centralWidget()->width();
-    int pathBoxWidth = ui->pathGroupBox->width();
-    int seriesBoxWidth = ui->seriesGroupBox->width();
-    int nameSchemeBoxWidth = ui->nameSchemeGroupBox->width();
-    int buttonWidth = ui->renameButton->width();
     int episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER;
     int episodeTableX = UNIVERSAL_SPACER;
     int episodeTableY = UNIVERSAL_SPACER;
-
-    // To be defined in the layout differentiation
-    int spaceBetweenGroupboxes, spaceBetweenUpperGroupboxes;
-    int episodeTableHeight;
-    int seriesBoxX, seriesBoxY;
-    int nameSchemeBoxX, nameSchemeBoxY;
-    int pathBoxX, pathBoxY;
-    int renameButtonX, renameButtonY;
-
-    // Define size to differentiate bewteen layouts
-    int bigSize = pathBoxWidth + seriesBoxWidth +  nameSchemeBoxWidth + buttonWidth + 5 * UNIVERSAL_SPACER;
-
-    if (windowWidth >= bigSize) // Representation for higher resolutions
-    {
-        spaceBetweenGroupboxes = (windowWidth - pathBoxWidth - seriesBoxWidth
-                                  - nameSchemeBoxWidth - buttonWidth - 2 * UNIVERSAL_SPACER) / 3;
-        episodeTableHeight = windowHeight - GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
-        seriesBoxX = UNIVERSAL_SPACER;
-        seriesBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        nameSchemeBoxX = UNIVERSAL_SPACER + seriesBoxWidth + spaceBetweenGroupboxes;
-        nameSchemeBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        pathBoxX = seriesBoxWidth + nameSchemeBoxWidth + UNIVERSAL_SPACER + 2 * spaceBetweenGroupboxes;
-        pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        renameButtonX = windowWidth - buttonWidth - UNIVERSAL_SPACER;
-        renameButtonY = windowHeight - GROUPBOX_HEIGHT;
-    }
-    else // Standard representation
-    {
-        spaceBetweenUpperGroupboxes = (windowWidth - seriesBoxWidth
-                                       - nameSchemeBoxWidth  - 2 * UNIVERSAL_SPACER) / 2;
-        episodeTableHeight = windowHeight - 2 * GROUPBOX_HEIGHT - 2 * UNIVERSAL_SPACER;
-        seriesBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
-        seriesBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        nameSchemeBoxX = seriesBoxX + seriesBoxWidth + UNIVERSAL_SPACER;
-        nameSchemeBoxY = windowHeight - 2 * GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        pathBoxX = std::max(spaceBetweenUpperGroupboxes, UNIVERSAL_SPACER);
-        pathBoxY = windowHeight - GROUPBOX_HEIGHT - UNIVERSAL_SPACER;
-        renameButtonX = nameSchemeBoxX + nameSchemeBoxWidth - buttonWidth;
-        renameButtonY = windowHeight - GROUPBOX_HEIGHT;
-    }
+    int controlHeight = ui->centralControlElementWidget->height();
+    int episodeTableHeight = windowHeight - 3 * UNIVERSAL_SPACER - controlHeight;
+    int controlWidth = windowWidth - 2 * UNIVERSAL_SPACER;
+    int controlY = episodeTableX + episodeTableHeight + UNIVERSAL_SPACER;
 
     if (seriesInformationEnabled)
     {
@@ -315,13 +276,10 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int episodeLineEditY = activatedTableItemRect.y() + 40;
 
     // Move
-    ui->seriesGroupBox->move(seriesBoxX, seriesBoxY);
-    ui->nameSchemeGroupBox->move(nameSchemeBoxX, nameSchemeBoxY);
-    ui->pathGroupBox->move(pathBoxX, pathBoxY);
-    ui->renameButton->move(renameButtonX, renameButtonY);
     ui->episodeLineEdit->move(episodeLineEditX, episodeLineEditY);
     seriesProgressBar->move(seriesProgressbarX, seriesProgressbarY);
     seriesStatusLabel->move(seriesStatusLabelX, seriesStatusLabelY);
+    ui->centralControlElementWidget->move(UNIVERSAL_SPACER, controlY);
 
     //Resize
     ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
@@ -330,6 +288,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     ui->additionalInfoScrollArea->setFixedHeight(episodeTableHeight);
     ui->episodeLineEdit->setFixedSize(episodeLineEditWidth, episodeLineEditHeight);
     seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
+    ui->centralControlElementWidget->setFixedWidth(controlWidth);
 }
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
@@ -468,7 +427,7 @@ void MainWindow::changeLocalization(QStringList translationList)
     ui->seriesLabel->setText(translationList.at(LanguageData::series));
     ui->seasonLabel->setText(translationList.at(LanguageData::season));
     ui->seriesLanguageLabel->setText(translationList.at(LanguageData::language));
-    ui->nameSchemeGroupBox->setTitle(translationList.at(LanguageData::nameScheme));
+    ui->nameSchemeLabel->setText(translationList.at(LanguageData::nameScheme));
     ui->renameButton->setText(translationList.at(LanguageData::rename));
     seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
     viewMenu->setTitle(translationList.at(LanguageData::display));
