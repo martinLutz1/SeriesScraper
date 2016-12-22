@@ -141,7 +141,7 @@
         <rect>
          <x>0</x>
          <y>20</y>
-         <width>151</width>
+         <width>176</width>
          <height>76</height>
         </rect>
        </property>
@@ -174,7 +174,7 @@
           <item>
            <widget class="QLabel" name="totalEpisodesInfoLabel">
             <property name="text">
-             <string>Episode #: </string>
+             <string>Episode number: </string>
             </property>
            </widget>
           </item>

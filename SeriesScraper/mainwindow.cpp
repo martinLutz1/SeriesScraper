@@ -228,8 +228,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     if (seriesInformationEnabled)
     {
-        episodeTableWidth = 0.8 * (windowWidth - 2 * UNIVERSAL_SPACER);
-        int additionalInfoWidth = 0.2 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        episodeTableWidth = 0.77 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        int additionalInfoWidth = 0.23 * (windowWidth - 2 * UNIVERSAL_SPACER);
         int additionalInfoHeight = episodeTableHeight;
 
         if (additionalInfoWidth > 250)
@@ -430,12 +430,17 @@ void MainWindow::changeLocalization(QStringList translationList)
     ui->nameSchemeLabel->setText(translationList.at(LanguageData::nameScheme));
     ui->renameButton->setText(translationList.at(LanguageData::rename));
     seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
+    // Menubar
     viewMenu->setTitle(translationList.at(LanguageData::display));
     helpMenu->setTitle(translationList.at(LanguageData::help));
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
     fullScreenAction->setText(translationList.at(LanguageData::fullscreen));
     directorySelectionText = translationList.at(LanguageData::directorySelection);
+    // Info sidebar
+    ui->airDateInfoLabel->setText(translationList.at(LanguageData::airDate) + ":");
+    ui->seasonInfoLabel->setText(translationList.at(LanguageData::season) + ":");
+    ui->totalEpisodesInfoLabel->setText(translationList.at(LanguageData::episodeNumber) + ":");
     // Rename confirmation dialog
     renameConfirmationMessageBox->setWindowTitle(translationList.at(LanguageData::areYouSure));
     renameConfirmationMessageBox->setText(translationList.at(LanguageData::forceRename));
