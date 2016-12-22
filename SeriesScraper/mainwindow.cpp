@@ -11,7 +11,7 @@
 
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
-#define MINIMUM_WINDOW_WIDTH 860
+#define MINIMUM_WINDOW_WIDTH 870
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

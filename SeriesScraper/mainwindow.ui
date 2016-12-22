@@ -151,8 +151,8 @@
         <rect>
          <x>0</x>
          <y>10</y>
-         <width>176</width>
-         <height>71</height>
+         <width>181</width>
+         <height>76</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="seriesInfohorizontalLayout">
@@ -303,6 +303,7 @@
         <property name="font">
          <font>
           <family>Segoe UI</family>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="title">
@@ -317,7 +318,7 @@
            <x>0</x>
            <y>20</y>
            <width>319</width>
-           <height>78</height>
+           <height>81</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="directorySelectionHorizontalLayout">
@@ -381,7 +382,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>9</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="text">
@@ -454,6 +455,7 @@
         <property name="font">
          <font>
           <family>Segoe UI</family>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="title">
@@ -488,7 +490,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>9</pointsize>
+                <pointsize>10</pointsize>
                </font>
               </property>
               <property name="text">
@@ -549,7 +551,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>9</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="text">
@@ -561,13 +563,13 @@
              <widget class="QComboBox" name="seasonComboBox">
               <property name="minimumSize">
                <size>
-                <width>45</width>
+                <width>50</width>
                 <height>26</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>45</width>
+                <width>50</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -587,7 +589,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>9</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="text">
@@ -628,7 +630,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>9</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="text">
@@ -643,7 +645,7 @@
              <widget class="QComboBox" name="nameSchemeComboBox">
               <property name="minimumSize">
                <size>
-                <width>90</width>
+                <width>95</width>
                 <height>26</height>
                </size>
               </property>
@@ -756,7 +758,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
