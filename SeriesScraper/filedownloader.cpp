@@ -3,6 +3,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QEventLoop>
+#include <QFile>
+#include <QImage>
 
 FileDownloader::FileDownloader()
 {
@@ -44,4 +46,27 @@ bool FileDownloader::downloadFile(QString url)
 QByteArray *FileDownloader::getDownloadedData()
 {
     return &downloadedData;
+}
+
+void FileDownloader::setFilePath(QString filePath, QString fileName)
+{
+    QString newFileName = filePath + "/" + fileName;
+    if (file.fileName() != newFileName)
+        file.setFileName(newFileName);
+}
+
+bool FileDownloader::saveFile(bool force)
+{
+    if (!file.exists() || force)
+    {
+        QImage image;
+        image.loadFromData(downloadedData);
+        return image.save(file.fileName());
+    }
+    return false;
+}
+
+bool FileDownloader::fileExists()
+{
+    return file.exists();
 }

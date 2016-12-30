@@ -16,6 +16,7 @@ public:
 
     void setSavePath(bool savePathOnExit);
     void setSaveSeries(bool saveSeriesOnExit);
+    void setSavePosterInDirectory(bool savePosterInDirectory);
     void setDarkTheme(bool useDarkTheme);
     void setShowSeriesInfo(bool showSeriesInfo);
     void setPath(QString path);
@@ -25,8 +26,10 @@ public:
     void setNameScheme(int nameScheme);
     void setGuiLanguage(QString guiLanguage);
     void setSeriesLanguage(QString seriesLanguage);
+
     bool getSavePath();
     bool getSaveSeries();
+    bool getSavePosterInDirectory();
     bool getDarkTheme();
     bool getShowSeriesInfo();
     QString getPath();
@@ -41,6 +44,7 @@ private:
     QFile settingsFile;
     bool savePath;
     bool saveSeries;
+    bool savePosterInDirectory;
     bool useDarkTheme;
     bool showSeriesInfo;
     QString path;
@@ -53,6 +57,7 @@ private:
 
     const QString jsonKeySavePath = "SavePath";
     const QString jsonKeySaveSeries = "SaveSeries";
+    const QString jsonKeySavePosterInDirectory = "SavePosterInDirectory";
     const QString jsonKeyDarkTheme = "DarkTheme";
     const QString jsonKeyShowSeriesInfo = "ShowSeriesInfo";
     const QString jsonKeyPath= "Path";
@@ -65,6 +70,7 @@ private:
 
     const bool defaultSavePath = false;
     const bool defaultSaveSeries = false;
+    const bool defaultSavePosterInDirectory = false;
     const bool defaultUseDarkTheme = false;
     const bool defaultShowSeriesInfo = true;
     const QString defaultPath = "";

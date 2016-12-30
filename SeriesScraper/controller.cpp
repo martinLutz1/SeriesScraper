@@ -101,14 +101,25 @@ void Controller::initializeInterfaceLanguages()
 
 void Controller::initializeSettings()
 {
+    settings.loadSettingsFile();
+
     int selectedSeriesParser = settings.getSeriesDatabase();
     int selectedNameScheme = settings.getNameScheme();
     QString selectedInterfaceLanguage = settings.getGuiLanguage();
     QString selectedSeriesLanguage = settings.getSeriesLanguage();
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
+    bool savePosterInDirectory = settings.getSavePosterInDirectory();
     bool useDarkTheme = settings.getDarkTheme();
     bool showSeriesInfo = settings.getShowSeriesInfo();
+
+    // Dont change theme afterwards!
+    if (useDarkTheme)
+    {
+        Message msgUseDarkTheme;
+        msgUseDarkTheme.type = Message::controller_useDarkTheme_view;
+        emit(sendMessage(msgUseDarkTheme));
+    }
 
     changeInterfaceLanguage(selectedInterfaceLanguage);
     changeSeriesParser(selectedSeriesParser);
@@ -116,6 +127,11 @@ void Controller::initializeSettings()
     changeSeriesLanguage(selectedSeriesLanguage);
     changeSaveSeries(saveSeries);
     changeSavePath(savePath);
+
+    Message msgSavePosterInDirectory;
+    msgSavePosterInDirectory.type = Message::controller_savePoster_settings;
+    msgSavePosterInDirectory.data[0].b = savePosterInDirectory;
+    emit(sendMessage(msgSavePosterInDirectory));
 
     Message msgUseDarkTheme;
     msgUseDarkTheme.type = Message::controller_useDarkTheme_settings;
@@ -225,17 +241,6 @@ Controller::~Controller()
 
 void Controller::initialize()
 {
-    settings.loadSettingsFile();
-
-    // Dont change theme afterwards!
-    bool useDarkTheme = settings.getDarkTheme();
-    if (useDarkTheme)
-    {
-        Message msgUseDarkTheme;
-        msgUseDarkTheme.type = Message::controller_useDarkTheme_view;
-        emit(sendMessage(msgUseDarkTheme));
-    }
-
     initializeFileTypes();
     initializeSeriesLanguages();
     initializeInterfaceLanguages();
@@ -439,6 +444,23 @@ void Controller::changeNameScheme(int nameScheme)
     emit(sendMessage(msgChangeNameScheme));
 }
 
+void Controller::savePoster()
+{
+    if (!fileDownloader.fileExists())
+    {
+        if (fileDownloader.saveFile())
+            setStatusMessage("Poster saved!");
+        else
+            setStatusMessage("Poster could not be saved.");
+    }
+    else
+    {
+        Message msgPosterAlreadyExists;
+        msgPosterAlreadyExists.type = Message::controller_posterAlreadyExists_view;
+        emit(sendMessage(msgPosterAlreadyExists));
+    }
+}
+
 bool Controller::setDirectory(QString path)
 {
     bool directoryExists = directoryParser.initializeDirectory(path);
@@ -454,6 +476,8 @@ bool Controller::setDirectory(QString path)
         newOldFileNames = directoryParser.getFiles();
         newSuffixes = directoryParser.getFilesSuffix();
         newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutSuffix();
+
+        fileDownloader.setFilePath(path, "poster.jpg");
     }
 
     seriesData.setWorkingDirectory(newDirectory);
@@ -474,6 +498,9 @@ bool Controller::renameFiles()
     fileRenamer.setOldFileNames(oldFileNameList);
     fileRenamer.setNewFileNames(newFileNameList);
     bool renameSuccess = fileRenamer.rename();
+
+    if (settings.getSavePosterInDirectory())
+        savePoster();
 
     if (renameSuccess)
     {
@@ -508,10 +535,10 @@ void Controller::updateView()
     msgViewUpdate.data[1].qsListPointer = &oldFileNameList;
     msgViewUpdate.data[2].qsListPointer = &newFileNameList;
     emit(sendMessage(msgViewUpdate));
-    updateRenameButton();
+    updateRenameButtonAndSavePoster();
 }
 
-void Controller::updateRenameButton()
+void Controller::updateRenameButtonAndSavePoster()
 {
     QDir testDir("");
     bool differentFileNames = false;
@@ -532,12 +559,18 @@ void Controller::updateRenameButton()
 
     bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
     bool seriesSet = !seriesData.getSeries().isEmpty();
-    bool enableButton = seriesSet & directorySet & differentFileNames;
+    bool enableRenameButton = seriesSet & directorySet & differentFileNames;
+    bool enableSavePoster = seriesSet & directorySet;
 
-    Message msgEnableButton;
-    msgEnableButton.type = Message::controller_enableButton_view;
-    msgEnableButton.data[0].b = enableButton;
-    emit(sendMessage(msgEnableButton));
+    Message msgEnableRenameButton;
+    msgEnableRenameButton.type = Message::controller_enableRenameButton_view;
+    msgEnableRenameButton.data[0].b = enableRenameButton;
+    emit(sendMessage(msgEnableRenameButton));
+
+    Message msgEnableSavePoster;
+    msgEnableSavePoster.type = Message::controller_enableSavePoster_view;
+    msgEnableSavePoster.data[0].b = enableSavePoster;
+    emit(sendMessage(msgEnableSavePoster));
 }
 
 void Controller::removeFileType(int index)
@@ -658,6 +691,19 @@ void Controller::notify(Message &msg)
         changeInterfaceLanguage(language);
         break;
     }
+    case Message::view_savePoster_controller:
+    {
+        savePoster();
+        break;
+    }
+    case Message::view_forceSavePoster_conroller:
+    {
+        if (fileDownloader.saveFile(true))
+            setStatusMessage("Poster saved!");
+        else
+            setStatusMessage("Poster could not be saved.");
+        break;
+    }
     case Message::view_showAboutDialog_controller:
     {
         Message msgShowAboutDialog;
@@ -688,6 +734,12 @@ void Controller::notify(Message &msg)
     {
         bool savePath = msg.data[0].b;
         settings.setSavePath(savePath);
+        break;
+    }
+    case Message::settings_savePoster_controller:
+    {
+        bool savePoster = msg.data[0].b;
+        settings.setSavePosterInDirectory(savePoster);
         break;
     }
     case Message::settings_reset_controller:

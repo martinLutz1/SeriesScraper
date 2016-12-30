@@ -47,10 +47,11 @@ private:
     void changeSaveSeries(bool saveSeries);
     void changeSavePath(bool savePath);
     void changeNameScheme(int nameScheme);
+    void savePoster();
     bool setDirectory(QString path);
     bool renameFiles();
     void updateView();
-    void updateRenameButton();
+    void updateRenameButtonAndSavePoster();
     void removeFileType(int index);
 
 public:

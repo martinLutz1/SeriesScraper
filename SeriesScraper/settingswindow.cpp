@@ -48,6 +48,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->omdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
     QObject::connect(ui->saveSeriesCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSaveSeriesChanged(bool)));
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
+    QObject::connect(ui->savePosterCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePosterChanged(bool)));
     QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
     QObject::connect(ui->darkThemeCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDarkThemeChanged(bool)));
     QObject::connect(ui->showSeriesInformationCheckBox, SIGNAL(toggled(bool)), this, SLOT(onShowSeriesInformationChanged(bool)));
@@ -142,6 +143,12 @@ void SettingsWindow::notify(Message &msg)
     {
         bool savePath = msg.data[0].b;
         ui->savePathCheckBox->setChecked(savePath);
+        break;
+    }
+    case Message::controller_savePoster_settings:
+    {
+        bool savePoster = msg.data[0].b;
+        ui->savePosterCheckBox->setChecked(savePoster);
         break;
     }
     case Message::controller_useDarkTheme_settings:
@@ -327,6 +334,14 @@ void SettingsWindow::onSavePathChanged(bool savePath)
     msgSavePath.type = Message::settings_savePath_controller;
     msgSavePath.data[0].b = savePath;
     emit(sendMessage(msgSavePath));
+}
+
+void SettingsWindow::onSavePosterChanged(bool savePoster)
+{
+    Message msgSavePoster;
+    msgSavePoster.type = Message::settings_savePoster_controller;
+    msgSavePoster.data[0].b = savePoster;
+    emit(sendMessage(msgSavePoster));
 }
 
 void SettingsWindow::onResetClicked()

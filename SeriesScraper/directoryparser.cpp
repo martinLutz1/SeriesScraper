@@ -9,7 +9,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     QStringList fileList;
 
     for (int i = 0; i < files.size(); i++)  // Get strings to calculate positions
-        fileList << files.at(i).filePath();
+        fileList << files.at(i).fileName();
 
     std::vector<int> position = getEpisodePositions(fileList);
 

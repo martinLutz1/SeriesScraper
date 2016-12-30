@@ -8,6 +8,7 @@ Settings::Settings()
     settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
     savePath = defaultSavePath;
     saveSeries = defaultSaveSeries;
+    savePosterInDirectory = defaultSavePosterInDirectory;
     useDarkTheme = defaultUseDarkTheme;
     showSeriesInfo = defaultShowSeriesInfo;
     path = defaultPath;
@@ -26,6 +27,7 @@ bool Settings::loadSettingsFile()
     {
         setSavePath(loadedObject.find(jsonKeySavePath).value().toBool());
         setSaveSeries(loadedObject.find(jsonKeySaveSeries).value().toBool());
+        setSavePosterInDirectory(loadedObject.find(jsonKeySavePosterInDirectory).value().toBool());
         setDarkTheme(loadedObject.find(jsonKeyDarkTheme).value().toBool());
         setShowSeriesInfo(loadedObject.find(jsonKeyShowSeriesInfo).value().toBool());
         setPath(loadedObject.find(jsonKeyPath).value().toString());
@@ -50,6 +52,7 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeyShowSeriesInfo, showSeriesInfo);
     jsonSettings.insert(jsonKeySaveSeries, saveSeries);
     jsonSettings.insert(jsonKeySeries, series);
+    jsonSettings.insert(jsonKeySavePosterInDirectory, savePosterInDirectory);
     jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
     jsonSettings.insert(jsonKeyGUILanguage, guiLanguage);
     jsonSettings.insert(jsonKeySeriesLanguage, seriesLanguage);
@@ -66,28 +69,23 @@ bool Settings::saveSettingsFile()
 
 bool Settings::resetSettingsFile()
 {
-    savePath = defaultSavePath;
-    saveSeries = defaultSaveSeries;
-    useDarkTheme = defaultUseDarkTheme;
-    showSeriesInfo = defaultShowSeriesInfo;
-    path = defaultPath;
-    series = defaultSeries;
-    season = defaultSeason;
-    seriesDatabase = defaultSeriesDatabase;
-    nameScheme = defaultNameScheme;
-    guiLanguage = defaultGuiLanguage;
-    seriesLanguage = defaultSeriesLanguage;
+    Settings();
     return saveSettingsFile();
 }
 
 void Settings::setSavePath(bool savePathOnExit)
 {
-    savePath = savePathOnExit;
+    this->savePath = savePathOnExit;
 }
 
 void Settings::setSaveSeries(bool saveSeriesOnExit)
 {
-    saveSeries = saveSeriesOnExit;
+    this->saveSeries = saveSeriesOnExit;
+}
+
+void Settings::setSavePosterInDirectory(bool savePosterInDirectory)
+{
+    this->savePosterInDirectory = savePosterInDirectory;
 }
 
 void Settings::setDarkTheme(bool useDarkTheme)
@@ -146,6 +144,11 @@ bool Settings::getSavePath()
 bool Settings::getSaveSeries()
 {
     return saveSeries;
+}
+
+bool Settings::getSavePosterInDirectory()
+{
+    return savePosterInDirectory;
 }
 
 bool Settings::getDarkTheme()

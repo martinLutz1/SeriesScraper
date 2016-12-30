@@ -36,10 +36,13 @@ private:
     KeyPressEater *keyPressEaterEscape;
     KeyPressEater *keyPressEaterEnter;
     QMessageBox *renameConfirmationMessageBox;
+    QMessageBox *posterConfirmationMessageBox;
 
+    QMenu *fileMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
     QMenu *appearanceMenu;
+    QAction *savePosterAction;
     QAction *aboutAction;
     QAction *settingsAction;
     QAction *fullScreenAction;
@@ -64,7 +67,7 @@ private:
     void setUpKeyEvents();
     void setUpTable();
     void setUpMenuBar();
-    void setUpRenameConfirmationMessageBox();
+    void setUpConfirmationMessageBoxes();
     void setUpEpisodeEdit();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
@@ -97,6 +100,7 @@ private slots:
     void onChangeEpisodeText();
     void onTableEnter();
 
+    void savePoster();
     void showAboutDialog();
     void showSettingsWindow();
     void toggleFullScreen();

@@ -31,12 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
     shadow = new CustomShadowEffect(ui->episodeLineEdit);
     tableItemPoint = new QPoint;
 
-    setUpGUI();
     setUpKeyEvents();
     setUpTable();
     setUpMenuBar();
-    setUpRenameConfirmationMessageBox();
+    setUpConfirmationMessageBoxes();
     setUpEpisodeEdit();
+    setUpGUI();
 
     QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
@@ -69,7 +69,10 @@ MainWindow::~MainWindow()
     delete blur;
     delete shadow;
     delete renameConfirmationMessageBox;
+    delete posterConfirmationMessageBox;
+    delete fileMenu;
     delete helpMenu;
+    delete savePosterAction;
     delete aboutAction;
     delete settingsAction;
     delete fullScreenAction;
@@ -95,8 +98,10 @@ void MainWindow::setUpGUI()
 
     // initialize view state
     ui->renameButton->setEnabled(false);
+    savePosterAction->setEnabled(false);
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
+    ui->episodeLineEdit->hide();
 }
 
 void MainWindow::setUpKeyEvents()
@@ -145,9 +150,11 @@ void MainWindow::setUpMenuBar()
 {
     QString aboutText = "About " APPLICATIONNAME;
 
+    fileMenu = new QMenu("File");
     viewMenu = new QMenu("Display");
     helpMenu = new QMenu("Help");
 
+    savePosterAction = new QAction("Save poster");
     aboutAction = new QAction(aboutText);
     settingsAction = new QAction("Settings");
     fullScreenAction = new QAction("Fullscreen");
@@ -157,21 +164,23 @@ void MainWindow::setUpMenuBar()
     settingsAction->setShortcut(QKeySequence::Preferences);
     fullScreenAction->setShortcut(QKeySequence::FullScreen);
 
+    fileMenu->addAction(savePosterAction);
     helpMenu->addAction(aboutAction);
     viewMenu->addAction(settingsAction);
     viewMenu->addAction(fullScreenAction);
 
+    ui->menuBar->addMenu(fileMenu);
     ui->menuBar->addMenu(viewMenu);
     ui->menuBar->addMenu(helpMenu);
 
     // Connect Actions
+    QObject::connect(savePosterAction, SIGNAL(triggered(bool)), this, SLOT(savePoster()));
     QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
     QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));
-    ui->episodeLineEdit->hide();
 }
 
-void MainWindow::setUpRenameConfirmationMessageBox()
+void MainWindow::setUpConfirmationMessageBoxes()
 {
     renameConfirmationMessageBox = new QMessageBox;
     renameConfirmationMessageBox->setWindowTitle("Are you sure?");
@@ -179,6 +188,13 @@ void MainWindow::setUpRenameConfirmationMessageBox()
     renameConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
     renameConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
     renameConfirmationMessageBox->setDefaultButton(QMessageBox::No);
+
+    posterConfirmationMessageBox = new QMessageBox;
+    posterConfirmationMessageBox->setWindowTitle("Override Poster");
+    posterConfirmationMessageBox->setText("A poster already exists in your series directory. Do you want to override it?");
+    posterConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
+    posterConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
+    posterConfirmationMessageBox->setDefaultButton(QMessageBox::No);
 }
 
 void MainWindow::setUpEpisodeEdit()
@@ -576,6 +592,13 @@ void MainWindow::onTableEnter()
     onCellClicked(row, coloumn);
 }
 
+void MainWindow::savePoster()
+{
+    Message msgSavePoster;
+    msgSavePoster.type = Message::view_savePoster_controller;
+    emit(sendMessage(msgSavePoster));
+}
+
 void MainWindow::showAboutDialog()
 {
     Message msgShowAbout;
@@ -647,10 +670,16 @@ void MainWindow::notify(Message &msg)
         setSeriesAvailableStatus(seriesSet, isEmpty);
         break;
     }
-    case Message::controller_enableButton_view:
+    case Message::controller_enableRenameButton_view:
     {
         bool enableButton = msg.data[0].b;
         ui->renameButton->setEnabled(enableButton);
+        break;
+    }
+    case Message::controller_enableSavePoster_view:
+    {
+        bool savePoster = msg.data[0].b;
+        savePosterAction->setEnabled(savePoster);
         break;
     }
     case Message::controller_startSeriesLoading_view:
@@ -842,6 +871,18 @@ void MainWindow::notify(Message &msg)
         ui->airDateInfoLabelData->setText(airDate);
 
         resizeEvent(NULL);
+        break;
+    }
+    case Message::controller_posterAlreadyExists_view:
+    {
+        posterConfirmationMessageBox->show();
+        posterConfirmationMessageBox->setFocus();
+        if (posterConfirmationMessageBox->exec() == 0) // 0 = Yes button
+        {
+            Message msgForceSavePoster;
+            msgForceSavePoster.type = Message::view_forceSavePoster_conroller;
+            emit(sendMessage(msgForceSavePoster));
+        }
         break;
     }
     default:
