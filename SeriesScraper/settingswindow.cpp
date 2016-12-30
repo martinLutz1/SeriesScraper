@@ -237,6 +237,8 @@ void SettingsWindow::changeLocalization(QStringList translationList)
     ui->saveSeriesCheckBox->setText(translationList.at(LanguageData::series));
     ui->seriesDatabaseGroupBox->setTitle(translationList.at(LanguageData::seriesDatabase));
     ui->recommendLabel->setText(translationList.at(LanguageData::recommended));
+    ui->saveInDirectoryGroupBox->setTitle(translationList.at(LanguageData::saveInSeriesDirectory));
+    ui->savePosterCheckBox->setText(translationList.at(LanguageData::poster));
     ui->videoGroupBox->setTitle(translationList.at(LanguageData::newFormat));
     ui->newFileTypeAddButton->setText(translationList.at(LanguageData::add));
     ui->fileTypeRemoveButton->setText(translationList.at(LanguageData::remove));

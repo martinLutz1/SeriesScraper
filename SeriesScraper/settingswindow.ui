@@ -247,7 +247,7 @@
       <string>Saving following things in directory on renaming.</string>
      </property>
      <property name="title">
-      <string>Save in directory</string>
+      <string>Save in series directory</string>
      </property>
      <widget class="QCheckBox" name="savePosterCheckBox">
       <property name="geometry">

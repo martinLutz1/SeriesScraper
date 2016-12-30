@@ -449,9 +449,9 @@ void Controller::savePoster()
     if (!fileDownloader.fileExists())
     {
         if (fileDownloader.saveFile())
-            setStatusMessage("Poster saved!");
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved));
         else
-            setStatusMessage("Poster could not be saved.");
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved));
     }
     else
     {
@@ -699,9 +699,9 @@ void Controller::notify(Message &msg)
     case Message::view_forceSavePoster_conroller:
     {
         if (fileDownloader.saveFile(true))
-            setStatusMessage("Poster saved!");
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved));
         else
-            setStatusMessage("Poster could not be saved.");
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved));
         break;
     }
     case Message::view_showAboutDialog_controller:

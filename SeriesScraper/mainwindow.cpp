@@ -190,7 +190,7 @@ void MainWindow::setUpConfirmationMessageBoxes()
     renameConfirmationMessageBox->setDefaultButton(QMessageBox::No);
 
     posterConfirmationMessageBox = new QMessageBox;
-    posterConfirmationMessageBox->setWindowTitle("Override Poster");
+    posterConfirmationMessageBox->setWindowTitle("Override poster?");
     posterConfirmationMessageBox->setText("A poster already exists in your series directory. Do you want to override it?");
     posterConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
     posterConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
@@ -447,10 +447,12 @@ void MainWindow::changeLocalization(QStringList translationList)
     ui->renameButton->setText(translationList.at(LanguageData::rename));
     seriesStatusLabel->setText(translationList.at(LanguageData::notFound));
     // Menubar
+    fileMenu->setTitle(translationList.at(LanguageData::file));
     viewMenu->setTitle(translationList.at(LanguageData::display));
     helpMenu->setTitle(translationList.at(LanguageData::help));
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
+    savePosterAction->setText(translationList.at(LanguageData::savePoster));
     fullScreenAction->setText(translationList.at(LanguageData::fullscreen));
     directorySelectionText = translationList.at(LanguageData::directorySelection);
     // Info sidebar
@@ -462,6 +464,11 @@ void MainWindow::changeLocalization(QStringList translationList)
     renameConfirmationMessageBox->setText(translationList.at(LanguageData::forceRename));
     renameConfirmationMessageBox->setButtonText(0, translationList.at(LanguageData::yes));
     renameConfirmationMessageBox->setButtonText(1, translationList.at(LanguageData::no));
+    // Poster confirmation dialog
+    posterConfirmationMessageBox->setWindowTitle(translationList.at(LanguageData::overridePoster));
+    posterConfirmationMessageBox->setText(translationList.at(LanguageData::posterAlreadyExists));
+    posterConfirmationMessageBox->setButtonText(0, translationList.at(LanguageData::yes));
+    posterConfirmationMessageBox->setButtonText(1, translationList.at(LanguageData::no));
 }
 
 void MainWindow::openDirectory()
@@ -763,7 +770,7 @@ void MainWindow::notify(Message &msg)
     case Message::controller_seasonMismatch_view:
     {
         renameConfirmationMessageBox->show();
-        renameConfirmationMessageBox->setFocus();
+        renameConfirmationMessageBox->buttons().at(1)->setFocus();
         if (renameConfirmationMessageBox->exec() == 0) // 0 = Yes button
         {
             Message msgForceRename;
@@ -876,7 +883,7 @@ void MainWindow::notify(Message &msg)
     case Message::controller_posterAlreadyExists_view:
     {
         posterConfirmationMessageBox->show();
-        posterConfirmationMessageBox->setFocus();
+        posterConfirmationMessageBox->buttons().at(1)->setFocus();
         if (posterConfirmationMessageBox->exec() == 0) // 0 = Yes button
         {
             Message msgForceSavePoster;
