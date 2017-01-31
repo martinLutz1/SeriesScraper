@@ -7,5 +7,6 @@
         <file>images/application_logos/tmdb.png</file>
         <file>images/icon/macIcon.icns</file>
         <file>images/default_poster.jpg</file>
+        <file>images/update.png</file>
     </qresource>
 </RCC>

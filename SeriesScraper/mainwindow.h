@@ -88,6 +88,7 @@ private slots:
     void openDirectory();
     void setPath();
     void startSetPathTimer();
+    void onUpdateDirectory();
     void startSeriesTextChangeTimer();
     void disableSeriesProgressbar();
     void updateProgressbar();

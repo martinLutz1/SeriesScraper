@@ -13,6 +13,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 
     std::vector<int> position = getEpisodePositions(fileList);
 
+
     if (int(position.size()) < files.size()) // Name scheme not found, natural sort
     {
         foundSeason = 0;
@@ -125,7 +126,11 @@ void DirectoryParser::setFileInformation()
             newSortedFilesWithoutSuffix << fileInfo.completeBaseName();
             newSuffixes << fileInfo.suffix();
         } else if (!fileInfo.isDir())
+        {
+            newSortedFiles << "";
+            newSortedFilesWithoutSuffix << "";
             newSuffixes << "";
+        }
     }
 
     sortedFiles = newSortedFiles;

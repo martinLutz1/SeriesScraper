@@ -38,9 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpEpisodeEdit();
     setUpGUI();
 
-    QObject::connect(ui->selectionButton, SIGNAL(clicked()), this, SLOT(openDirectory()));
+    QObject::connect(ui->selectionButton, SIGNAL(clicked(bool)), this, SLOT(openDirectory()));
     QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
     QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
+    QObject::connect(ui->directoryUpdateButton, SIGNAL(clicked(bool)), this, SLOT(onUpdateDirectory()));
     QObject::connect(ui->episodeNameTable, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(onCellClicked(int,int)));
     QObject::connect(ui->episodeLineEdit, SIGNAL(editingFinished()), ui->episodeLineEdit, SLOT(hide()));
     QObject::connect(keyPressEaterEscape, SIGNAL(keyPressed()), ui->episodeLineEdit, SLOT(hide()));
@@ -494,26 +495,37 @@ void MainWindow::setPath()
     if (dir.path().isEmpty()) {
         ui->pathLineEdit->setStyleSheet(colorWhite);
         ui->correctPathLabel->setText("");
+        ui->directoryUpdateButton->setEnabled(false);
     }
     else if (dir.exists()) {
         chosenPath = directoryPath;
         ui->pathLineEdit->setStyleSheet(colorGreen);
         ui->correctPathLabel->setText(checkmark);
+        ui->directoryUpdateButton->setEnabled(true);
     }
     else {
         ui->pathLineEdit->setStyleSheet(colorRed);
         ui->correctPathLabel->setText(times);
+        ui->directoryUpdateButton->setEnabled(false);
     }
-    QString directory = dir.path();
     Message directoryChangedMsg;
     directoryChangedMsg.type = Message::view_changeDirectory_controller;
-    directoryChangedMsg.data[0].qsPointer = &directory;
+    directoryChangedMsg.data[0].qsPointer = &directoryPath;
     emit(sendMessage(directoryChangedMsg));
 }
 
 void MainWindow::startSetPathTimer()
 {
     setPathTimer->start(500);
+}
+
+void MainWindow::onUpdateDirectory()
+{
+    QString directoryPath = ui->pathLineEdit->text();
+    Message directoryUpdateMsg;
+    directoryUpdateMsg.type = Message::view_updateDirectory_controller;
+    directoryUpdateMsg.data[0].qsPointer = &directoryPath;
+    emit(sendMessage(directoryUpdateMsg));
 }
 
 void MainWindow::startSeriesTextChangeTimer()

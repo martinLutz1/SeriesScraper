@@ -633,6 +633,14 @@ void Controller::notify(Message &msg)
         updateView();
         break;
     }
+    case Message::view_updateDirectory_controller:
+    {
+        QString path = *msg.data[0].qsPointer;
+        setDirectory(path);
+        updateNewFileNames();
+        updateView();
+        break;
+    }
     case Message::view_changeEpisodeName_controller:
     {
         int episode = msg.data[0].i;
