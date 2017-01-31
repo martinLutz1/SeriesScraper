@@ -63,6 +63,14 @@ private:
     bool seriesInformationEnabled = false;
     QString directorySelectionText = "Directory selection";
 
+    bool stateSeasonComboBox;
+    bool stateReloadButton;
+    bool stateSeriesLanguageComboBox;
+    bool stateRenameButton;
+
+    void disableGUIControl();
+    void enableGUIControl();
+
     void setUpGUI();
     void setUpKeyEvents();
     void setUpTable();

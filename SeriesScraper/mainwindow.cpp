@@ -81,6 +81,37 @@ MainWindow::~MainWindow()
     delete keyPressEaterEnter;
 }
 
+void MainWindow::disableGUIControl()
+{
+    stateReloadButton = ui->directoryUpdateButton->isEnabled();
+    stateSeasonComboBox = ui->seasonComboBox->isEnabled();
+    stateSeriesLanguageComboBox = ui->seriesLanguageComboBox->isEnabled();
+    stateRenameButton = ui->renameButton->isEnabled();
+
+    ui->selectionButton->setEnabled(false);
+    ui->pathLineEdit->setEnabled(false);
+    ui->directoryUpdateButton->setEnabled(false);
+    ui->seriesLineEdit->setEnabled(false);
+    ui->seasonComboBox->setEnabled(false);
+    ui->seriesLanguageComboBox->setEnabled(false);
+    ui->nameSchemeComboBox->setEnabled(false);
+    ui->renameButton->setEnabled(false);
+    savePosterAction->setEnabled(false);
+}
+
+void MainWindow::enableGUIControl()
+{
+    ui->selectionButton->setEnabled(true);
+    ui->pathLineEdit->setEnabled(true);
+    ui->directoryUpdateButton->setEnabled(stateReloadButton);
+    ui->seriesLineEdit->setEnabled(true);
+    ui->seasonComboBox->setEnabled(stateSeasonComboBox);
+    ui->seriesLanguageComboBox->setEnabled(stateSeriesLanguageComboBox);
+    ui->nameSchemeComboBox->setEnabled(true);
+    ui->renameButton->setEnabled(stateRenameButton);
+    savePosterAction->setEnabled(true);
+}
+
 void MainWindow::setUpGUI()
 {
     this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
@@ -715,8 +746,7 @@ void MainWindow::notify(Message &msg)
         seriesProgressBar->setHidden(false);
         progressBarTimer->start(5);
 
-        ui->selectionButton->setEnabled(false);
-
+        disableGUIControl();
         break;
     }
     case Message::controller_addNameScheme_view:
@@ -769,6 +799,7 @@ void MainWindow::notify(Message &msg)
         progressIncrement = 10;
         disableSeriesProgressbarTimer->start(200);
         ui->selectionButton->setEnabled(true);
+        enableGUIControl();
         break;
     }
     case Message::controller_failureSeriesLoading_view:
@@ -777,6 +808,7 @@ void MainWindow::notify(Message &msg)
         progressIncrement = 1;
         disableSeriesProgressbarTimer->start(2000);
         ui->selectionButton->setEnabled(true);
+        enableGUIControl();
         break;
     }
     case Message::controller_seasonMismatch_view:
