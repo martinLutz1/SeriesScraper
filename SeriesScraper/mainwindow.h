@@ -37,12 +37,14 @@ private:
     KeyPressEater *keyPressEaterEnter;
     QMessageBox *renameConfirmationMessageBox;
     QMessageBox *posterConfirmationMessageBox;
+    QMessageBox *undoRenamingConfirmationBox;
 
     QMenu *fileMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
     QMenu *appearanceMenu;
     QAction *savePosterAction;
+    QAction *undoRenameAction;
     QAction *aboutAction;
     QAction *settingsAction;
     QAction *fullScreenAction;
@@ -63,14 +65,8 @@ private:
     bool seriesInformationEnabled = false;
     QString directorySelectionText = "Directory selection";
 
-    bool stateSeasonComboBox;
-    bool stateReloadButton;
-    bool stateSeriesLanguageComboBox;
-    bool stateRenameButton;
-
     void disableGUIControl();
     void enableGUIControl();
-
     void setUpGUI();
     void setUpKeyEvents();
     void setUpTable();
@@ -110,6 +106,7 @@ private slots:
     void onTableEnter();
 
     void savePoster();
+    void undoRenaming();
     void showAboutDialog();
     void showSettingsWindow();
     void toggleFullScreen();

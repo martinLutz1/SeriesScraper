@@ -83,33 +83,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::disableGUIControl()
 {
-    stateReloadButton = ui->directoryUpdateButton->isEnabled();
-    stateSeasonComboBox = ui->seasonComboBox->isEnabled();
-    stateSeriesLanguageComboBox = ui->seriesLanguageComboBox->isEnabled();
-    stateRenameButton = ui->renameButton->isEnabled();
-
-    ui->selectionButton->setEnabled(false);
-    ui->pathLineEdit->setEnabled(false);
-    ui->directoryUpdateButton->setEnabled(false);
-    ui->seriesLineEdit->setEnabled(false);
-    ui->seasonComboBox->setEnabled(false);
-    ui->seriesLanguageComboBox->setEnabled(false);
-    ui->nameSchemeComboBox->setEnabled(false);
-    ui->renameButton->setEnabled(false);
-    savePosterAction->setEnabled(false);
+    ui->centralControlElementWidget->setEnabled(false);
 }
 
 void MainWindow::enableGUIControl()
 {
-    ui->selectionButton->setEnabled(true);
-    ui->pathLineEdit->setEnabled(true);
-    ui->directoryUpdateButton->setEnabled(stateReloadButton);
-    ui->seriesLineEdit->setEnabled(true);
-    ui->seasonComboBox->setEnabled(stateSeasonComboBox);
-    ui->seriesLanguageComboBox->setEnabled(stateSeriesLanguageComboBox);
-    ui->nameSchemeComboBox->setEnabled(true);
-    ui->renameButton->setEnabled(stateRenameButton);
-    savePosterAction->setEnabled(true);
+    ui->centralControlElementWidget->setEnabled(true);
 }
 
 void MainWindow::setUpGUI()
@@ -131,6 +110,7 @@ void MainWindow::setUpGUI()
     // initialize view state
     ui->renameButton->setEnabled(false);
     savePosterAction->setEnabled(false);
+    undoRenameAction->setEnabled(false);
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
     ui->episodeLineEdit->hide();
@@ -187,16 +167,20 @@ void MainWindow::setUpMenuBar()
     helpMenu = new QMenu("Help");
 
     savePosterAction = new QAction("Save poster");
+    undoRenameAction = new QAction("Undo renaming");
     aboutAction = new QAction(aboutText);
     settingsAction = new QAction("Settings");
     fullScreenAction = new QAction("Fullscreen");
 
     aboutAction->setMenuRole(QAction::ApplicationSpecificRole);
     settingsAction->setMenuRole(QAction::ApplicationSpecificRole);
+
     settingsAction->setShortcut(QKeySequence::Preferences);
     fullScreenAction->setShortcut(QKeySequence::FullScreen);
+    undoRenameAction->setShortcut(QKeySequence::Undo);
 
     fileMenu->addAction(savePosterAction);
+    fileMenu->addAction(undoRenameAction);
     helpMenu->addAction(aboutAction);
     viewMenu->addAction(settingsAction);
     viewMenu->addAction(fullScreenAction);
@@ -207,6 +191,7 @@ void MainWindow::setUpMenuBar()
 
     // Connect Actions
     QObject::connect(savePosterAction, SIGNAL(triggered(bool)), this, SLOT(savePoster()));
+    QObject::connect(undoRenameAction, SIGNAL(triggered(bool)), this, SLOT(undoRenaming()));
     QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
     QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));
@@ -227,6 +212,13 @@ void MainWindow::setUpConfirmationMessageBoxes()
     posterConfirmationMessageBox->addButton("Yes", QMessageBox::YesRole);
     posterConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
     posterConfirmationMessageBox->setDefaultButton(QMessageBox::No);
+
+    undoRenamingConfirmationBox = new QMessageBox;
+    undoRenamingConfirmationBox->setWindowTitle("Undo renaming");
+    undoRenamingConfirmationBox->setText("Are you sure you want to undo the last rename action?");
+    undoRenamingConfirmationBox->addButton("Yes", QMessageBox::YesRole);
+    undoRenamingConfirmationBox->addButton("No", QMessageBox::NoRole);
+    undoRenamingConfirmationBox->setDefaultButton(QMessageBox::No);
 }
 
 void MainWindow::setUpEpisodeEdit()
@@ -610,6 +602,7 @@ void MainWindow::onSeasonChanged(int index)
 
 void MainWindow::onRenameButtonPressed()
 {
+    disableGUIControl();
     Message renameMsg;
     renameMsg.type = Message::view_rename_controller;
     emit(sendMessage(renameMsg));
@@ -647,6 +640,18 @@ void MainWindow::savePoster()
     Message msgSavePoster;
     msgSavePoster.type = Message::view_savePoster_controller;
     emit(sendMessage(msgSavePoster));
+}
+
+void MainWindow::undoRenaming()
+{
+    undoRenamingConfirmationBox->show();
+    undoRenamingConfirmationBox->buttons().at(1)->setFocus();
+    if (undoRenamingConfirmationBox->exec() == 0) // 0 = Yes button
+    {
+        Message msgUndoRenaming;
+        msgUndoRenaming.type = Message::view_undoRenaming_controller;
+        emit(sendMessage(msgUndoRenaming));
+    }
 }
 
 void MainWindow::showAboutDialog()
@@ -811,6 +816,17 @@ void MainWindow::notify(Message &msg)
         enableGUIControl();
         break;
     }
+    case Message::controller_renameFinished_view:
+    {
+        enableGUIControl();
+        break;
+    }
+    case Message::controller_enableUndoRenaming_view:
+    {
+        bool enableUndoRenaming = msg.data[0].b;
+        undoRenameAction->setEnabled(enableUndoRenaming);
+        break;
+    }
     case Message::controller_seasonMismatch_view:
     {
         renameConfirmationMessageBox->show();
@@ -820,6 +836,9 @@ void MainWindow::notify(Message &msg)
             Message msgForceRename;
             msgForceRename.type = Message::view_forceRename_controller;
             emit(sendMessage(msgForceRename));
+        } else
+        {
+            enableGUIControl();
         }
         ui->renameButton->setDown(false);
         break;

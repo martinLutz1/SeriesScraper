@@ -37,16 +37,42 @@ bool FileRenamer::rename()
             QString newFileName = newFileNameList.at(i);
 
             bool emptyFileName = fileToRename.isEmpty();
+            bool emptyNewName = newFileName.isEmpty();
             bool hasAlreadyNewName = (newFileName == fileToRename);
             // Do not rename empty file names and files with the same name
-            if (emptyFileName || hasAlreadyNewName)
+            if (emptyFileName || hasAlreadyNewName || emptyNewName)
                 continue;
 
-            bool renameSuccess = workingDirectory.rename(fileToRename, newFileName);
-            if (!renameSuccess)
-                renamingSucceded = renameSuccess;
+            renamingSucceded = workingDirectory.rename(fileToRename, newFileName);
+            if (!renamingSucceded)
+                break;
         }
-
     }
+    undoPossible = renamingSucceded;
     return renamingSucceded;
+}
+
+bool FileRenamer::isUndoPossible()
+{
+    return undoPossible;
+}
+
+bool FileRenamer::deleteLastUndo()
+{
+    undoPossible = false;
+}
+
+bool FileRenamer::undo()
+{
+    if (undoPossible)
+    {
+        // Swap old and new file names
+        QStringList temp = oldFileNameList;
+        oldFileNameList = newFileNameList;
+        newFileNameList = temp;
+        return rename();
+    } else
+    {
+        return false;
+    }
 }

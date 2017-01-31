@@ -50,6 +50,7 @@ private:
     void savePoster();
     bool setDirectory(QString path);
     bool renameFiles();
+    bool undoRenameFiles();
     void updateView();
     void updateRenameButtonAndSavePoster();
     void removeFileType(int index);

@@ -30,7 +30,6 @@ void Controller::initializeNameSchemes()
             nameSchemeHandler.setNameScheme(i);
             nameSchemeRepresentationList <<  nameSchemeHandler.getNameSchemeRepresentation();
             nameSchemeList << nameSchemeHandler.getNameScheme();
-
         }
     } else // Add default entry if name scheme list not found or empty
     {
@@ -464,6 +463,16 @@ void Controller::savePoster()
 
 bool Controller::setDirectory(QString path)
 {
+    if (seriesData.getWorkingDirectory().absolutePath() != path)
+    {
+        fileRenamer.deleteLastUndo();
+
+        Message msgDisableUndoRenaming;
+        msgDisableUndoRenaming.type = Message::controller_enableUndoRenaming_view;
+        msgDisableUndoRenaming.data[0].b = false;
+        emit(sendMessage(msgDisableUndoRenaming));
+    }
+
     bool directoryExists = directoryParser.initializeDirectory(path);
     QDir newDirectory("");
     QStringList newOldFileNames;
@@ -512,6 +521,12 @@ bool Controller::renameFiles()
         seriesData.setOldFileNamesWithoutSuffix(renamedFilesWithoutSuffix);
         updateView();
 
+        // Enable undo action
+        Message msgEnableUndoRenaming;
+        msgEnableUndoRenaming.type = Message::controller_enableUndoRenaming_view;
+        msgEnableUndoRenaming.data[0].b = true;
+        emit(sendMessage(msgEnableUndoRenaming));
+
         // Success Message
         QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful);
@@ -521,7 +536,44 @@ bool Controller::renameFiles()
         QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);
         setStatusMessage(renameFailure);
     }
+    Message msgRenameFinished;
+    msgRenameFinished.type = Message::controller_renameFinished_view;
+    emit(sendMessage(msgRenameFinished));
+
     return renameSuccess;
+}
+
+bool Controller::undoRenameFiles()
+{
+    if (fileRenamer.isUndoPossible())
+    {
+        bool undoRenameSuccess = fileRenamer.undo();
+
+        if (undoRenameSuccess)
+        {
+            directoryParser.initializeDirectory(seriesData.getWorkingDirectory().absolutePath());
+            QStringList renamedFiles = directoryParser.getFiles();
+            QStringList renamedFilesWithoutSuffix = directoryParser.getFilesWithoutSuffix();
+            seriesData.setOldFileNames(renamedFiles);
+            seriesData.setOldFileNamesWithoutSuffix(renamedFilesWithoutSuffix);
+            updateView();
+
+            // Success Message
+            // TODO
+        } else
+        {
+            // Failure Message
+            // TODO
+        }
+        Message msgRenameFinished;
+        msgRenameFinished.type = Message::controller_renameFinished_view;
+        emit(sendMessage(msgRenameFinished));
+
+        return undoRenameSuccess;
+    } else
+    {
+        return false;
+    }
 }
 
 void Controller::updateView()
@@ -684,6 +736,11 @@ void Controller::notify(Message &msg)
     case Message::view_forceRename_controller:
     {
         renameFiles();
+        break;
+    }
+    case Message::view_undoRenaming_controller:
+    {
+        undoRenameFiles();
         break;
     }
     case Message::view_changeNameScheme_controller:
