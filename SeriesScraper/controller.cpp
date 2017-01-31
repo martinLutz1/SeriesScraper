@@ -272,12 +272,13 @@ bool Controller::loadSeries(QString series, int season)
         if (seriesFound)
         {
             QString seriesLanguage = seriesData.getSelectedLanguage();
+
+            newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
             newSelectedSeason = season;
             newSeriesName = seriesParser.getSeriesName();
             newPosterUrl = seriesParser.getPosterUrl();
             newPlot = seriesParser.getPlot();
             newAmountSeasons = seriesParser.getAmountSeasons();
-            newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
             newAirDate = seriesParser.getSeriesYear();
 
             // Finish loading animation

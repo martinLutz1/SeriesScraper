@@ -17,7 +17,7 @@ private:
     const QString basePosterUrl = "http://image.tmdb.org/t/p/w780";
     QString seriesID;
 
-    bool setSeriesInformation(QString language);
+    bool setSeriesInformation(QString seasonNumberText);
 };
 
 #endif // TMDBSERIESPARSER_H

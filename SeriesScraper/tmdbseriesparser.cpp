@@ -30,12 +30,9 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
         if (jsonArray.size() > 0)
         {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());
-            bool seriesInformationSet = setSeriesInformation("en-EN");
-            if (seriesInformationSet)
-                return true;
         }
     }
-    return false;
+    return scrapingSuccessful;
 }
 
 QStringList TMDbSeriesParser::getSeason(int season, QString language)
@@ -50,44 +47,42 @@ QStringList TMDbSeriesParser::getSeason(int season, QString language)
     {
         QJsonArray episodeJsonArray = parsedObject.value(seasonNumberText).toObject().value("episodes").toArray();
         for (int i = 0; i < episodeJsonArray.size(); i++)
+        {
             episodeList << episodeJsonArray[i].toObject().value("name").toString();
-
-        // Set year information
-        year = parsedObject.value(seasonNumberText).toObject().value("air_date").toString().left(4);
-
-        // Update series name (language may be changed)
-        seriesFullName = parsedObject.value("name").toString();
+        }
+        setSeriesInformation(seasonNumberText);
     }
     return episodeList;
 }
 
-bool TMDbSeriesParser::setSeriesInformation(QString language)
+bool TMDbSeriesParser::setSeriesInformation(QString seasonNumberText)
 {
-    QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language=" + language;
-    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
-    if (scrapingSuccessful)
-    {
-        QJsonValue numberOfSeasons = parsedObject.value("number_of_seasons");
-        QJsonValue seriesName = parsedObject.value("name");
-        QJsonValue posterUrlValue = parsedObject.value("poster_path");
-        QJsonValue plotValue = parsedObject.value("overview");
+    QJsonValue yearValue = parsedObject.value(seasonNumberText).toObject().value("air_date");
+    QJsonValue amountSeasonsValue = parsedObject.value("number_of_seasons");
+    QJsonValue seriesFullNameValue = parsedObject.value("name");
+    QJsonValue posterUrlValue = parsedObject.value(seasonNumberText).toObject().value("poster_path");
+    QJsonValue plotValue = parsedObject.value(seasonNumberText).toObject().value("overview");
 
-        if (numberOfSeasons.isUndefined()
-                || seriesName.isUndefined()
-                || posterUrlValue.isUndefined()
-                || plotValue.isUndefined())
-        {
-            return false;
-        }
-        else
-        {
-            amountSeasons = numberOfSeasons.toInt();
-            seriesFullName = seriesName.toString();
-            posterUrl = basePosterUrl + posterUrlValue.toString();
-            plot = plotValue.toString();
-            return true;
-        }
+    if (yearValue.isUndefined()
+            || amountSeasonsValue.isUndefined()
+            || seriesFullNameValue.isUndefined()
+            || posterUrlValue.isUndefined()
+            || plotValue.isUndefined())
+    {
+        year = "";
+        amountSeasons = 0;
+        seriesFullName = "";
+        posterUrl = "";
+        plot = "";
+        return false;
     }
     else
-        return false;
+    {
+        year = yearValue.toString().left(4);
+        amountSeasons = amountSeasonsValue.toInt();
+        seriesFullName = seriesFullNameValue.toString();
+        posterUrl = basePosterUrl + posterUrlValue.toString();
+        plot = plotValue.toString();
+        return true;
+    }
 }
