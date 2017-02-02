@@ -10,6 +10,9 @@ public:
     OMDbSeriesParser();
     bool scrapeSeries(QString series);
     QStringList getSeason(int season, QString language="en-EN");
+
+private:
+    QString lastScrapedSeries;
 };
 
 #endif // OMDBSERIESPARSER_H

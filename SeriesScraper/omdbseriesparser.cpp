@@ -11,6 +11,11 @@ OMDbSeriesParser::OMDbSeriesParser()
 
 bool OMDbSeriesParser::scrapeSeries(QString series)
 {
+    if (lastScrapedSeries == series)
+    {
+        return true;
+    }
+
     seriesFullName.clear();
     amountSeasons = 0;
     year.clear();
@@ -28,6 +33,7 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
         plot = parsedObject.value("Plot").toString();
 
         scrapingSuccessful = !seriesFullName.isEmpty();
+        lastScrapedSeries = series;
     }
     return scrapingSuccessful;
 }
