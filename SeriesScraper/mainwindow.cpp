@@ -477,6 +477,7 @@ void MainWindow::changeLocalization(QStringList translationList)
     aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at(LanguageData::settings));
     savePosterAction->setText(translationList.at(LanguageData::savePoster));
+    undoRenameAction->setText(translationList.at(LanguageData::undoRenaming));
     fullScreenAction->setText(translationList.at(LanguageData::fullscreen));
     directorySelectionText = translationList.at(LanguageData::directorySelection);
     // Info sidebar
@@ -493,6 +494,11 @@ void MainWindow::changeLocalization(QStringList translationList)
     posterConfirmationMessageBox->setText(translationList.at(LanguageData::posterAlreadyExists));
     posterConfirmationMessageBox->setButtonText(0, translationList.at(LanguageData::yes));
     posterConfirmationMessageBox->setButtonText(1, translationList.at(LanguageData::no));
+    // Undo renaming confirmation dialog
+    undoRenameConfirmationBox->setWindowTitle(translationList.at(LanguageData::undoRenaming));
+    undoRenameConfirmationBox->setText(translationList.at(LanguageData::undoRenamingDetailed));
+    undoRenameConfirmationBox->setButtonText(0, translationList.at(LanguageData::yes));
+    undoRenameConfirmationBox->setButtonText(1, translationList.at(LanguageData::no));
 }
 
 void MainWindow::openDirectory()

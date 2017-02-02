@@ -4,8 +4,8 @@
 
 void Controller::initializeFileTypes()
 {
-    // Todo: Error message
-    fileTypeHandler.loadFileTypeFile();
+    bool loadingSuccessful = fileTypeHandler.loadFileTypeFile();
+
     QStringList fileTypes = fileTypeHandler.getFileTypes();
     directoryParser.setFileTypes(fileTypes);
 
@@ -13,6 +13,13 @@ void Controller::initializeFileTypes()
     msgSetFileTypes.type = Message::controller_setFileTypes_settings;
     msgSetFileTypes.data[0].qsListPointer = &fileTypes;
     emit(sendMessage(msgSetFileTypes));
+
+    if (!loadingSuccessful)
+    {
+        // Todo localize
+        QString fileFormatNotFound = interfaceLanguageHandler.getTranslation(LanguageData::fileFormatNotFound);
+        setStatusMessage(fileFormatNotFound);
+    }
 }
 
 void Controller::initializeNameSchemes()
@@ -578,11 +585,13 @@ bool Controller::undoRenameFiles()
             updateView();
 
             // Success Message
-            // TODO
+            QString undoRenameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingSuccessful);
+            setStatusMessage(undoRenameSuccessful);
         } else
         {
             // Failure Message
-            // TODO
+            QString undoRenameFailure = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingFailed);
+            setStatusMessage(undoRenameFailure);
         }
         Message msgRenameFinished;
         msgRenameFinished.type = Message::controller_renameFinished_view;
