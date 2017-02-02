@@ -535,7 +535,7 @@
     </font>
    </property>
    <property name="toolTip">
-    <string>Use with caution. Resets the video formats, name schemes and all settings to default</string>
+    <string>Resets all settings. Video formats and name schemes stay untouched.</string>
    </property>
    <property name="text">
     <string>Reset</string>

@@ -5,19 +5,7 @@
 
 Settings::Settings()
 {
-    settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
-    savePath = defaultSavePath;
-    saveSeries = defaultSaveSeries;
-    savePosterInDirectory = defaultSavePosterInDirectory;
-    useDarkTheme = defaultUseDarkTheme;
-    showSeriesInfo = defaultShowSeriesInfo;
-    path = defaultPath;
-    series = defaultSeries;
-    season = defaultSeason;
-    seriesDatabase = defaultSeriesDatabase;
-    nameScheme = defaultNameScheme;
-    guiLanguage = defaultGuiLanguage;
-    seriesLanguage = defaultSeriesLanguage;
+    setDefaultValues();
 }
 
 bool Settings::loadSettingsFile()
@@ -69,7 +57,7 @@ bool Settings::saveSettingsFile()
 
 bool Settings::resetSettingsFile()
 {
-    Settings();
+    setDefaultValues();
     return saveSettingsFile();
 }
 
@@ -194,4 +182,21 @@ int Settings::getSeriesDatabase()
 int Settings::getNameScheme()
 {
     return nameScheme;
+}
+
+void Settings::setDefaultValues()
+{
+    settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
+    savePath = defaultSavePath;
+    saveSeries = defaultSaveSeries;
+    savePosterInDirectory = defaultSavePosterInDirectory;
+    useDarkTheme = defaultUseDarkTheme;
+    showSeriesInfo = defaultShowSeriesInfo;
+    path = defaultPath;
+    series = defaultSeries;
+    season = defaultSeason;
+    seriesDatabase = defaultSeriesDatabase;
+    nameScheme = defaultNameScheme;
+    guiLanguage = defaultGuiLanguage;
+    seriesLanguage = defaultSeriesLanguage;
 }

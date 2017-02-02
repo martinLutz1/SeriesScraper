@@ -41,6 +41,7 @@ public:
     int getNameScheme();
 
 private:
+    void setDefaultValues();
     QFile settingsFile;
     bool savePath;
     bool saveSeries;
