@@ -57,7 +57,7 @@ bool FileRenamer::isUndoPossible()
     return undoPossible;
 }
 
-bool FileRenamer::deleteLastUndo()
+void FileRenamer::deleteLastUndo()
 {
     undoPossible = false;
 }

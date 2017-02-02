@@ -14,7 +14,7 @@ public:
     void setDirectory(QDir directory);
     bool rename();
     bool isUndoPossible();
-    bool deleteLastUndo();
+    void deleteLastUndo();
     bool undo();
 
 private:

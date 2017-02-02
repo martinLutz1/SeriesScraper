@@ -309,7 +309,7 @@
         <property name="font">
          <font>
           <family>Segoe UI</family>
-          <pointsize>12</pointsize>
+          <pointsize>11</pointsize>
          </font>
         </property>
         <property name="title">
@@ -324,7 +324,7 @@
            <x>0</x>
            <y>20</y>
            <width>481</width>
-           <height>81</height>
+           <height>88</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="directorySelectionHorizontalLayout">
@@ -388,7 +388,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>11</pointsize>
+                <pointsize>10</pointsize>
                </font>
               </property>
               <property name="text">
@@ -471,7 +471,7 @@
               <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
-                <height>5</height>
+                <height>0</height>
                </size>
               </property>
              </spacer>
@@ -503,7 +503,7 @@
         <property name="font">
          <font>
           <family>Segoe UI</family>
-          <pointsize>12</pointsize>
+          <pointsize>11</pointsize>
          </font>
         </property>
         <property name="title">
@@ -615,7 +615,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>11</pointsize>
+                <pointsize>10</pointsize>
                </font>
               </property>
               <property name="text">
@@ -653,7 +653,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>11</pointsize>
+                <pointsize>10</pointsize>
                </font>
               </property>
               <property name="text">
@@ -694,7 +694,7 @@
               <property name="font">
                <font>
                 <family>Segoe UI</family>
-                <pointsize>11</pointsize>
+                <pointsize>10</pointsize>
                </font>
               </property>
               <property name="text">
@@ -822,7 +822,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
