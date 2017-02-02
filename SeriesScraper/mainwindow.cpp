@@ -177,6 +177,7 @@ void MainWindow::setUpMenuBar()
 
     settingsAction->setShortcut(QKeySequence::Preferences);
     fullScreenAction->setShortcut(QKeySequence::FullScreen);
+    savePosterAction->setShortcut(QKeySequence::Save);
     undoRenameAction->setShortcut(QKeySequence::Undo);
 
     fileMenu->addAction(savePosterAction);
