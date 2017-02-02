@@ -26,8 +26,6 @@ private:
     OMDbSeriesParser omdbSeriesParser;
     TMDbSeriesParser tmdbSeriesParser;
     int selectedSeriesParser; // 0 = TMDb, 1 = OMDb
-
-
     QString seriesInput;
 };
 

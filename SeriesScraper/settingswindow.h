@@ -42,6 +42,7 @@ private slots:
     void onSaveSeriesChanged(bool saveSeries);
     void onSavePathChanged(bool savePath);
     void onSavePosterChanged(bool savePoster);
+    void onSetDetectedSeason(bool setDetectedSeason);
     void onResetClicked();
     void onDarkThemeChanged(bool useDarkTheme);
     void onShowSeriesInformationChanged(bool showInfo);

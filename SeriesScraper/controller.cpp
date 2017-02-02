@@ -109,6 +109,7 @@ void Controller::initializeSettings()
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
     bool savePosterInDirectory = settings.getSavePosterInDirectory();
+    bool setDetectedSeason = settings.getAutoSetDetectedSeason();
     bool useDarkTheme = settings.getDarkTheme();
     bool showSeriesInfo = settings.getShowSeriesInfo();
 
@@ -131,6 +132,11 @@ void Controller::initializeSettings()
     msgSavePosterInDirectory.type = Message::controller_savePoster_settings;
     msgSavePosterInDirectory.data[0].b = savePosterInDirectory;
     emit(sendMessage(msgSavePosterInDirectory));
+
+    Message msgSetDetectedSeason;
+    msgSetDetectedSeason.type = Message::controller_setDetectedSeason_settings;
+    msgSetDetectedSeason.data[0].b = setDetectedSeason;
+    emit(sendMessage(msgSetDetectedSeason));
 
     Message msgUseDarkTheme;
     msgUseDarkTheme.type = Message::controller_useDarkTheme_settings;
@@ -271,13 +277,18 @@ bool Controller::loadSeries(QString series, int season)
         if (seriesFound)
         {
             QString seriesLanguage = seriesData.getSelectedLanguage();
+            newAmountSeasons = seriesParser.getAmountSeasons();
 
-            newEpisodeList = seriesParser.getEpisodeList(season, seriesLanguage);
-            newSelectedSeason = season;
+            int seasonToLoad = season;
+            if (season > newAmountSeasons) // Avoid loading not existing seasons
+            {
+                seasonToLoad = 1;
+            }
+            newEpisodeList = seriesParser.getEpisodeList(seasonToLoad, seriesLanguage);
+            newSelectedSeason = seasonToLoad;
             newSeriesName = seriesParser.getSeriesName();
             newPosterUrl = seriesParser.getPosterUrl();
             newPlot = seriesParser.getPlot();
-            newAmountSeasons = seriesParser.getAmountSeasons();
             newAirDate = seriesParser.getSeriesYear();
 
             // Finish loading animation
@@ -385,6 +396,13 @@ void Controller::changeSeries(QString series, int season)
     msgSeriesSet.data[0].b = seriesSet;
     msgSeriesSet.data[1].b = isEmpty;
     emit(sendMessage(msgSeriesSet));
+
+    // Update series and season on view
+    Message msgSetSeries;
+    msgSetSeries.type = Message::controller_setSeries_view;
+    msgSetSeries.data[0].qsPointer = &series;
+    msgSetSeries.data[1].i = seriesData.getSelectedSeason();
+    emit(sendMessage(msgSetSeries));
 }
 
 void Controller::changeSaveSeries(bool saveSeries)
@@ -655,7 +673,16 @@ void Controller::notify(Message &msg)
         // Only write on change
         if (series != oldSeries)
         {
-            changeSeries(series, 1);
+            int season = 1;
+            if (settings.getAutoSetDetectedSeason())
+            {
+                int foundSeason = directoryParser.getFoundSeason();
+                if (foundSeason <= 100)
+                {
+                    season = foundSeason;
+                }
+            }
+            changeSeries(series, season);
         }
         break;
     }
@@ -807,6 +834,12 @@ void Controller::notify(Message &msg)
     {
         bool savePoster = msg.data[0].b;
         settings.setSavePosterInDirectory(savePoster);
+        break;
+    }
+    case Message::settings_setDetectedSeason_controller:
+    {
+        bool setDetectedSeason = msg.data[0].b;
+        settings.setAutoSetDetectedSeason(setDetectedSeason);
         break;
     }
     case Message::settings_reset_controller:

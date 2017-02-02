@@ -127,17 +127,22 @@ int SeriesParser::getAmountSeasons()
 
 QStringList SeriesParser::getEpisodeList(int season, QString language)
 {
+    int seasonToLoad = season;
+    if (season > getAmountSeasons()) // Dont load not existing seasons
+    {
+        seasonToLoad = 1;
+    }
+
     switch(selectedSeriesParser)
     {
     default:
     case tmdb:
-    {
-        return tmdbSeriesParser.getSeason(season, language);
-        break;
+    {  
+        return tmdbSeriesParser.getSeason(seasonToLoad, language);
     }
     case omdb:
     {
-        return omdbSeriesParser.getSeason(season);
+        return omdbSeriesParser.getSeason(seasonToLoad);
         break;
     }
     }

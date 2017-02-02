@@ -596,8 +596,6 @@ void MainWindow::onSeasonChanged(int index)
     seasonChangedMsg.type = Message::view_changeSeason_controller;
     seasonChangedMsg.data[0].i = index + 1;
     emit(sendMessage(seasonChangedMsg));
-
-    ui->seasonComboBox->setCurrentIndex(index);
 }
 
 void MainWindow::onRenameButtonPressed()

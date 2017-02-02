@@ -16,6 +16,7 @@ bool Settings::loadSettingsFile()
         setSavePath(loadedObject.find(jsonKeySavePath).value().toBool());
         setSaveSeries(loadedObject.find(jsonKeySaveSeries).value().toBool());
         setSavePosterInDirectory(loadedObject.find(jsonKeySavePosterInDirectory).value().toBool());
+        setAutoSetDetectedSeason(loadedObject.find(jsonKeyAutoSetDetectedSeason).value().toBool());
         setDarkTheme(loadedObject.find(jsonKeyDarkTheme).value().toBool());
         setShowSeriesInfo(loadedObject.find(jsonKeyShowSeriesInfo).value().toBool());
         setPath(loadedObject.find(jsonKeyPath).value().toString());
@@ -41,6 +42,7 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeySaveSeries, saveSeries);
     jsonSettings.insert(jsonKeySeries, series);
     jsonSettings.insert(jsonKeySavePosterInDirectory, savePosterInDirectory);
+    jsonSettings.insert(jsonKeyAutoSetDetectedSeason, autoSetDetectedSeason);
     jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
     jsonSettings.insert(jsonKeyGUILanguage, guiLanguage);
     jsonSettings.insert(jsonKeySeriesLanguage, seriesLanguage);
@@ -74,6 +76,11 @@ void Settings::setSaveSeries(bool saveSeriesOnExit)
 void Settings::setSavePosterInDirectory(bool savePosterInDirectory)
 {
     this->savePosterInDirectory = savePosterInDirectory;
+}
+
+void Settings::setAutoSetDetectedSeason(bool autoSetDetectedSeason)
+{
+    this->autoSetDetectedSeason = autoSetDetectedSeason;
 }
 
 void Settings::setDarkTheme(bool useDarkTheme)
@@ -139,6 +146,11 @@ bool Settings::getSavePosterInDirectory()
     return savePosterInDirectory;
 }
 
+bool Settings::getAutoSetDetectedSeason()
+{
+    return autoSetDetectedSeason;
+}
+
 bool Settings::getDarkTheme()
 {
     return useDarkTheme;
@@ -190,6 +202,7 @@ void Settings::setDefaultValues()
     savePath = defaultSavePath;
     saveSeries = defaultSaveSeries;
     savePosterInDirectory = defaultSavePosterInDirectory;
+    autoSetDetectedSeason = defaultAutoSetDetectedSeason;
     useDarkTheme = defaultUseDarkTheme;
     showSeriesInfo = defaultShowSeriesInfo;
     path = defaultPath;

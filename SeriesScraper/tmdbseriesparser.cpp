@@ -30,6 +30,7 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
         if (jsonArray.size() > 0)
         {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());
+            setAmountSeasons();
         }
     }
     return scrapingSuccessful;
@@ -58,13 +59,11 @@ QStringList TMDbSeriesParser::getSeason(int season, QString language)
 bool TMDbSeriesParser::setSeriesInformation(QString seasonNumberText)
 {
     QJsonValue yearValue = parsedObject.value(seasonNumberText).toObject().value("air_date");
-    QJsonValue amountSeasonsValue = parsedObject.value("number_of_seasons");
     QJsonValue seriesFullNameValue = parsedObject.value("name");
     QJsonValue posterUrlValue = parsedObject.value(seasonNumberText).toObject().value("poster_path");
     QJsonValue plotValue = parsedObject.value(seasonNumberText).toObject().value("overview");
 
     if (yearValue.isUndefined()
-            || amountSeasonsValue.isUndefined()
             || seriesFullNameValue.isUndefined()
             || posterUrlValue.isUndefined()
             || plotValue.isUndefined())
@@ -75,14 +74,31 @@ bool TMDbSeriesParser::setSeriesInformation(QString seasonNumberText)
         posterUrl = "";
         plot = "";
         return false;
-    }
-    else
+    } else
     {
         year = yearValue.toString().left(4);
-        amountSeasons = amountSeasonsValue.toInt();
         seriesFullName = seriesFullNameValue.toString();
         posterUrl = basePosterUrl + posterUrlValue.toString();
         plot = plotValue.toString();
         return true;
+    }
+}
+
+bool TMDbSeriesParser::setAmountSeasons()
+{
+    QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language=english";
+    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    if (scrapingSuccessful)
+    {
+         QJsonValue amountSeasonsValue = parsedObject.value("number_of_seasons");
+         if (amountSeasonsValue.isUndefined())
+         {
+             amountSeasons = 0;
+             return false;
+         } else
+         {
+             amountSeasons = amountSeasonsValue.toInt();
+             return true;
+         }
     }
 }

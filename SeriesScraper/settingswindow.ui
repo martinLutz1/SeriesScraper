@@ -275,7 +275,7 @@
      <property name="title">
       <string>Misc</string>
      </property>
-     <widget class="QCheckBox" name="checkBox">
+     <widget class="QCheckBox" name="autoSetDetectedSeasonCheckBox">
       <property name="geometry">
        <rect>
         <x>10</x>

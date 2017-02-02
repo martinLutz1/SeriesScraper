@@ -49,6 +49,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->saveSeriesCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSaveSeriesChanged(bool)));
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
     QObject::connect(ui->savePosterCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePosterChanged(bool)));
+    QObject::connect(ui->autoSetDetectedSeasonCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSetDetectedSeason(bool)));
     QObject::connect(ui->resetButton, SIGNAL(pressed()), this, SLOT(onResetClicked()));
     QObject::connect(ui->darkThemeCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDarkThemeChanged(bool)));
     QObject::connect(ui->showSeriesInformationCheckBox, SIGNAL(toggled(bool)), this, SLOT(onShowSeriesInformationChanged(bool)));
@@ -149,6 +150,12 @@ void SettingsWindow::notify(Message &msg)
     {
         bool savePoster = msg.data[0].b;
         ui->savePosterCheckBox->setChecked(savePoster);
+        break;
+    }
+    case Message::controller_setDetectedSeason_settings:
+    {
+        bool setDetectedSeason = msg.data[0].b;
+        ui->autoSetDetectedSeasonCheckBox->setChecked(setDetectedSeason);
         break;
     }
     case Message::controller_useDarkTheme_settings:
@@ -343,6 +350,14 @@ void SettingsWindow::onSavePosterChanged(bool savePoster)
     msgSavePoster.type = Message::settings_savePoster_controller;
     msgSavePoster.data[0].b = savePoster;
     emit(sendMessage(msgSavePoster));
+}
+
+void SettingsWindow::onSetDetectedSeason(bool setDetectedSeason)
+{
+    Message msgSetDetectedSeason;
+    msgSetDetectedSeason.type = Message::settings_setDetectedSeason_controller;
+    msgSetDetectedSeason.data[0].b = setDetectedSeason;
+    emit(sendMessage(msgSetDetectedSeason));
 }
 
 void SettingsWindow::onResetClicked()

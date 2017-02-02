@@ -18,6 +18,7 @@ private:
     QString seriesID;
 
     bool setSeriesInformation(QString seasonNumberText);
+    bool setAmountSeasons();
 };
 
 #endif // TMDBSERIESPARSER_H
