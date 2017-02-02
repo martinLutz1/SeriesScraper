@@ -16,7 +16,6 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 
     if (int(position.size()) < files.size()) // Name scheme not found, natural sort
     {
-        foundSeason = 0;
         sortedFiles = naturalSort(files);
     } else // Sort by found positions
     {
@@ -162,6 +161,7 @@ bool DirectoryParser::initializeDirectory(QString path)
 {
     QDir directory(path);
     bool directoryExists = directory.exists();
+    foundSeason = 0;
     if (directoryExists)
     {
         this->directory = directory;

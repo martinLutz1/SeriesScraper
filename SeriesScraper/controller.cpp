@@ -677,7 +677,7 @@ void Controller::notify(Message &msg)
             if (settings.getAutoSetDetectedSeason())
             {
                 int foundSeason = directoryParser.getFoundSeason();
-                if (foundSeason <= 100)
+                if (foundSeason > 0 && foundSeason <= 100)
                 {
                     season = foundSeason;
                 }
