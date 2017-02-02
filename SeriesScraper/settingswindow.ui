@@ -68,9 +68,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>130</y>
-       <width>290</width>
-       <height>90</height>
+       <y>135</y>
+       <width>250</width>
+       <height>85</height>
       </rect>
      </property>
      <property name="title">
@@ -101,7 +101,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>170</x>
         <y>30</y>
         <width>60</width>
         <height>20</height>
@@ -136,7 +136,7 @@
        <x>315</x>
        <y>0</y>
        <width>160</width>
-       <height>130</height>
+       <height>80</height>
       </rect>
      </property>
      <property name="title">
@@ -175,7 +175,7 @@
        <x>10</x>
        <y>0</y>
        <width>290</width>
-       <height>130</height>
+       <height>135</height>
       </rect>
      </property>
      <property name="title">
@@ -238,9 +238,9 @@
      <property name="geometry">
       <rect>
        <x>315</x>
-       <y>130</y>
+       <y>80</y>
        <width>160</width>
-       <height>90</height>
+       <height>55</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -260,6 +260,32 @@
       </property>
       <property name="text">
        <string>Poster</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="miscGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>275</x>
+       <y>135</y>
+       <width>200</width>
+       <height>85</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Misc</string>
+     </property>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>25</y>
+        <width>185</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set detected season</string>
       </property>
      </widget>
     </widget>

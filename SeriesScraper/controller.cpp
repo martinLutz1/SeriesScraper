@@ -463,6 +463,7 @@ void Controller::savePoster()
 
 bool Controller::setDirectory(QString path)
 {
+    // Discard undo action when the path changed
     if (seriesData.getWorkingDirectory().absolutePath() != path)
     {
         fileRenamer.deleteLastUndo();

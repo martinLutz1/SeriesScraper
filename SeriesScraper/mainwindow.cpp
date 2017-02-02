@@ -213,12 +213,12 @@ void MainWindow::setUpConfirmationMessageBoxes()
     posterConfirmationMessageBox->addButton("No", QMessageBox::NoRole);
     posterConfirmationMessageBox->setDefaultButton(QMessageBox::No);
 
-    undoRenamingConfirmationBox = new QMessageBox;
-    undoRenamingConfirmationBox->setWindowTitle("Undo renaming");
-    undoRenamingConfirmationBox->setText("Are you sure you want to undo the last rename action?");
-    undoRenamingConfirmationBox->addButton("Yes", QMessageBox::YesRole);
-    undoRenamingConfirmationBox->addButton("No", QMessageBox::NoRole);
-    undoRenamingConfirmationBox->setDefaultButton(QMessageBox::No);
+    undoRenameConfirmationBox = new QMessageBox;
+    undoRenameConfirmationBox->setWindowTitle("Undo renaming");
+    undoRenameConfirmationBox->setText("Are you sure you want to undo the last rename action?");
+    undoRenameConfirmationBox->addButton("Yes", QMessageBox::YesRole);
+    undoRenameConfirmationBox->addButton("No", QMessageBox::NoRole);
+    undoRenameConfirmationBox->setDefaultButton(QMessageBox::No);
 }
 
 void MainWindow::setUpEpisodeEdit()
@@ -644,9 +644,9 @@ void MainWindow::savePoster()
 
 void MainWindow::undoRenaming()
 {
-    undoRenamingConfirmationBox->show();
-    undoRenamingConfirmationBox->buttons().at(1)->setFocus();
-    if (undoRenamingConfirmationBox->exec() == 0) // 0 = Yes button
+    undoRenameConfirmationBox->show();
+    undoRenameConfirmationBox->buttons().at(1)->setFocus();
+    if (undoRenameConfirmationBox->exec() == 0) // 0 = Yes button
     {
         Message msgUndoRenaming;
         msgUndoRenaming.type = Message::view_undoRenaming_controller;

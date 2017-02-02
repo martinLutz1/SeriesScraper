@@ -263,8 +263,7 @@ void SettingsWindow::createResetConfirmationDialog()
 
 void SettingsWindow::resizeNameSchemeTab()
 {
-    int windowWidth = this->width();
-    int tabWidth =  windowWidth - 2 * UNIVERSAL_SPACER/2;
+    int tabWidth = this->width() - UNIVERSAL_SPACER;
     int tabHeight = windowSize.height() - 60;
     int listWidth = tabWidth - 2.5 * UNIVERSAL_SPACER;
     int listHeight = ui->nameSchemeListWidget->height();
@@ -377,9 +376,9 @@ void SettingsWindow::onTabChanged(int index)
 {
     if (index == 2) // Name Scheme tab
     {
-        int windowWidth = ui->nameSchemeListWidget->sizeHintForColumn(0) + 2 * UNIVERSAL_SPACER;
-        if (windowWidth > 800)
-            windowWidth = 800;
+        int windowWidth = ui->nameSchemeListWidget->sizeHintForColumn(0) + 2 * UNIVERSAL_SPACER + 20;
+        if (windowWidth > 1000)
+            windowWidth = 1000;
         else if (windowWidth < windowSize.width())
             windowWidth = windowSize.width();
 

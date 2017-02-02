@@ -37,7 +37,7 @@ private:
     KeyPressEater *keyPressEaterEnter;
     QMessageBox *renameConfirmationMessageBox;
     QMessageBox *posterConfirmationMessageBox;
-    QMessageBox *undoRenamingConfirmationBox;
+    QMessageBox *undoRenameConfirmationBox;
 
     QMenu *fileMenu;
     QMenu *helpMenu;
