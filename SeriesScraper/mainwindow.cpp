@@ -107,6 +107,15 @@ void MainWindow::setUpGUI()
     ui->seriesGroupBox->setLayout(ui->seriesSelectionHorizontalLayout);
     ui->centralControlElementWidget->setLayout(ui->controlElementshorizontalLayout);
 
+    // add icons
+    window()->setWindowIcon(QIcon(":/images/logo.png"));
+    settingsAction->setIcon(QIcon(":/images/settings.png"));
+    aboutAction->setIcon(QIcon(":/images/about.png"));
+    savePosterAction->setIcon(QIcon(":/images/save.png"));
+    undoRenameAction->setIcon(QIcon(":/images/undo.png"));
+
+    fullScreenAction->setIcon(QIcon(":/images/fullscreen.png"));
+
     // initialize view state
     ui->renameButton->setEnabled(false);
     savePosterAction->setEnabled(false);

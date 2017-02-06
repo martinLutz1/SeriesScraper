@@ -10,10 +10,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
-#if defined (Q_OS_MACX)
-    ui->outputTextEdit->setFontPointSize(13);
-#endif
     QObject::connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(hide()));
+    window()->setWindowIcon(QIcon(":/images/about.png"));
 }
 
 AboutDialog::~AboutDialog()
@@ -27,6 +25,7 @@ void AboutDialog::notify(Message &msg)
     case Message::controller_showAboutDialog_about:
     {
         this->show();
+        this->setWindowIcon(QIcon(":/images/about.png"));
         break;
     }
     case Message::controller_changeLocalization_view:

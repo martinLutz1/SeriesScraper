@@ -32,6 +32,8 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
     if (scrapingSuccessful)
     {
         QJsonArray jsonArray = parsedObject.value("results").toArray();
+        scrapingSuccessful = !jsonArray.isEmpty();
+
         if (jsonArray.size() > 0)
         {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());

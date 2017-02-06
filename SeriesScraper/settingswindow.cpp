@@ -91,6 +91,7 @@ void SettingsWindow::notify(Message &msg)
         this->show();
         this->setFocus();
         ui->doneButton->setFocus();
+        this->setWindowIcon(QIcon(":/images/settings.png"));
         break;
     }
     case Message::controller_changeLocalization_view:
