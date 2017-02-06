@@ -28,7 +28,9 @@ private:
     QTimer *seriesTextChangeTimer;
     QTimer *progressBarTimer;
     QTimer *disableSeriesProgressbarTimer;
+    QTimer *clearStatusTextTimer;
     QLabel *seriesStatusLabel;
+    QLabel *statusBarTypeImageLabel;
     QProgressBar *seriesProgressBar;
     QPoint *tableItemPoint;
     QGraphicsBlurEffect *blur;
@@ -77,6 +79,7 @@ private:
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
     void removeNameSchemeItem(int itemIndex);
+    void setStatusMessage(QString message, int type);
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
     void updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons);
@@ -84,6 +87,13 @@ private:
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    enum statusMessageType
+    {
+        error,
+        success,
+        info
+    };
+
     ~MainWindow();
 
 private slots:
@@ -104,6 +114,7 @@ private slots:
     void onNameSchemeChanged(int index);
     void onChangeEpisodeText();
     void onTableEnter();
+    void clearStatusText();
 
     void savePoster();
     void undoRenaming();

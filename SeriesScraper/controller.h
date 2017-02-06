@@ -35,7 +35,7 @@ private:
     void initializeInterfaceLanguages();
     void initializeSettings();
     void updateNewFileNames();
-    void setStatusMessage(QString status);
+    void setStatusMessage(QString status, int type);
     void setSeriesInformation();
 
     bool loadSeries(QString series, int season);

@@ -25,8 +25,10 @@ MainWindow::MainWindow(QWidget *parent) :
     seriesTextChangeTimer = new QTimer(this);
     progressBarTimer = new QTimer(this);
     disableSeriesProgressbarTimer = new QTimer(this);
+    clearStatusTextTimer = new QTimer(this);
     seriesProgressBar = new QProgressBar(this);
     seriesStatusLabel = new QLabel(this);
+    statusBarTypeImageLabel = new QLabel();
     blur = new QGraphicsBlurEffect(ui->episodeNameTable);
     shadow = new CustomShadowEffect(ui->episodeLineEdit);
     tableItemPoint = new QPoint;
@@ -55,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
     QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
+    QObject::connect(clearStatusTextTimer, SIGNAL(timeout()), this, SLOT(clearStatusText()));
 }
 
 MainWindow::~MainWindow()
@@ -64,7 +67,9 @@ MainWindow::~MainWindow()
     delete seriesTextChangeTimer;
     delete progressBarTimer;
     delete disableSeriesProgressbarTimer;
+    delete clearStatusTextTimer;
     delete seriesStatusLabel;
+    delete statusBarTypeImageLabel;
     delete seriesProgressBar;
     delete tableItemPoint;
     delete blur;
@@ -93,6 +98,9 @@ void MainWindow::enableGUIControl()
 
 void MainWindow::setUpGUI()
 {
+    statusBarTypeImageLabel->setTextFormat(Qt::RichText);
+    this->statusBar()->addWidget(statusBarTypeImageLabel);
+
     this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
 
     ui->seriesInfohorizontalLayout->setStretch(0, 3);
@@ -113,7 +121,6 @@ void MainWindow::setUpGUI()
     aboutAction->setIcon(QIcon(":/images/about.png"));
     savePosterAction->setIcon(QIcon(":/images/save.png"));
     undoRenameAction->setIcon(QIcon(":/images/undo.png"));
-
     fullScreenAction->setIcon(QIcon(":/images/fullscreen.png"));
 
     // initialize view state
@@ -463,6 +470,33 @@ void MainWindow::removeNameSchemeItem(int itemIndex)
         ui->nameSchemeComboBox->setCurrentIndex(selectedIndex - 1);
 }
 
+void MainWindow::setStatusMessage(QString message, int type)
+{
+    clearStatusTextTimer->stop();
+    QString labelText;
+    switch (type)
+    {
+    case statusMessageType::error:
+    {
+        labelText = "<img src=:/images/error.png> ";
+        break;
+    }
+    case statusMessageType::success:
+    {
+        labelText = "<img src=:/images/check.png> ";
+        break;
+    }
+    case statusMessageType::info:
+    {
+        labelText = "";
+        break;
+    }
+    }
+    labelText += message;
+    statusBarTypeImageLabel->setText(labelText);
+    clearStatusTextTimer->start(5000);
+}
+
 void MainWindow::changeLocalization(QStringList translationList)
 {
     QStringList tableHeader;
@@ -647,6 +681,12 @@ void MainWindow::onTableEnter()
     int row = ui->episodeNameTable->selectedItems().at(0)->row();
     int coloumn = ui->episodeNameTable->selectedItems().at(0)->column();
     onCellClicked(row, coloumn);
+}
+
+void MainWindow::clearStatusText()
+{
+    clearStatusTextTimer->stop();
+    statusBarTypeImageLabel->clear();
 }
 
 void MainWindow::savePoster()
@@ -866,7 +906,8 @@ void MainWindow::notify(Message &msg)
     case Message::controller_setStatus_view:
     {
         QString status = *msg.data[0].qsPointer;
-        ui->statusBar->showMessage(status, 10000);
+        int type = msg.data[1].i;
+        setStatusMessage(status, type);
         break;
     }
     case Message::controller_changeSeriesParser_view:

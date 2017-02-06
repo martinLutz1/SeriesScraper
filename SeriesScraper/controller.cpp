@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "mainwindow.h" // StatusMessageType enum
 #include <QDebug>
 #include <vector>
 
@@ -18,7 +19,7 @@ void Controller::initializeFileTypes()
     {
         // Todo localize
         QString fileFormatNotFound = interfaceLanguageHandler.getTranslation(LanguageData::fileFormatNotFound);
-        setStatusMessage(fileFormatNotFound);
+        setStatusMessage(fileFormatNotFound, MainWindow::statusMessageType::error);
     }
 }
 
@@ -44,7 +45,7 @@ void Controller::initializeNameSchemes()
         nameSchemeRepresentationList << nameSchemeHandler.getNameSchemeRepresentation();
         // Error message
         QString nameSchemeFileNotFound = interfaceLanguageHandler.getTranslation(LanguageData::nameSchemeFileNotFound);
-        setStatusMessage(nameSchemeFileNotFound);
+        setStatusMessage(nameSchemeFileNotFound, MainWindow::statusMessageType::error);
     }
 
     // Send name scheme list to view
@@ -71,7 +72,7 @@ void Controller::initializeSeriesLanguages()
         seriesLanguageList << QString("English");
         // Error message
         QString languageFileReadingFailure = interfaceLanguageHandler.getTranslation(LanguageData::seriesLanguageNotFound);
-        setStatusMessage(languageFileReadingFailure);
+        setStatusMessage(languageFileReadingFailure, MainWindow::statusMessageType::error);
     }
 
     // Send series language list to view
@@ -101,7 +102,7 @@ void Controller::initializeInterfaceLanguages()
         msgNoGUILanguagesFound.type = Message::controller_noGUILanguagesFound_settings;
         emit(sendMessage(msgNoGUILanguagesFound));
         // Error message
-        setStatusMessage("No language files found");
+        setStatusMessage("No language files found", MainWindow::statusMessageType::error);
     }
 }
 
@@ -176,11 +177,12 @@ void Controller::updateNewFileNames()
     seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
 }
 
-void Controller::setStatusMessage(QString status)
+void Controller::setStatusMessage(QString status, int type)
 {
     Message msgSetStatus;
     msgSetStatus.type = Message::controller_setStatus_view;
     msgSetStatus.data[0].qsPointer =  &status;
+    msgSetStatus.data[1].i = type;
     emit(sendMessage(msgSetStatus));
 }
 
@@ -351,7 +353,7 @@ bool Controller::changeInterfaceLanguage(QString language)
     } else
     {
         // Error message
-        setStatusMessage("Could not read language file " + language + ".json");
+        setStatusMessage("Could not read language file " + language + ".json", MainWindow::statusMessageType::error);
     }
 
     settings.setGuiLanguage(interfaceLanguage);
@@ -458,7 +460,7 @@ void Controller::changeNameScheme(int nameScheme)
     else
     {
         QString nameSchemeLineNotFound = interfaceLanguageHandler.getTranslation(LanguageData::nameSchemeLineNotFound);
-        setStatusMessage(nameSchemeLineNotFound + " " +  QString::number(nameScheme + 1));
+        setStatusMessage(nameSchemeLineNotFound + " " +  QString::number(nameScheme + 1), MainWindow::statusMessageType::error);
     }
 
     settings.setNameScheme(newNameScheme);
@@ -474,9 +476,9 @@ void Controller::savePoster()
     if (!fileDownloader.fileExists())
     {
         if (fileDownloader.saveFile())
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved));
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
         else
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved));
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
     }
     else
     {
@@ -555,12 +557,12 @@ bool Controller::renameFiles()
 
         // Success Message
         QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
-        setStatusMessage(renameSuccessful);
+        setStatusMessage(renameSuccessful, MainWindow::statusMessageType::success);
     } else
     {
         // Failure Message
         QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);
-        setStatusMessage(renameFailure);
+        setStatusMessage(renameFailure, MainWindow::statusMessageType::error);
     }
     Message msgRenameFinished;
     msgRenameFinished.type = Message::controller_renameFinished_view;
@@ -586,12 +588,12 @@ bool Controller::undoRenameFiles()
 
             // Success Message
             QString undoRenameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingSuccessful);
-            setStatusMessage(undoRenameSuccessful);
+            setStatusMessage(undoRenameSuccessful, MainWindow::statusMessageType::success);
         } else
         {
             // Failure Message
             QString undoRenameFailure = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingFailed);
-            setStatusMessage(undoRenameFailure);
+            setStatusMessage(undoRenameFailure, MainWindow::statusMessageType::error);
         }
         Message msgRenameFinished;
         msgRenameFinished.type = Message::controller_renameFinished_view;
@@ -802,9 +804,9 @@ void Controller::notify(Message &msg)
     case Message::view_forceSavePoster_conroller:
     {
         if (fileDownloader.saveFile(true))
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved));
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
         else
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved));
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
         break;
     }
     case Message::view_showAboutDialog_controller:
