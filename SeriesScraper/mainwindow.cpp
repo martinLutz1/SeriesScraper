@@ -957,6 +957,17 @@ void MainWindow::notify(Message &msg)
         ui->pathLineEdit->setText(path);
         break;
     }
+    case Message::controller_updateDirectoryWidget_view:
+    {
+        std::vector<QStringList> pathStructure = *msg.data[0].qsListVectorPointer;
+
+        /*
+        for (int i = 0; i < int(pathStructure.size()); i++)
+            qDebug() << pathStructure.at(i);
+        qDebug() << pathStructure.size();
+        */
+        break;
+    }
     case Message::controller_useDarkTheme_view:
     {
         changeToDarkTheme();

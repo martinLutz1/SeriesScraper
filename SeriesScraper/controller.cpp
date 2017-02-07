@@ -723,6 +723,12 @@ void Controller::notify(Message &msg)
         setDirectory(path);
         updateNewFileNames();
         updateView();
+
+        std::vector<QStringList> pathStructure = directoryParser.getPathStructure(4);
+        Message msgUpdateDirectoryWidget;
+        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
+        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
+        emit(sendMessage(msgUpdateDirectoryWidget));
         break;
     }
     case Message::view_updateDirectory_controller:

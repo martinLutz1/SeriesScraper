@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <vector>
 
 class Message
 {
@@ -45,6 +46,7 @@ public:
         controller_seriesSet_view,
         controller_setSeries_view,
         controller_setPath_view,
+        controller_updateDirectoryWidget_view,
         controller_enableRenameButton_view,
         controller_enableSavePoster_view,
         controller_startSeriesLoading_view,
@@ -68,6 +70,7 @@ public:
         controller_setSeriesInfo_view,
         controller_removeNameScheme_view,
         controller_posterAlreadyExists_view,
+
         controller_showAboutDialog_about,
         controller_showSettingsWindow_settings,
         controller_addGUILanguages_settings,
@@ -89,6 +92,7 @@ public:
     union MessageData {
         QString* qsPointer;
         QStringList* qsListPointer;
+        std::vector<QStringList> *qsListVectorPointer;
         QByteArray* qbPointer;
         int i;
         bool b;

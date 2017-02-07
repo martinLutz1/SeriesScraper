@@ -10,6 +10,7 @@ class DirectoryParser
 {
 private:
     QDir directory;
+    bool directorySet = false;
     QString directoryPathInput;
     QStringList filter;
     QRegularExpression seasonAndEpisodeExpression;
@@ -25,6 +26,7 @@ private:
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
     std::vector<int> getEpisodePositions(QStringList episodeList);
+    int getDirectoryPositionInList(QStringList directoryList, QString directoryToFind);
     void setFileInformation();
 
 public:
@@ -32,6 +34,9 @@ public:
     void setFileTypes(QStringList fileTypes);
     bool initializeDirectory(QString path);
 
+    // Returns vector of directory lists, containing all siblings dirs along the path
+    // The last vector tells the position of the current path directory in each list
+    std::vector<QStringList> getPathStructure(int depth);
     QString getDirectoryPathInput();
     int getFoundSeason();
     QStringList getFiles();
