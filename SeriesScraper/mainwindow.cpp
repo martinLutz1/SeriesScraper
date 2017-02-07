@@ -12,6 +12,7 @@
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
 #define MINIMUM_WINDOW_WIDTH 870
+#define MINIMUM_PATH_STRUCTURE_BOX_SIZE 150
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +33,11 @@ MainWindow::MainWindow(QWidget *parent) :
     blur = new QGraphicsBlurEffect(ui->episodeNameTable);
     shadow = new CustomShadowEffect(ui->episodeLineEdit);
     tableItemPoint = new QPoint;
+
+    pathStructureComboBoxList[0] = ui->pathStructure1ComboBox;
+    pathStructureComboBoxList[1] = ui->pathStructure2ComboBox;
+    pathStructureComboBoxList[2] = ui->pathStructure3ComboBox;
+    pathStructureComboBoxList[3] = ui->pathStructure4ComboBox;
 
     setUpKeyEvents();
     setUpTable();
@@ -346,6 +352,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     ui->episodeLineEdit->setFixedSize(episodeLineEditWidth, episodeLineEditHeight);
     seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
     ui->centralControlElementWidget->setFixedWidth(controlWidth);
+
+    //updateDirectoryWidgetVisibility();
 }
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
@@ -375,6 +383,47 @@ void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, 
                 ui->episodeNameTable->item(i,0)->setTextColor(QColor(150, 150, 150));
         }
     }
+}
+
+void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure)
+{
+    clearDirectoryWidget();
+    if (pathStructure.size() == 0)
+        return;
+
+    qDebug() << "\n";
+    for (int i = 0; i < int(pathStructure.size()); i++)
+        qDebug() << pathStructure.at(i);
+
+    for (int i = 0; i < int(pathStructure.size() - 2); i++)
+    {
+        for (int j = 0; j < pathStructure.at(i + 1).size(); j++)
+        {
+            pathStructureComboBoxList[i]->addItem(QIcon(":/images/folder.png"), pathStructure.at(i + 1).at(j));
+        }
+    }
+
+
+}
+
+void MainWindow::clearDirectoryWidget()
+{
+    for (int i = 0; i < NUMBER_PATH_STRUCTURE_COMBOBOXES; i++)
+        pathStructureComboBoxList[i]->clear();
+}
+
+void MainWindow::updateDirectoryWidgetVisibility()
+{
+    int layoutWidth = ui->centralWidget->width() * 0.35;
+    int comboBoxWidth = ui->pathStructure4ComboBox->width();
+    int buttonWidth = ui->pathStructureContentButton->width();
+
+    int numberOfVisibleBoxes = layoutWidth / MINIMUM_PATH_STRUCTURE_BOX_SIZE;
+    qDebug() << numberOfVisibleBoxes << layoutWidth;
+    ui->pathStructure4ComboBox->setVisible(numberOfVisibleBoxes >= 2);
+    ui->pathStructure3ComboBox->setVisible(numberOfVisibleBoxes >= 3);
+    ui->pathStructure2ComboBox->setVisible(numberOfVisibleBoxes >= 4);
+    ui->pathStructure1ComboBox->setVisible(numberOfVisibleBoxes >= 5);
 }
 
 void MainWindow::changeToDarkTheme()
@@ -960,12 +1009,7 @@ void MainWindow::notify(Message &msg)
     case Message::controller_updateDirectoryWidget_view:
     {
         std::vector<QStringList> pathStructure = *msg.data[0].qsListVectorPointer;
-
-        /*
-        for (int i = 0; i < int(pathStructure.size()); i++)
-            qDebug() << pathStructure.at(i);
-        qDebug() << pathStructure.size();
-        */
+        updateDirectoryWidget(pathStructure);
         break;
     }
     case Message::controller_useDarkTheme_view:

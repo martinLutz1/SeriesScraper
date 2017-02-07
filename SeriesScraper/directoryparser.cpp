@@ -194,44 +194,55 @@ std::vector<QStringList> DirectoryParser::getPathStructure(int depth)
         QDir parentDir = workingDirectory;
         parentDir.cdUp();
 
-        for (int i = 0; i < depth; i++)
+        if (workingDirectory.isRoot())
         {
-            QStringList directoryList;
-            QStringList directoryListToSearch;
-            QString directoryToFind;
-
-            bool isRoot = workingDirectory.isRoot();
-            if (isRoot)
+            QStringList rootDriveList;
+            QFileInfoList rootDrives = QDir::drives();
+            for (int i = 0; i < rootDrives.size(); i++)
             {
-                QFileInfoList rootDrives = QDir::drives();
-                for (int i = 0; i < rootDrives.size(); i++)
-                {
-                    directoryList << rootDrives.at(i).absolutePath();
-                }
-                directoryListToSearch = directoryList;
-                directoryToFind = workingDirectory.absolutePath();
-
-                // Additional entry for last dir
-                pathStructure.push_back(workingDirectory.entryList());
-                currentDirectoryPositionList << QString::number(getDirectoryPositionInList(directoryListToSearch, directoryToFind));
+                rootDriveList << rootDrives.at(i).absolutePath();
             }
-            else
-            {
-                directoryList = workingDirectory.entryList();
-                directoryListToSearch = parentDir.entryList();
-                directoryToFind = workingDirectory.dirName();
-
-                currentDirectoryPositionList << QString::number(getDirectoryPositionInList(directoryListToSearch, directoryToFind));
-                // Additional entry for last dir
-                if (depth - 1 == i)
-                {
-                    pathStructure.push_back(parentDir.entryList());
-                }
-            }
-            workingDirectory.cdUp();
-            parentDir.cdUp();
+            currentDirectoryPositionList << QString::number(getDirectoryPositionInList(rootDriveList, workingDirectory.absolutePath()));
+            pathStructure.push_back(workingDirectory.entryList());
+            pathStructure.push_back(rootDriveList);
+            pathStructure.push_back(currentDirectoryPositionList);
         }
-        pathStructure.push_back(currentDirectoryPositionList);
+        else
+        {
+            // Last directory content where nothing is selected
+            pathStructure.push_back(workingDirectory.entryList());
+
+            for (int i = 0; i < depth; i++)
+            {
+                QStringList directoryListToSearch;
+                QString directoryToFind;
+
+                directoryToFind = workingDirectory.dirName();
+                directoryListToSearch = parentDir.entryList();
+
+                currentDirectoryPositionList << QString::number(getDirectoryPositionInList(directoryListToSearch, directoryToFind));
+                pathStructure.push_back(directoryListToSearch);
+
+                if (parentDir.isRoot() && (depth != i + 1))
+                {
+                    QStringList rootDriveList;
+                    QFileInfoList rootDrives = QDir::drives();
+                    for (int i = 0; i < rootDrives.size(); i++)
+                    {
+                        rootDriveList << rootDrives.at(i).absolutePath();
+                    }
+                    currentDirectoryPositionList << QString::number(getDirectoryPositionInList(rootDriveList, parentDir.absolutePath()));
+                    pathStructure.push_back(rootDriveList);
+                    break;
+                }
+                else
+                {
+                    workingDirectory.cdUp();
+                    parentDir.cdUp();
+                }
+            }
+            pathStructure.push_back(currentDirectoryPositionList);
+        }
     }
     return pathStructure;
 }

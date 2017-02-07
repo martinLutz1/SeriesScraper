@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #define APPLICATIONNAME "SeriesScraper"
+#define NUMBER_PATH_STRUCTURE_COMBOBOXES 4
 
 #include <QMainWindow>
 #include <QDir>
@@ -10,6 +11,7 @@
 #include <QGraphicsBlurEffect>
 #include <QStyleFactory>
 #include <QMessageBox>
+#include <QComboBox>
 #include "customshadoweffect.h"
 #include "keypresseater.h"
 #include "aboutdialog.h"
@@ -40,6 +42,7 @@ private:
     QMessageBox *renameConfirmationMessageBox;
     QMessageBox *posterConfirmationMessageBox;
     QMessageBox *undoRenameConfirmationBox;
+    QComboBox* pathStructureComboBoxList[NUMBER_PATH_STRUCTURE_COMBOBOXES];
 
     QMenu *fileMenu;
     QMenu *helpMenu;
@@ -83,6 +86,9 @@ private:
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
     void updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons);
+    void updateDirectoryWidget(std::vector<QStringList> pathStructure);
+    void clearDirectoryWidget();
+    void updateDirectoryWidgetVisibility();
     void changeToDarkTheme();
 
 public:
