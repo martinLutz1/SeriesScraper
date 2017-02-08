@@ -149,6 +149,8 @@ void MainWindow::setUpGUI()
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
     ui->episodeLineEdit->hide();
+    ui->pathStructure3ComboBox->setVisible(false);
+    ui->pathStructure4ComboBox->setVisible(false);
 }
 
 void MainWindow::setUpKeyEvents()
@@ -366,7 +368,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
     ui->centralControlElementWidget->setFixedWidth(controlWidth);
 
-    //updateDirectoryWidgetVisibility();
+    updateDirectoryWidgetVisibility();
 }
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
@@ -434,16 +436,9 @@ void MainWindow::clearDirectoryWidget()
 
 void MainWindow::updateDirectoryWidgetVisibility()
 {
-    int layoutWidth = ui->centralWidget->width() * 0.35;
-    int comboBoxWidth = ui->pathStructure4ComboBox->width();
-    int buttonWidth = ui->pathStructureContentButton->width();
-
-    int numberOfVisibleBoxes = layoutWidth / MINIMUM_PATH_STRUCTURE_BOX_SIZE;
-    //qDebug() << numberOfVisibleBoxes << layoutWidth;
-    ui->pathStructure4ComboBox->setVisible(numberOfVisibleBoxes >= 2);
-    ui->pathStructure3ComboBox->setVisible(numberOfVisibleBoxes >= 3);
-    ui->pathStructure2ComboBox->setVisible(numberOfVisibleBoxes >= 4);
-    ui->pathStructure1ComboBox->setVisible(numberOfVisibleBoxes >= 5);
+    int layoutWidth = ui->centralWidget->width() - 605;
+    ui->pathStructure3ComboBox->setVisible(layoutWidth >= 600);
+    ui->pathStructure4ComboBox->setVisible(layoutWidth >= 720);
 }
 
 void MainWindow::changeToDarkTheme()
