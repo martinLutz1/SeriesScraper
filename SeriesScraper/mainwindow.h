@@ -26,7 +26,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     Ui::MainWindow *ui;
-    QTimer *setPathTimer;
     QTimer *seriesTextChangeTimer;
     QTimer *progressBarTimer;
     QTimer *disableSeriesProgressbarTimer;
@@ -79,6 +78,7 @@ private:
     void setUpMenuBar();
     void setUpConfirmationMessageBoxes();
     void setUpEpisodeEdit();
+    void setUpDirectoryWidget();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
@@ -87,7 +87,7 @@ private:
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
     void updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons);
-    void updateDirectoryWidget(std::vector<QStringList> pathStructure);
+    void updateDirectoryWidget(std::vector<QStringList> pathStructure, bool containsRoot, QString path);
     void clearDirectoryWidget();
     void updateDirectoryWidgetVisibility();
     void changeToDarkTheme();
@@ -107,8 +107,6 @@ private slots:
     bool setRow(int row, QString oldFileName, QString newFileName);
     void clearTable();
     void openDirectory();
-    void setPath();
-    void startSetPathTimer();
     void onUpdateDirectory();
     void startSeriesTextChangeTimer();
     void disableSeriesProgressbar();

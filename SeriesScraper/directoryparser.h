@@ -23,6 +23,7 @@ private:
     QStringList sortedFileWithoutSuffix;
     QStringList suffixes;
     std::vector<QStringList> pathStructure;
+    bool containsRoot = false;
 
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
@@ -40,6 +41,7 @@ public:
     // The last vector tells the position of the current path directory in each list
     std::vector<QStringList> getPathStructure();
     QString getDirectoryViaStructure(int level, int selection);
+    bool getStructureContainsRoot();
     QString getDirectoryPathInput();
     int getFoundSeason();
     QStringList getFiles();

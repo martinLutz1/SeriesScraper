@@ -516,15 +516,14 @@ bool Controller::setDirectory(QString path)
 
         fileDownloader.setFilePath(path, "poster.jpg");
 
-        Message msgSetPath;
-        msgSetPath.type = Message::controller_setPath_view;
-        msgSetPath.data[0].qsPointer = &path;
-        emit(sendMessage(msgSetPath));
-
         std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
+        bool containsRoot = directoryParser.getStructureContainsRoot();
+
         Message msgUpdateDirectoryWidget;
         msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
         msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
+        msgUpdateDirectoryWidget.data[1].b = containsRoot;
+        msgUpdateDirectoryWidget.data[2].qsPointer = &path;
         emit(sendMessage(msgUpdateDirectoryWidget));
     }
 

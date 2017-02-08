@@ -141,6 +141,7 @@ void DirectoryParser::setPathStructure(int depth)
             pathStructure.push_back(workingDirectory.entryList());
             pathStructure.push_back(rootDriveList);
             pathStructure.push_back(currentDirectoryPositionList);
+            containsRoot = true;
         }
         else
         {
@@ -168,12 +169,14 @@ void DirectoryParser::setPathStructure(int depth)
                     }
                     currentDirectoryPositionList << QString::number(getDirectoryPositionInList(rootDriveList, parentDir.absolutePath()));
                     pathStructure.push_back(rootDriveList);
+                    containsRoot = true;
                     break;
                 }
                 else
                 {
                     workingDirectory.cdUp();
                     parentDir.cdUp();
+                    containsRoot = false;
                 }
             }
             pathStructure.push_back(currentDirectoryPositionList);
@@ -268,6 +271,11 @@ QString DirectoryParser::getDirectoryViaStructure(int level, int selection)
     }
     newDirectory.cd(directoryName);
     return newDirectory.absolutePath();
+}
+
+bool DirectoryParser::getStructureContainsRoot()
+{
+    return containsRoot;
 }
 
 QString DirectoryParser::getDirectoryPathInput()

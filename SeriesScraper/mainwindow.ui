@@ -493,25 +493,6 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLabel" name="correctPathLabel">
-                <property name="minimumSize">
-                 <size>
-                  <width>15</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>15</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
              </layout>
             </item>
             <item>
@@ -864,33 +845,11 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QLineEdit" name="pathLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>290</y>
-      <width>548</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>240</width>
-      <height>20</height>
-     </size>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-     </font>
-    </property>
-   </widget>
    <zorder>episodeNameTable</zorder>
    <zorder>episodeLineEdit</zorder>
    <zorder>additionalInfoScrollArea</zorder>
    <zorder>centralControlElementWidget</zorder>
    <zorder></zorder>
-   <zorder>pathLineEdit</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">

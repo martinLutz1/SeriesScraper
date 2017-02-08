@@ -17,12 +17,11 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    chosenPath(QDir::current()),
+    chosenPath(QDir::homePath()),
     tableRows(0),
     progressIncrement(1)
 {
     ui->setupUi(this);
-    setPathTimer = new QTimer(this);
     seriesTextChangeTimer = new QTimer(this);
     progressBarTimer = new QTimer(this);
     disableSeriesProgressbarTimer = new QTimer(this);
@@ -44,11 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpMenuBar();
     setUpConfirmationMessageBoxes();
     setUpEpisodeEdit();
+    setUpDirectoryWidget();
     setUpGUI();
 
     QObject::connect(ui->selectionButton, SIGNAL(clicked(bool)), this, SLOT(openDirectory()));
-    QObject::connect(ui->pathLineEdit, SIGNAL(textChanged(QString)), this, SLOT(startSetPathTimer()));
-    QObject::connect(setPathTimer, SIGNAL(timeout()), this, SLOT(setPath()));
     QObject::connect(ui->directoryUpdateButton, SIGNAL(clicked(bool)), this, SLOT(onUpdateDirectory()));
     QObject::connect(ui->episodeNameTable, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(onCellClicked(int,int)));
     QObject::connect(ui->episodeLineEdit, SIGNAL(editingFinished()), ui->episodeLineEdit, SLOT(hide()));
@@ -64,20 +62,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
     QObject::connect(clearStatusTextTimer, SIGNAL(timeout()), this, SLOT(clearStatusText()));
-
-    // Path structure widget
-    QObject::connect(ui->pathStructureContentButton, SIGNAL(clicked()), this, SLOT(onPathStructureContentButtonClicked()));
-    QObject::connect(directoryEntriesMenu, SIGNAL(triggered(QAction*)), this, SLOT(onDirectoryEntryClicked(QAction*)));
-    QObject::connect(ui->pathStructure1ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox1EntryClicked(int)));
-    QObject::connect(ui->pathStructure2ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox2EntryClicked(int)));
-    QObject::connect(ui->pathStructure3ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox3EntryClicked(int)));
-    QObject::connect(ui->pathStructure4ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox4EntryClicked(int)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete setPathTimer;
     delete seriesTextChangeTimer;
     delete progressBarTimer;
     delete disableSeriesProgressbarTimer;
@@ -118,8 +107,6 @@ void MainWindow::setUpGUI()
     statusBarTypeImageLabel->setTextFormat(Qt::RichText);
     this->statusBar()->addWidget(statusBarTypeImageLabel);
 
-    directoryEntriesMenu = new QMenu(this);
-
     this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
 
     ui->seriesInfohorizontalLayout->setStretch(0, 3);
@@ -134,7 +121,7 @@ void MainWindow::setUpGUI()
     ui->seriesGroupBox->setLayout(ui->seriesSelectionHorizontalLayout);
     ui->centralControlElementWidget->setLayout(ui->controlElementshorizontalLayout);
 
-    // add icons
+    // Add icons
     window()->setWindowIcon(QIcon(":/images/logo.png"));
     settingsAction->setIcon(QIcon(":/images/settings.png"));
     aboutAction->setIcon(QIcon(":/images/about.png"));
@@ -142,15 +129,13 @@ void MainWindow::setUpGUI()
     undoRenameAction->setIcon(QIcon(":/images/undo.png"));
     fullScreenAction->setIcon(QIcon(":/images/fullscreen.png"));
 
-    // initialize view state
+    // Initialize view state
     ui->renameButton->setEnabled(false);
     savePosterAction->setEnabled(false);
     undoRenameAction->setEnabled(false);
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
     ui->episodeLineEdit->hide();
-    ui->pathStructure3ComboBox->setVisible(false);
-    ui->pathStructure4ComboBox->setVisible(false);
 }
 
 void MainWindow::setUpKeyEvents()
@@ -267,6 +252,28 @@ void MainWindow::setUpEpisodeEdit()
     ui->episodeLineEdit->setAutoFillBackground(true);
     ui->episodeLineEdit->setGraphicsEffect(shadow);
     ui->episodeLineEdit->installEventFilter(keyPressEaterEscape);
+}
+
+void MainWindow::setUpDirectoryWidget()
+{
+    directoryEntriesMenu = new QMenu(this);
+
+    QObject::connect(ui->pathStructureContentButton, SIGNAL(clicked()), this, SLOT(onPathStructureContentButtonClicked()));
+    QObject::connect(directoryEntriesMenu, SIGNAL(triggered(QAction*)), this, SLOT(onDirectoryEntryClicked(QAction*)));
+    QObject::connect(ui->pathStructure1ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox1EntryClicked(int)));
+    QObject::connect(ui->pathStructure2ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox2EntryClicked(int)));
+    QObject::connect(ui->pathStructure3ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox3EntryClicked(int)));
+    QObject::connect(ui->pathStructure4ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox4EntryClicked(int)));
+
+    ui->pathStructure3ComboBox->setVisible(false);
+    ui->pathStructure4ComboBox->setVisible(false);
+
+    for (int i = 0; i < NUMBER_PATH_STRUCTURE_COMBOBOXES; i++)
+    {
+        pathStructureComboBoxList[i]->setEnabled(false);
+    }
+    ui->directoryUpdateButton->setEnabled(false);
+    ui->pathStructureContentButton->setEnabled(false);
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -400,7 +407,7 @@ void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, 
     }
 }
 
-void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure)
+void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, bool containsRoot, QString path)
 {
     clearDirectoryWidget();
     if (pathStructure.size() == 0)
@@ -421,9 +428,34 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure)
     {
         for (int j = 0; j < pathStructure.at(i + 1).size(); j++)
         {
+            if (containsRoot && (int(pathStructure.size() - 3) == i))
+            {
+                pathStructureComboBoxList[i]->addItem(QIcon(":/images/hdd.png"), pathStructure.at(i + 1).at(j));
+            }
+            else
+            {
             pathStructureComboBoxList[i]->addItem(QIcon(":/images/folder.png"), pathStructure.at(i + 1).at(j));
+            }
         }
         pathStructureComboBoxList[i]->setCurrentIndex(pathStructure.at(pathStructure.size() - 1).at(i).toInt());
+    }
+
+    // Set accessability of widget
+    for (int i = 0; i < NUMBER_PATH_STRUCTURE_COMBOBOXES; i++)
+    {
+        pathStructureComboBoxList[i]->setEnabled(pathStructureComboBoxList[i]->count() > 0);
+    }
+    ui->pathStructureContentButton->setEnabled(pathStructure.size() > NUMBER_PATH_STRUCTURE_COMBOBOXES - 1);
+
+    QDir dir(path);
+    if (dir.exists() && !path.isEmpty())
+    {
+        chosenPath = path;
+        ui->directoryUpdateButton->setEnabled(true);
+    }
+    else
+    {
+        chosenPath = QDir::homePath();
     }
 }
 
@@ -614,47 +646,20 @@ void MainWindow::openDirectory()
     // Open directory-dialog to chose directory
     QString directoryPath;
     directoryPath = QFileDialog::getExistingDirectory(this, directorySelectionText, chosenPath.path());
-    if (!directoryPath.isNull())
+    QDir dir(directoryPath);
+
+    if (!directoryPath.isNull() && dir.exists())
     {
-        chosenPath = directoryPath; // Remember path
-        ui->pathLineEdit->setText(directoryPath);
-    }
-}
-
-void MainWindow::setPath()
-{
-    setPathTimer->stop();
-    QString directoryPath = ui->pathLineEdit->text();
-    QDir dir;
-    dir.setPath(directoryPath);
-
-    // Set the status
-    if (dir.path().isEmpty()) {
-        ui->pathLineEdit->setStyleSheet(colorWhite);
-        ui->correctPathLabel->setText("");
-        ui->directoryUpdateButton->setEnabled(false);
-    }
-    else if (dir.exists()) {
         chosenPath = directoryPath;
-        ui->pathLineEdit->setStyleSheet(colorGreen);
-        ui->correctPathLabel->setText(checkmark);
         ui->directoryUpdateButton->setEnabled(true);
+
+        Message directoryChangedMsg;
+        directoryChangedMsg.type = Message::view_changeDirectory_controller;
+        directoryChangedMsg.data[0].qsPointer = &directoryPath;
+        emit(sendMessage(directoryChangedMsg));
     }
-    else {
-        ui->pathLineEdit->setStyleSheet(colorRed);
-        ui->correctPathLabel->setText(times);
-        ui->directoryUpdateButton->setEnabled(false);
-    }
-    Message directoryChangedMsg;
-    directoryChangedMsg.type = Message::view_changeDirectory_controller;
-    directoryChangedMsg.data[0].qsPointer = &directoryPath;
-    emit(sendMessage(directoryChangedMsg));
 }
 
-void MainWindow::startSetPathTimer()
-{
-    setPathTimer->start(500);
-}
 
 void MainWindow::onUpdateDirectory()
 {
@@ -1065,16 +1070,13 @@ void MainWindow::notify(Message &msg)
         seriesTextChangeTimer->stop(); // Avoid double loading
         break;
     }
-    case Message::controller_setPath_view:
-    {
-        QString path = *msg.data[0].qsPointer;
-        chosenPath = path;
-        break;
-    }
     case Message::controller_updateDirectoryWidget_view:
     {
         std::vector<QStringList> pathStructure = *msg.data[0].qsListVectorPointer;
-        updateDirectoryWidget(pathStructure);
+        bool containsRoot = msg.data[1].b;
+        QString path = *msg.data[2].qsPointer;
+
+        updateDirectoryWidget(pathStructure, containsRoot, path);
         break;
     }
     case Message::controller_useDarkTheme_view:
