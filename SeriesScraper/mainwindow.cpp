@@ -64,6 +64,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
     QObject::connect(clearStatusTextTimer, SIGNAL(timeout()), this, SLOT(clearStatusText()));
+
+    // Path structure widget
+    QObject::connect(ui->pathStructureContentButton, SIGNAL(clicked()), this, SLOT(onPathStructureContentButtonClicked()));
+    QObject::connect(directoryEntriesMenu, SIGNAL(triggered(QAction*)), this, SLOT(onDirectoryEntryClicked(QAction*)));
+    QObject::connect(ui->pathStructure1ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox1EntryClicked(int)));
+    QObject::connect(ui->pathStructure2ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox2EntryClicked(int)));
+    QObject::connect(ui->pathStructure3ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox3EntryClicked(int)));
+    QObject::connect(ui->pathStructure4ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox4EntryClicked(int)));
 }
 
 MainWindow::~MainWindow()
@@ -84,12 +92,15 @@ MainWindow::~MainWindow()
     delete posterConfirmationMessageBox;
     delete fileMenu;
     delete helpMenu;
+    delete directoryEntriesMenu;
     delete savePosterAction;
     delete aboutAction;
     delete settingsAction;
     delete fullScreenAction;
     delete keyPressEaterEscape;
     delete keyPressEaterEnter;
+    for (int i = 0; i < NUMBER_PATH_STRUCTURE_COMBOBOXES; i++)
+        delete pathStructureComboBoxList[i];
 }
 
 void MainWindow::disableGUIControl()
@@ -106,6 +117,8 @@ void MainWindow::setUpGUI()
 {
     statusBarTypeImageLabel->setTextFormat(Qt::RichText);
     this->statusBar()->addWidget(statusBarTypeImageLabel);
+
+    directoryEntriesMenu = new QMenu(this);
 
     this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
 
@@ -395,19 +408,24 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure)
     for (int i = 0; i < int(pathStructure.size()); i++)
         qDebug() << pathStructure.at(i);
 
+    for (int i = 0; i < pathStructure.at(0).size(); i++)
+    {
+        directoryEntriesMenu->addAction(QIcon(":/images/folder.png"), pathStructure.at(0).at(i));
+    }
+    // Fill comboboxes
     for (int i = 0; i < int(pathStructure.size() - 2); i++)
     {
         for (int j = 0; j < pathStructure.at(i + 1).size(); j++)
         {
             pathStructureComboBoxList[i]->addItem(QIcon(":/images/folder.png"), pathStructure.at(i + 1).at(j));
         }
+        pathStructureComboBoxList[i]->setCurrentIndex(pathStructure.at(pathStructure.size() - 1).at(i).toInt());
     }
-
-
 }
 
 void MainWindow::clearDirectoryWidget()
 {
+    directoryEntriesMenu->clear();
     for (int i = 0; i < NUMBER_PATH_STRUCTURE_COMBOBOXES; i++)
         pathStructureComboBoxList[i]->clear();
 }
@@ -732,6 +750,53 @@ void MainWindow::onTableEnter()
     onCellClicked(row, coloumn);
 }
 
+void MainWindow::onDirectoryEntryClicked(QAction *clickedAction)
+{
+    QString selectedText = clickedAction->text();
+    for (int i = 0; i < directoryEntriesMenu->actions().size(); i++)
+    {
+        if (directoryEntriesMenu->actions().at(i)->text() == selectedText)
+        {
+            Message msgSwitchToFolder;
+            msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
+            msgSwitchToFolder.data[0].i = 0;
+            msgSwitchToFolder.data[1].i = i;
+            emit(sendMessage(msgSwitchToFolder));
+
+            break;
+        }
+    }
+}
+
+void MainWindow::onDirectoryComboBox1EntryClicked(int selection)
+{
+    onDirectoryComboBoxEntryClicked(1, selection);
+}
+
+void MainWindow::onDirectoryComboBox2EntryClicked(int selection)
+{
+    onDirectoryComboBoxEntryClicked(2, selection);
+}
+
+void MainWindow::onDirectoryComboBox3EntryClicked(int selection)
+{
+    onDirectoryComboBoxEntryClicked(3, selection);
+}
+
+void MainWindow::onDirectoryComboBox4EntryClicked(int selection)
+{
+    onDirectoryComboBoxEntryClicked(4, selection);
+}
+
+void MainWindow::onDirectoryComboBoxEntryClicked(int level, int selection)
+{
+    Message msgSwitchToFolder;
+    msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
+    msgSwitchToFolder.data[0].i = level;
+    msgSwitchToFolder.data[1].i = selection;
+    emit(sendMessage(msgSwitchToFolder));
+}
+
 void MainWindow::clearStatusText()
 {
     clearStatusTextTimer->stop();
@@ -779,6 +844,11 @@ void MainWindow::toggleFullScreen()
         this->showFullScreen();
     else
         this->showNormal();
+}
+
+void MainWindow::onPathStructureContentButtonClicked()
+{
+    directoryEntriesMenu->exec(QCursor::pos());
 }
 
 void MainWindow::onSeriesLanguageChanged(int index)

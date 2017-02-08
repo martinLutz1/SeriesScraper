@@ -724,11 +724,18 @@ void Controller::notify(Message &msg)
         updateNewFileNames();
         updateView();
 
-        std::vector<QStringList> pathStructure = directoryParser.getPathStructure(4);
+        std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
         Message msgUpdateDirectoryWidget;
         msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
         msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
         emit(sendMessage(msgUpdateDirectoryWidget));
+        break;
+    }
+    case Message::view_switchToDirectory_controller:
+    {
+        int level = msg.data[0].i;
+        int selection = msg.data[1].i;
+        qDebug() << level << selection;
         break;
     }
     case Message::view_updateDirectory_controller:

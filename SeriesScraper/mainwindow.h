@@ -48,6 +48,7 @@ private:
     QMenu *helpMenu;
     QMenu *viewMenu;
     QMenu *appearanceMenu;
+    QMenu *directoryEntriesMenu;
     QAction *savePosterAction;
     QAction *undoRenameAction;
     QAction *aboutAction;
@@ -120,6 +121,12 @@ private slots:
     void onNameSchemeChanged(int index);
     void onChangeEpisodeText();
     void onTableEnter();
+    void onDirectoryEntryClicked(QAction* clickedAction);
+    void onDirectoryComboBox1EntryClicked(int selection);
+    void onDirectoryComboBox2EntryClicked(int selection);
+    void onDirectoryComboBox3EntryClicked(int selection);
+    void onDirectoryComboBox4EntryClicked(int selection);
+    void onDirectoryComboBoxEntryClicked(int level, int selection);
     void clearStatusText();
 
     void savePoster();
@@ -127,6 +134,7 @@ private slots:
     void showAboutDialog();
     void showSettingsWindow();
     void toggleFullScreen();
+    void onPathStructureContentButtonClicked();
 
 public slots:
     void notify(Message &msg);

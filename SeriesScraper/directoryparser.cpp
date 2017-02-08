@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include <QCollator>
 #include <QDebug>
+#include "mainwindow.h" // Path structure box number
 
 QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 {
@@ -13,11 +14,11 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 
     std::vector<int> position = getEpisodePositions(fileList);
 
-
     if (int(position.size()) < files.size()) // Name scheme not found, natural sort
     {
         sortedFiles = naturalSort(files);
-    } else // Sort by found positions
+    }
+    else // Sort by found positions
     {
         for (int i = 0; i < files.size(); i++)
         {
@@ -116,73 +117,7 @@ int DirectoryParser::getDirectoryPositionInList(QStringList directoryList, QStri
     return -1; // Not found
 }
 
-void DirectoryParser::setFileInformation()
-{
-    directory.setFilter(QDir::Files);
-    QFileInfoList fileInfoList = directory.entryInfoList(filter);
-    QFileInfoList sortedFileInfoList = sortFiles(fileInfoList);
-
-    QStringList newSortedFiles;
-    QStringList newSortedFilesWithoutSuffix;
-    QStringList newSuffixes;
-
-    QFileInfo fileInfo;
-    for (int i = 0; i < sortedFileInfoList.size(); ++i)
-    {
-        fileInfo = sortedFileInfoList.at(i);
-        if (fileInfo.isFile())
-        {
-            newSortedFiles << fileInfo.fileName();
-            newSortedFilesWithoutSuffix << fileInfo.completeBaseName();
-            newSuffixes << fileInfo.suffix();
-        } else if (!fileInfo.isDir())
-        {
-            newSortedFiles << "";
-            newSortedFilesWithoutSuffix << "";
-            newSuffixes << "";
-        }
-    }
-
-    sortedFiles = newSortedFiles;
-    sortedFileWithoutSuffix = newSortedFilesWithoutSuffix;
-    suffixes = newSuffixes;
-}
-
-DirectoryParser::DirectoryParser() : foundSeason(0)
-{
-    directory.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    directory.setSorting(QDir::NoSort);
-    directory.setPath("");
-
-    seasonAndEpisodeExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
-    seasonNumberExpression.setPattern("(s)[0-9]*");
-    episodeNumberExpression.setPattern("(e)[0-9]*");
-    numberExpression.setPattern("[0-9]*$");
-}
-
-void DirectoryParser::setFileTypes(QStringList fileTypes)
-{
-    for (int i = 0; i < fileTypes.size(); i++)
-        fileTypes[i] = "*." + fileTypes.at(i);
-    filter = fileTypes;
-    directory.setNameFilters(filter);
-}
-
-bool DirectoryParser::initializeDirectory(QString path)
-{
-    QDir newDirectory(path);
-    directorySet = newDirectory.exists();
-    foundSeason = 0;
-    if (directorySet)
-    {
-        directory = newDirectory;
-        setFileInformation();
-    }
-    directoryPathInput = path;
-    return directorySet;
-}
-
-std::vector<QStringList> DirectoryParser::getPathStructure(int depth)
+void DirectoryParser::setPathStructure(int depth)
 {
     std::vector<QStringList> pathStructure;
     if (directorySet)
@@ -244,6 +179,78 @@ std::vector<QStringList> DirectoryParser::getPathStructure(int depth)
             pathStructure.push_back(currentDirectoryPositionList);
         }
     }
+    this->pathStructure = pathStructure;
+}
+
+void DirectoryParser::setFileInformation()
+{
+    directory.setFilter(QDir::Files);
+    QFileInfoList fileInfoList = directory.entryInfoList(filter);
+    QFileInfoList sortedFileInfoList = sortFiles(fileInfoList);
+
+    QStringList newSortedFiles;
+    QStringList newSortedFilesWithoutSuffix;
+    QStringList newSuffixes;
+
+    QFileInfo fileInfo;
+    for (int i = 0; i < sortedFileInfoList.size(); ++i)
+    {
+        fileInfo = sortedFileInfoList.at(i);
+        if (fileInfo.isFile())
+        {
+            newSortedFiles << fileInfo.fileName();
+            newSortedFilesWithoutSuffix << fileInfo.completeBaseName();
+            newSuffixes << fileInfo.suffix();
+        } else if (!fileInfo.isDir())
+        {
+            newSortedFiles << "";
+            newSortedFilesWithoutSuffix << "";
+            newSuffixes << "";
+        }
+    }
+    setPathStructure(NUMBER_PATH_STRUCTURE_COMBOBOXES);
+
+    sortedFiles = newSortedFiles;
+    sortedFileWithoutSuffix = newSortedFilesWithoutSuffix;
+    suffixes = newSuffixes;
+}
+
+DirectoryParser::DirectoryParser() : foundSeason(0)
+{
+    directory.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    directory.setSorting(QDir::NoSort);
+    directory.setPath("");
+
+    seasonAndEpisodeExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
+    seasonNumberExpression.setPattern("(s)[0-9]*");
+    episodeNumberExpression.setPattern("(e)[0-9]*");
+    numberExpression.setPattern("[0-9]*$");
+}
+
+void DirectoryParser::setFileTypes(QStringList fileTypes)
+{
+    for (int i = 0; i < fileTypes.size(); i++)
+        fileTypes[i] = "*." + fileTypes.at(i);
+    filter = fileTypes;
+    directory.setNameFilters(filter);
+}
+
+bool DirectoryParser::initializeDirectory(QString path)
+{
+    QDir newDirectory(path);
+    directorySet = newDirectory.exists();
+    foundSeason = 0;
+    if (directorySet)
+    {
+        directory = newDirectory;
+        setFileInformation();
+    }
+    directoryPathInput = path;
+    return directorySet;
+}
+
+std::vector<QStringList> DirectoryParser::getPathStructure()
+{
     return pathStructure;
 }
 

@@ -22,11 +22,13 @@ private:
     QStringList sortedFiles;
     QStringList sortedFileWithoutSuffix;
     QStringList suffixes;
+    std::vector<QStringList> pathStructure;
 
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
     std::vector<int> getEpisodePositions(QStringList episodeList);
     int getDirectoryPositionInList(QStringList directoryList, QString directoryToFind);
+    void setPathStructure(int depth);
     void setFileInformation();
 
 public:
@@ -36,7 +38,7 @@ public:
 
     // Returns vector of directory lists, containing all siblings dirs along the path
     // The last vector tells the position of the current path directory in each list
-    std::vector<QStringList> getPathStructure(int depth);
+    std::vector<QStringList> getPathStructure();
     QString getDirectoryPathInput();
     int getFoundSeason();
     QStringList getFiles();

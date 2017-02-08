@@ -16,6 +16,7 @@ public:
         view_getEpisodeName_controller,
         view_changeDirectory_controller,
         view_updateDirectory_controller,
+        view_switchToDirectory_controller,
         view_rename_controller,
         view_forceRename_controller,
         view_undoRenaming_controller,
