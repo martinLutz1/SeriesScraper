@@ -438,11 +438,9 @@ void Controller::changeSavePath(bool savePath)
 {
     if (savePath)
     {
-        QString path = settings.getPath();
-        Message msgSetPath;
-        msgSetPath.type = Message::controller_setPath_view;
-        msgSetPath.data[0].qsPointer = &path;
-        emit(sendMessage(msgSetPath));
+        setDirectory(settings.getPath());
+        updateNewFileNames();
+        updateView();
     }
     Message msgSavePath;
     msgSavePath.type = Message::controller_savePath_settings;
@@ -491,6 +489,7 @@ void Controller::savePoster()
 bool Controller::setDirectory(QString path)
 {
     // Discard undo action when the path changed
+    // Also update path on gui
     if (seriesData.getWorkingDirectory().absolutePath() != path)
     {
         fileRenamer.deleteLastUndo();
@@ -516,6 +515,17 @@ bool Controller::setDirectory(QString path)
         newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutSuffix();
 
         fileDownloader.setFilePath(path, "poster.jpg");
+
+        Message msgSetPath;
+        msgSetPath.type = Message::controller_setPath_view;
+        msgSetPath.data[0].qsPointer = &path;
+        emit(sendMessage(msgSetPath));
+
+        std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
+        Message msgUpdateDirectoryWidget;
+        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
+        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
+        emit(sendMessage(msgUpdateDirectoryWidget));
     }
 
     seriesData.setWorkingDirectory(newDirectory);
@@ -723,12 +733,6 @@ void Controller::notify(Message &msg)
         setDirectory(path);
         updateNewFileNames();
         updateView();
-
-        std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
-        Message msgUpdateDirectoryWidget;
-        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
-        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
-        emit(sendMessage(msgUpdateDirectoryWidget));
         break;
     }
     case Message::view_switchToDirectory_controller:
@@ -739,12 +743,6 @@ void Controller::notify(Message &msg)
         setDirectory(path);
         updateNewFileNames();
         updateView();
-
-        std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
-        Message msgUpdateDirectoryWidget;
-        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
-        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
-        emit(sendMessage(msgUpdateDirectoryWidget));
         break;
     }
     case Message::view_updateDirectory_controller:

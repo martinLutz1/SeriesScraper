@@ -412,15 +412,6 @@
                   <height>26</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Lost</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/folder.png</normaloff>:/images/folder.png</iconset>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
@@ -431,15 +422,6 @@
                   <height>26</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>S01</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/folder.png</normaloff>:/images/folder.png</iconset>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
@@ -450,15 +432,6 @@
                   <height>26</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Users</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/folder.png</normaloff>:/images/folder.png</iconset>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
@@ -469,15 +442,6 @@
                   <height>26</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>martin</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/folder.png</normaloff>:/images/folder.png</iconset>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>

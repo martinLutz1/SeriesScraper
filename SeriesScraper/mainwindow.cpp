@@ -1073,7 +1073,7 @@ void MainWindow::notify(Message &msg)
     case Message::controller_setPath_view:
     {
         QString path = *msg.data[0].qsPointer;
-        ui->pathLineEdit->setText(path);
+        chosenPath = path;
         break;
     }
     case Message::controller_updateDirectoryWidget_view:
