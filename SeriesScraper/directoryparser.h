@@ -39,6 +39,7 @@ public:
     // Returns vector of directory lists, containing all siblings dirs along the path
     // The last vector tells the position of the current path directory in each list
     std::vector<QStringList> getPathStructure();
+    QString getDirectoryViaStructure(int level, int selection);
     QString getDirectoryPathInput();
     int getFoundSeason();
     QStringList getFiles();

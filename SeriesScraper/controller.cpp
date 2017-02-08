@@ -735,13 +735,21 @@ void Controller::notify(Message &msg)
     {
         int level = msg.data[0].i;
         int selection = msg.data[1].i;
-        qDebug() << level << selection;
+        QString path = directoryParser.getDirectoryViaStructure(level, selection);
+        setDirectory(path);
+        updateNewFileNames();
+        updateView();
+
+        std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
+        Message msgUpdateDirectoryWidget;
+        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
+        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
+        emit(sendMessage(msgUpdateDirectoryWidget));
         break;
     }
     case Message::view_updateDirectory_controller:
     {
-        QString path = *msg.data[0].qsPointer;
-        setDirectory(path);
+        setDirectory(directoryParser.getDirectoryPathInput());
         updateNewFileNames();
         updateView();
         break;

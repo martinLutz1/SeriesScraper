@@ -254,6 +254,22 @@ std::vector<QStringList> DirectoryParser::getPathStructure()
     return pathStructure;
 }
 
+QString DirectoryParser::getDirectoryViaStructure(int level, int selection)
+{
+    if (level >= int(pathStructure.size() - 1))
+        return "";
+
+    QDir newDirectory = directory;
+    QString directoryName = pathStructure.at(level).at(selection);
+
+    for (int i = 0; i < level; i++)
+    {
+        newDirectory.cdUp();
+    }
+    newDirectory.cd(directoryName);
+    return newDirectory.absolutePath();
+}
+
 QString DirectoryParser::getDirectoryPathInput()
 {
     return directoryPathInput;

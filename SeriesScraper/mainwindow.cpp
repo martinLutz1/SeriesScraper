@@ -404,9 +404,11 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure)
     if (pathStructure.size() == 0)
         return;
 
-    qDebug() << "\n";
-    for (int i = 0; i < int(pathStructure.size()); i++)
-        qDebug() << pathStructure.at(i);
+    if (pathStructure.at(0).size() == 0)
+    {
+        directoryEntriesMenu->addAction("Empty");
+        directoryEntriesMenu->actions().at(0)->setEnabled(false);
+    }
 
     for (int i = 0; i < pathStructure.at(0).size(); i++)
     {
@@ -437,7 +439,7 @@ void MainWindow::updateDirectoryWidgetVisibility()
     int buttonWidth = ui->pathStructureContentButton->width();
 
     int numberOfVisibleBoxes = layoutWidth / MINIMUM_PATH_STRUCTURE_BOX_SIZE;
-    qDebug() << numberOfVisibleBoxes << layoutWidth;
+    //qDebug() << numberOfVisibleBoxes << layoutWidth;
     ui->pathStructure4ComboBox->setVisible(numberOfVisibleBoxes >= 2);
     ui->pathStructure3ComboBox->setVisible(numberOfVisibleBoxes >= 3);
     ui->pathStructure2ComboBox->setVisible(numberOfVisibleBoxes >= 4);
@@ -661,10 +663,8 @@ void MainWindow::startSetPathTimer()
 
 void MainWindow::onUpdateDirectory()
 {
-    QString directoryPath = ui->pathLineEdit->text();
     Message directoryUpdateMsg;
     directoryUpdateMsg.type = Message::view_updateDirectory_controller;
-    directoryUpdateMsg.data[0].qsPointer = &directoryPath;
     emit(sendMessage(directoryUpdateMsg));
 }
 
