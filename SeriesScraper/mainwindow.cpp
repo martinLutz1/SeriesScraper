@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
+#include <QDesktopServices>
 #include <QDebug>
 
 #define UNIVERSAL_SPACER 10
@@ -413,16 +414,12 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, b
     if (pathStructure.size() == 0)
         return;
 
-    if (pathStructure.at(0).size() == 0)
-    {
-        directoryEntriesMenu->addAction("Empty");
-        directoryEntriesMenu->actions().at(0)->setEnabled(false);
-    }
-
     for (int i = 0; i < pathStructure.at(0).size(); i++)
     {
         directoryEntriesMenu->addAction(QIcon(":/images/folder.png"), pathStructure.at(0).at(i));
     }
+    directoryEntriesMenu->addSeparator();
+    directoryEntriesMenu->addAction(QIcon(":/images/hdd.png"), "Open this folder");
     // Fill comboboxes
     for (int i = 0; i < int(pathStructure.size() - 2); i++)
     {
@@ -753,16 +750,22 @@ void MainWindow::onTableEnter()
 void MainWindow::onDirectoryEntryClicked(QAction *clickedAction)
 {
     QString selectedText = clickedAction->text();
+
     for (int i = 0; i < directoryEntriesMenu->actions().size(); i++)
     {
         if (directoryEntriesMenu->actions().at(i)->text() == selectedText)
         {
+             // Last entry open current directory
+            if (directoryEntriesMenu->actions().size() - 1 == i)
+            {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(chosenPath.absolutePath()));
+                break;
+            }
             Message msgSwitchToFolder;
             msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
             msgSwitchToFolder.data[0].i = 0;
             msgSwitchToFolder.data[1].i = i;
             emit(sendMessage(msgSwitchToFolder));
-
             break;
         }
     }
