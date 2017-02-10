@@ -418,8 +418,10 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, b
     {
         directoryEntriesMenu->addAction(QIcon(":/images/folder.png"), pathStructure.at(0).at(i));
     }
+    // Add open directory entry
     directoryEntriesMenu->addSeparator();
-    directoryEntriesMenu->addAction(QIcon(":/images/hdd.png"), "Open this folder");
+    directoryEntriesMenu->addAction(QIcon(":/images/folder_video.png"), "Open this folder");
+
     // Fill comboboxes
     for (int i = 0; i < int(pathStructure.size() - 2); i++)
     {
@@ -431,7 +433,7 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, b
             }
             else
             {
-            pathStructureComboBoxList[i]->addItem(QIcon(":/images/folder.png"), pathStructure.at(i + 1).at(j));
+                pathStructureComboBoxList[i]->addItem(QIcon(":/images/folder.png"), pathStructure.at(i + 1).at(j));
             }
         }
         pathStructureComboBoxList[i]->setCurrentIndex(pathStructure.at(pathStructure.size() - 1).at(i).toInt());
@@ -755,7 +757,7 @@ void MainWindow::onDirectoryEntryClicked(QAction *clickedAction)
     {
         if (directoryEntriesMenu->actions().at(i)->text() == selectedText)
         {
-             // Last entry open current directory
+            // Last entry open current directory
             if (directoryEntriesMenu->actions().size() - 1 == i)
             {
                 QDesktopServices::openUrl(QUrl::fromLocalFile(chosenPath.absolutePath()));

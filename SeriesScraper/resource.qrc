@@ -18,5 +18,6 @@
         <file>images/check.png</file>
         <file>images/error.png</file>
         <file>images/undo.png</file>
+        <file>images/folder_video.png</file>
     </qresource>
 </RCC>

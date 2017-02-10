@@ -53,6 +53,19 @@ QFileInfoList DirectoryParser::naturalSort(QFileInfoList files)
     return fileInfos;
 }
 
+QStringList DirectoryParser::naturalSort(QStringList toSort)
+{
+    QStringList sorted = toSort;
+    QCollator collator;
+    collator.setNumericMode(true);
+    std::sort(sorted.begin(), sorted.end(),
+              [&collator](const QString &string1, const QString &string2)
+    {
+        return collator.compare(string1, string2) < 0;
+    });
+    return sorted;
+}
+
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 {
     std::vector<int> episodePosition;
@@ -137,6 +150,7 @@ void DirectoryParser::setPathStructure(int depth)
             {
                 rootDriveList << rootDrives.at(i).absolutePath();
             }
+            rootDriveList = naturalSort(rootDriveList);
             currentDirectoryPositionList << QString::number(getDirectoryPositionInList(rootDriveList, workingDirectory.absolutePath()));
             pathStructure.push_back(workingDirectory.entryList());
             pathStructure.push_back(rootDriveList);
@@ -146,7 +160,7 @@ void DirectoryParser::setPathStructure(int depth)
         else
         {
             // Last directory content where nothing is selected
-            pathStructure.push_back(workingDirectory.entryList());
+            pathStructure.push_back(naturalSort(workingDirectory.entryList()));
 
             for (int i = 0; i < depth; i++)
             {
@@ -154,7 +168,7 @@ void DirectoryParser::setPathStructure(int depth)
                 QString directoryToFind;
 
                 directoryToFind = workingDirectory.dirName();
-                directoryListToSearch = parentDir.entryList();
+                directoryListToSearch = naturalSort(parentDir.entryList());
 
                 currentDirectoryPositionList << QString::number(getDirectoryPositionInList(directoryListToSearch, directoryToFind));
                 pathStructure.push_back(directoryListToSearch);
@@ -167,6 +181,7 @@ void DirectoryParser::setPathStructure(int depth)
                     {
                         rootDriveList << rootDrives.at(i).absolutePath();
                     }
+                    rootDriveList = naturalSort(rootDriveList);
                     currentDirectoryPositionList << QString::number(getDirectoryPositionInList(rootDriveList, parentDir.absolutePath()));
                     pathStructure.push_back(rootDriveList);
                     containsRoot = true;

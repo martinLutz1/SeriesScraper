@@ -27,6 +27,7 @@ private:
 
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
+    QStringList naturalSort(QStringList toSort);
     std::vector<int> getEpisodePositions(QStringList episodeList);
     int getDirectoryPositionInList(QStringList directoryList, QString directoryToFind);
     void setPathStructure(int depth);
