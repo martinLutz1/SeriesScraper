@@ -12,7 +12,7 @@ public:
     bool downloadFile(QString url);
     QByteArray *getDownloadedData();
     void setFilePath(QString filePath, QString fileName);
-    bool saveFile(bool force = false);
+    bool saveFileAsImage(bool force = false);
     bool fileExists();
 
 private:

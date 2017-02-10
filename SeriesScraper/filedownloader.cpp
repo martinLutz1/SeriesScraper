@@ -14,7 +14,11 @@ FileDownloader::FileDownloader()
 bool FileDownloader::downloadFile(QString url)
 {
     if (url.isEmpty())
+    {
+        lastSuccessUrl.clear();
+        downloadedData.clear();
         return false;
+    }
     else if (url == lastSuccessUrl) // Dont download twice
         return true;
 
@@ -55,7 +59,7 @@ void FileDownloader::setFilePath(QString filePath, QString fileName)
         file.setFileName(newFileName);
 }
 
-bool FileDownloader::saveFile(bool force)
+bool FileDownloader::saveFileAsImage(bool force)
 {
     if (!file.exists() || force)
     {

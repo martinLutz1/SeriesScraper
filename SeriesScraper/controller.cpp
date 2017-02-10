@@ -473,7 +473,7 @@ void Controller::savePoster()
 {
     if (!fileDownloader.fileExists())
     {
-        if (fileDownloader.saveFile())
+        if (fileDownloader.saveFileAsImage())
             setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
         else
             setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
@@ -652,7 +652,7 @@ void Controller::updateRenameButtonAndSavePoster()
     bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
     bool seriesSet = !seriesData.getSeries().isEmpty();
     bool enableRenameButton = seriesSet & directorySet & differentFileNames;
-    bool enableSavePoster = seriesSet & directorySet;
+    bool enableSavePoster = seriesSet & directorySet & !seriesData.getPosterUrl().isEmpty();
 
     Message msgEnableRenameButton;
     msgEnableRenameButton.type = Message::controller_enableRenameButton_view;
@@ -821,7 +821,7 @@ void Controller::notify(Message &msg)
     }
     case Message::view_forceSavePoster_conroller:
     {
-        if (fileDownloader.saveFile(true))
+        if (fileDownloader.saveFileAsImage(true))
             setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
         else
             setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
