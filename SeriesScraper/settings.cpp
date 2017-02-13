@@ -26,6 +26,13 @@ bool Settings::loadSettingsFile()
         setNameScheme(loadedObject.find(jsonKeyNameScheme).value().toInt());
         setGuiLanguage(loadedObject.find(jsonKeyGUILanguage).value().toString());
         setSeriesLanguage(loadedObject.find(jsonKeySeriesLanguage).value().toString());
+
+        // Window position and size
+        int x = loadedObject.find(jsonKeyWindowPosX).value().toInt();
+        int y = loadedObject.find(jsonKeyWindowPosY).value().toInt();
+        int width = loadedObject.find(jsonKeyWindowWidth).value().toInt();
+        int height = loadedObject.find(jsonKeyWindowHeight).value().toInt();
+        setWindowRect(QRect(x, y, width, height));
     } else
         saveSettingsFile(); // Creates settings file with default values defined in constructor
 
@@ -48,6 +55,10 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeySeriesLanguage, seriesLanguage);
     jsonSettings.insert(jsonKeyNameScheme, nameScheme);
     jsonSettings.insert(jsonKeySeason, season);
+    jsonSettings.insert(jsonKeyWindowPosX, windowPosX);
+    jsonSettings.insert(jsonKeyWindowPosY, windowPosY);
+    jsonSettings.insert(jsonKeyWindowWidth, windowWidth);
+    jsonSettings.insert(jsonKeyWindowHeight, windowHeight);
 
     bool successReading = settingsFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
     if (successReading)
@@ -131,6 +142,14 @@ void Settings::setSeriesLanguage(QString seriesLanguage)
     this->seriesLanguage = seriesLanguage;
 }
 
+void Settings::setWindowRect(QRect windowRect)
+{
+    windowPosX = windowRect.x();
+    windowPosY = windowRect.y();
+    windowWidth = windowRect.width();
+    windowHeight = windowRect.height();
+}
+
 bool Settings::getSavePath()
 {
     return savePath;
@@ -196,6 +215,11 @@ int Settings::getNameScheme()
     return nameScheme;
 }
 
+QRect Settings::getWindowRect()
+{
+    return QRect(windowPosX, windowPosY, windowWidth, windowHeight);
+}
+
 void Settings::setDefaultValues()
 {
     settingsFile.setFileName(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("settings.json"));
@@ -212,4 +236,8 @@ void Settings::setDefaultValues()
     nameScheme = defaultNameScheme;
     guiLanguage = defaultGuiLanguage;
     seriesLanguage = defaultSeriesLanguage;
+    windowPosX = defaultWindowPosX;
+    windowPosY = defaultWindowPosY;
+    windowWidth = defaultWindowWidth;
+    windowHeight = defaultWindowHeight;
 }

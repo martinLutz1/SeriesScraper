@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QFile>
+#include <Qrect>
 #include "jsonloader.h"
 
 
@@ -27,6 +28,7 @@ public:
     void setNameScheme(int nameScheme);
     void setGuiLanguage(QString guiLanguage);
     void setSeriesLanguage(QString seriesLanguage);
+    void setWindowRect(QRect windowRect);
 
     bool getSavePath();
     bool getSaveSeries();
@@ -41,6 +43,7 @@ public:
     int getSeason();
     int getSeriesDatabase();
     int getNameScheme();
+    QRect getWindowRect();
 
 private:
     void setDefaultValues();
@@ -58,6 +61,10 @@ private:
     int nameScheme;
     QString guiLanguage;
     QString seriesLanguage;
+    int windowPosX;
+    int windowPosY;
+    int windowWidth;
+    int windowHeight;
 
     const QString jsonKeySavePath = "SavePath";
     const QString jsonKeySaveSeries = "SaveSeries";
@@ -72,6 +79,10 @@ private:
     const QString jsonKeyNameScheme = "NameScheme";
     const QString jsonKeyGUILanguage = "InterfaceLanguage";
     const QString jsonKeySeriesLanguage = "SeriesLanguage";
+    const QString jsonKeyWindowPosX = "WindowPosX";
+    const QString jsonKeyWindowPosY = "WindowPosY";
+    const QString jsonKeyWindowWidth = "WindowWidth";
+    const QString jsonKeyWindowHeight = "WindowHeight";
 
     const bool defaultSavePath = false;
     const bool defaultSaveSeries = false;
@@ -86,6 +97,10 @@ private:
     const int defaultNameScheme = 0;
     const QString defaultGuiLanguage = "English";
     const QString defaultSeriesLanguage = "English";
+    const int defaultWindowPosX = -1;
+    const int defaultWindowPosY = -1;
+    const int defaultWindowWidth = 0;
+    const int defaultWindowHeight = 0;
 };
 
 #endif // SETTINGS_H

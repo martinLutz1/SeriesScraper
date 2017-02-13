@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QRect>
 #include <vector>
 
 class Message
@@ -26,6 +27,7 @@ public:
         view_forceSavePoster_conroller,
         view_showAboutDialog_controller,
         view_showSettingsWindow_controller,
+        view_setWindowRect_controller,
 
         settings_changeGUILanguage_controller,
         settings_changeSeriesParser_controller,
@@ -47,6 +49,7 @@ public:
         controller_seriesSet_view,
         controller_setSeries_view,
         controller_setPath_view,
+        controller_setWindowRect_view,
         controller_updateDirectoryWidget_view,
         controller_enableRenameButton_view,
         controller_enableSavePoster_view,
@@ -94,6 +97,7 @@ public:
         QString* qsPointer;
         QStringList* qsListPointer;
         std::vector<QStringList> *qsListVectorPointer;
+        QRect *qRectPointer;
         QByteArray* qbPointer;
         int i;
         bool b;

@@ -120,6 +120,7 @@ void Controller::initializeSettings()
     bool setDetectedSeason = settings.getAutoSetDetectedSeason();
     bool useDarkTheme = settings.getDarkTheme();
     bool showSeriesInfo = settings.getShowSeriesInfo();
+    QRect windowRect = settings.getWindowRect();
 
     // Dont change theme afterwards!
     if (useDarkTheme)
@@ -155,6 +156,11 @@ void Controller::initializeSettings()
     msgShowSeriesInfo.type = Message::controller_showSeriesInfo_settings;
     msgShowSeriesInfo.data[0].b = showSeriesInfo;
     emit(sendMessage(msgShowSeriesInfo));
+
+    Message msgSetWindowRect;
+    msgSetWindowRect.type = Message::controller_setWindowRect_view;
+    msgSetWindowRect.data[0].qRectPointer = &windowRect;
+    emit(sendMessage(msgSetWindowRect));
 }
 
 void Controller::updateNewFileNames()
@@ -825,6 +831,12 @@ void Controller::notify(Message &msg)
             setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
         else
             setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
+        break;
+    }
+    case Message::view_setWindowRect_controller:
+    {
+        QRect windowRect = *msg.data[0].qRectPointer;
+        settings.setWindowRect(windowRect);
         break;
     }
     case Message::view_showAboutDialog_controller:

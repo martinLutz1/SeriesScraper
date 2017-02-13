@@ -67,6 +67,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    QRect windowRect = this->geometry();
+    Message msgSetWindowRect;
+    msgSetWindowRect.type = Message::view_setWindowRect_controller;
+    msgSetWindowRect.data[0].qRectPointer = &windowRect;
+    emit(sendMessage(msgSetWindowRect));
+
     delete ui;
     delete seriesTextChangeTimer;
     delete progressBarTimer;
@@ -137,6 +143,8 @@ void MainWindow::setUpGUI()
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
     ui->episodeLineEdit->hide();
+
+    this->activateWindow();
 }
 
 void MainWindow::setUpKeyEvents()
@@ -1090,6 +1098,15 @@ void MainWindow::notify(Message &msg)
         // Workaround for white table headers
         setRow(0, "", "");
         clearTable();
+        break;
+    }
+    case Message::controller_setWindowRect_view:
+    {
+        QRect windowRect = *msg.data[0].qRectPointer;
+        if (windowRect.y() >= 0)
+        {
+            this->setGeometry(windowRect);
+        }
         break;
     }
     case Message::controller_showSeriesInfo_view:
