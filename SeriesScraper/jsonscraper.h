@@ -11,7 +11,7 @@ public:
 
 protected:
     bool scrapeJsonObjectViaPost(QString requestUrl, QJsonObject post);
-    bool scrapeJsonObjectViaGet(QString requestUrl, QString authorizationKey = "");
+    bool scrapeJsonObjectViaGet(QString requestUrl, QJsonObject headerArguments = QJsonObject());
     QJsonObject parsedObject;
 
 private:

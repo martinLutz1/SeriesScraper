@@ -27,7 +27,7 @@ bool JsonScraper::scrapeJsonObjectViaPost(QString requestUrl, QJsonObject post)
     return parseReply(reply);
 }
 
-bool JsonScraper::scrapeJsonObjectViaGet(QString requestUrl, QString authorizationKey)
+bool JsonScraper::scrapeJsonObjectViaGet(QString requestUrl, QJsonObject headerArguments)
 {
     // Create custom temporary event loop on stack
     QEventLoop eventLoop;
@@ -38,8 +38,13 @@ bool JsonScraper::scrapeJsonObjectViaGet(QString requestUrl, QString authorizati
 
     // The HTTP request
     QNetworkRequest req(requestUrl);
-    if (!authorizationKey.isEmpty())
-        req.setRawHeader("Authorization", authorizationKey.toLocal8Bit());
+
+    while (!headerArguments.isEmpty())
+    {
+        QString headerName = headerArguments.keys().at(0);
+        QString headerValue = headerArguments.take(headerName).toString();
+        req.setRawHeader(headerName.toLocal8Bit(), headerValue.toLocal8Bit());
+    }
 
     QNetworkReply *reply = mgr.get(req);
     eventLoop.exec(); // Blocks stack until "finished()" has been called

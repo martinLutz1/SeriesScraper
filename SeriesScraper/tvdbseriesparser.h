@@ -15,12 +15,16 @@ private:
     const QString apiKey = "99DBAA5F3B8BB8B7";
     const QString userName = "m.lutz";
     const QString userKey = "E6FAA2402891836F";
-    const QString loginUrl = "https://api.thetvdb.com/login";
+    const QString baseUrl = "https://api.thetvdb.com/";
+    const QString posterBaseUrl = "http://thetvdb.com/banners/posters/";
 
+    QString seriesID;
+    QString currentLanguage;
     QString authToken;
     bool loggedIn = false;
 
     bool authenticate();
+    bool setAmountSeasons();
 };
 
 #endif // TVDBSERIESPARSER_H

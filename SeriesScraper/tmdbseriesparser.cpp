@@ -13,9 +13,7 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
 {
     QString searchFor = series.replace(" ", "+");
     if (lastScrapedSeries == searchFor)
-    {
         return true;
-    }
 
     seriesID.clear();
     seriesFullName.clear();
@@ -24,7 +22,6 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
     if (series.isEmpty())
         return false;
 
-    // Create request string
     QString requestUrl = tmdbUrl  + "search/tv?api_key=" + authentificationKey + "&query=" + searchFor;
 
     // Get JsonObject from requestUrl;
@@ -34,7 +31,7 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
         QJsonArray jsonArray = parsedObject.value("results").toArray();
         scrapingSuccessful = !jsonArray.isEmpty();
 
-        if (jsonArray.size() > 0)
+        if (scrapingSuccessful)
         {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());
             setAmountSeasons();
