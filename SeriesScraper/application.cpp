@@ -44,8 +44,8 @@ void Application::init()
     QObject::connect(settings, SIGNAL(sendMessage(Message&)), controller, SLOT(notify(Message&)));
     QObject::connect(controller, SIGNAL(sendMessage(Message&)), settings, SLOT(notify(Message&)));
 
-    view->show();
     controller->initialize();
+    view->show();
 }
 
 int Application::exec()
