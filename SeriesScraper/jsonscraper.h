@@ -10,8 +10,12 @@ public:
     JsonScraper();
 
 protected:
-    bool scrapeJsonObject(QString requestUrl);
+    bool scrapeJsonObjectViaPost(QString requestUrl, QJsonObject post);
+    bool scrapeJsonObjectViaGet(QString requestUrl, QString authorizationKey = "");
     QJsonObject parsedObject;
+
+private:
+    bool parseReply(QNetworkReply *reply);
 };
 
 #endif // JSONSCRAPER_H

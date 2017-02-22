@@ -24,7 +24,7 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
         return false;
 
     QString requestUrl = "http://www.omdbapi.com/?t=" + series + "&r=json";
-    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
         amountSeasons = parsedObject.value("totalSeasons").toString().toInt();
@@ -38,12 +38,13 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
     return scrapingSuccessful;
 }
 
-QStringList OMDbSeriesParser::getSeason(int season, QString language)
-{
+QStringList OMDbSeriesParser::getSeason(int season, QString language /* unused */)
+{   
+    Q_UNUSED(language);
     QStringList episodeList;
     QString requestUrl = "http://www.omdbapi.com/?t=" + seriesFullName + "&season=" + QString::number(season);
 
-    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
         QJsonArray episodeArray = parsedObject.value("Episodes").toArray();

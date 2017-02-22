@@ -2,7 +2,6 @@
 #define BASESERIESPARSER_H
 
 #include "jsonscraper.h"
-#include <QTemporaryFile>
 
 class BaseSeriesParser : public JsonScraper
 {
@@ -23,6 +22,7 @@ protected:
     QString plot;
     int amountSeasons;
 
+    QString lastScrapedSeries;
 };
 
 #endif // BASESERIESPARSER_H

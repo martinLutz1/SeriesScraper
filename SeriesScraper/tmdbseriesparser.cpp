@@ -28,7 +28,7 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
     QString requestUrl = tmdbUrl  + "search/tv?api_key=" + authentificationKey + "&query=" + searchFor;
 
     // Get JsonObject from requestUrl;
-    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
         QJsonArray jsonArray = parsedObject.value("results").toArray();
@@ -51,7 +51,7 @@ QStringList TMDbSeriesParser::getSeason(int season, QString language)
     QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language="
             + language + "&append_to_response=" + seasonNumberText;
 
-    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
         QJsonArray episodeJsonArray = parsedObject.value(seasonNumberText).toObject().value("episodes").toArray();
@@ -102,7 +102,7 @@ bool TMDbSeriesParser::setSeriesInformation(QString seasonNumberText)
 bool TMDbSeriesParser::setAmountSeasons()
 {
     QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language=english";
-    bool scrapingSuccessful = scrapeJsonObject(requestUrl);
+    bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
          QJsonValue amountSeasonsValue = parsedObject.value("number_of_seasons");

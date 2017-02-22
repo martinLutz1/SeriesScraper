@@ -40,7 +40,8 @@ SOURCES += main.cpp \
     serieslanguagehandler.cpp \
     interfacelanguagehandler.cpp \
     baseseriesparser.cpp \
-    filedownloader.cpp
+    filedownloader.cpp \
+    tvdbseriesparser.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -69,7 +70,8 @@ HEADERS  += mainwindow.h \
     serieslanguagehandler.h \
     interfacelanguagehandler.h \
     baseseriesparser.h \
-    filedownloader.h
+    filedownloader.h \
+    tvdbseriesparser.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

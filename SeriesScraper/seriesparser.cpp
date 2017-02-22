@@ -2,13 +2,16 @@
 
 SeriesParser::SeriesParser() : selectedSeriesParser(0)
 {
-
+    seriesParserVector.push_back(&tmdbSeriesParser);
+    seriesParserVector.push_back(&omdbSeriesParser);
+    seriesParserVector.push_back(&tvdbSeriesParser);
 }
 
 void SeriesParser::setSeriesParser(int seriesParser)
 {
-    if (seriesParser >= 0 && seriesParser <= 1)
+    if (seriesParser >= 0 && seriesParser <= 2)
         selectedSeriesParser = seriesParser;
+    selectedSeriesParser = 2; // REmove, when selection implemented
 }
 
 int SeriesParser::getSeriesParser()
@@ -18,111 +21,34 @@ int SeriesParser::getSeriesParser()
 
 bool SeriesParser::scrapeSeries(QString series)
 {
+    selectedSeriesParser = 2; // remove
     seriesInput = series;
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {
-        return tmdbSeriesParser.scrapeSeries(series);
-        break;
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.scrapeSeries(series);
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->scrapeSeries(series);
 }
 
 QString SeriesParser::getSeriesName()
 {
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {
-        return tmdbSeriesParser.getSeriesName();
-        break;
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.getSeriesName();
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->getSeriesName();
 }
 
 QString SeriesParser::getSeriesYear()
 {
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {
-        return tmdbSeriesParser.getYear();
-        break;
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.getYear();
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->getYear();
 }
 
 QString SeriesParser::getPosterUrl()
 {
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {
-        return tmdbSeriesParser.getPosterUrl();
-        break;
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.getPosterUrl();
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->getPosterUrl();
 }
 
 QString SeriesParser::getPlot()
 {
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {
-        return tmdbSeriesParser.getPlot();
-        break;
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.getPlot();
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->getPlot();
 }
 
 int SeriesParser::getAmountSeasons()
 {
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {
-        return tmdbSeriesParser.getAmountSeasons();
-        break;
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.getAmountSeasons();
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->getAmountSeasons();
 }
 
 QStringList SeriesParser::getEpisodeList(int season, QString language)
@@ -133,19 +59,7 @@ QStringList SeriesParser::getEpisodeList(int season, QString language)
         seasonToLoad = 1;
     }
 
-    switch(selectedSeriesParser)
-    {
-    default:
-    case tmdb:
-    {  
-        return tmdbSeriesParser.getSeason(seasonToLoad, language);
-    }
-    case omdb:
-    {
-        return omdbSeriesParser.getSeason(seasonToLoad);
-        break;
-    }
-    }
+    return seriesParserVector.at(selectedSeriesParser)->getSeason(seasonToLoad, language);
 }
 
 QString SeriesParser::getSeriesInput()
