@@ -17,9 +17,7 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
         return false;
 
     if (!loggedIn)
-    {
         loggedIn = authenticate();
-    }
 
     QString requestUrl = baseUrl + "search/series?name=" + series;
     QJsonObject headerArguments;
@@ -38,7 +36,7 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
             plot = seriesArray.at(0).toObject().value("overview").toString();
             lastScrapedSeries = series;
             setAmountSeasons();
-            posterUrl = baseUrl + seriesArray.at(0).toObject().value("banner").toString();
+            posterUrl = posterBaseUrl + seriesID + "-1.jpg";
         }
     }
     return scrapingSuccessful;
@@ -61,7 +59,6 @@ QStringList TVDBSeriesParser::getSeason(int season, QString language)
             episodeList << episodeArray.at(i).toObject().value("episodeName").toString();
         }
         year = episodeArray.at(0).toObject().value("firstAired").toString().left(4);
-        posterUrl = posterBaseUrl + seriesID + "-1.jpg";
     }
     return episodeList;
 }

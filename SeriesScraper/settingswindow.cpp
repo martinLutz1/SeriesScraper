@@ -46,6 +46,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     QObject::connect(ui->selectInterfaceLanguageComboBox, SIGNAL(activated(QString)), this, SLOT(onGUILanguageChanged(QString)));
     QObject::connect(ui->tmdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
     QObject::connect(ui->omdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
+    QObject::connect(ui->tvdbRadioButton, SIGNAL(clicked(bool)), this, SLOT(onSeriesParserChanged()));
     QObject::connect(ui->saveSeriesCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSaveSeriesChanged(bool)));
     QObject::connect(ui->savePathCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePathChanged(bool)));
     QObject::connect(ui->savePosterCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSavePosterChanged(bool)));
@@ -132,8 +133,12 @@ void SettingsWindow::notify(Message &msg)
             ui->omdbRadioButton->setChecked(true);
             break;
         }
+        case SeriesParser::tvdb:
+        {
+            ui->tvdbRadioButton->setChecked(true);
+            break;
         }
-        break;
+        }
     }
     case Message::controller_saveSeries_settings:
     {
@@ -319,15 +324,18 @@ void SettingsWindow::onSeriesParserChanged()
 {
     bool tmdb = ui->tmdbRadioButton->isChecked();
     bool omdb = ui->omdbRadioButton->isChecked();
+    bool tvdb = ui->tvdbRadioButton->isCheckable();
 
     Message msgSeriesParserChanged;
     msgSeriesParserChanged.type = Message::settings_changeSeriesParser_controller;
     if (tmdb)
-        msgSeriesParserChanged.data[0].i = 0;
+        msgSeriesParserChanged.data[0].i = SeriesParser::tmdb;
     else if (omdb)
-        msgSeriesParserChanged.data[0].i = 1;
+        msgSeriesParserChanged.data[0].i = SeriesParser::omdb;
+    else if (tvdb)
+        msgSeriesParserChanged.data[0].i = SeriesParser::tvdb;
     else // Should never happen
-        msgSeriesParserChanged.data[0].i = 0;
+        msgSeriesParserChanged.data[0].i = SeriesParser::tmdb;
     emit(sendMessage(msgSeriesParserChanged));
 }
 

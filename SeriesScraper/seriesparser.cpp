@@ -11,7 +11,6 @@ void SeriesParser::setSeriesParser(int seriesParser)
 {
     if (seriesParser >= 0 && seriesParser <= 2)
         selectedSeriesParser = seriesParser;
-    selectedSeriesParser = 2; // REmove, when selection implemented
 }
 
 int SeriesParser::getSeriesParser()
@@ -21,7 +20,6 @@ int SeriesParser::getSeriesParser()
 
 bool SeriesParser::scrapeSeries(QString series)
 {
-    selectedSeriesParser = 2; // remove
     seriesInput = series;
     return seriesParserVector.at(selectedSeriesParser)->scrapeSeries(series);
 }
@@ -55,9 +53,7 @@ QStringList SeriesParser::getEpisodeList(int season, QString language)
 {
     int seasonToLoad = season;
     if (season > getAmountSeasons()) // Dont load not existing seasons
-    {
         seasonToLoad = 1;
-    }
 
     return seriesParserVector.at(selectedSeriesParser)->getSeason(seasonToLoad, language);
 }

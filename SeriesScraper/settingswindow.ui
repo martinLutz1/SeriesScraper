@@ -129,6 +129,19 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#353535;&quot;&gt;(recommended)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
+     <widget class="QRadioButton" name="tvdbRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>55</y>
+        <width>100</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TVDB</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="saveOnExitGroupBox">
      <property name="geometry">
