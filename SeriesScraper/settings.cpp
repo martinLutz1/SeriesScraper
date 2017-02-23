@@ -121,7 +121,7 @@ void Settings::setSeason(int season)
 
 void Settings::setSeriesDatabase(int seriesDatabase)
 {
-    if (seriesDatabase >= 0 && seriesDatabase <= 1)
+    if (seriesDatabase >= 0 && seriesDatabase <= 2)
         this->seriesDatabase = seriesDatabase;
     else // Set to default if seriesDatabase is not valid
         this->seriesDatabase = 0;
