@@ -3,7 +3,7 @@
 
 #include <QStringList>
 #include <QDir>
-
+#include <vector>
 
 class FileRenamer
 {
@@ -12,17 +12,18 @@ public:
     void setOldFileNames(QStringList oldfileNameList);
     void setNewFileNames(QStringList newFileNameList);
     void setDirectory(QDir directory);
-    bool rename();
+    bool rename(bool isUndo = false);
     bool isUndoPossible();
-    void deleteLastUndo();
     bool undo();
 
 private:
+    QDir workingDirectory;
     QStringList oldFileNameList;
     QStringList newFileNameList;
-    QDir workingDirectory;
 
-    bool undoPossible = false;
+    std::vector<QDir> workingDirectoryStack;
+    std::vector<QStringList> oldFileNameListStack;
+    std::vector<QStringList> newFileNameListStack;
 };
 
 #endif // FILERENAMER_H

@@ -1,6 +1,8 @@
 #include "filerenamer.h"
 #include <QDebug>
 
+#define MAX_UNDO_OPERATIONS 15
+
 FileRenamer::FileRenamer()
 {
 
@@ -21,7 +23,7 @@ void FileRenamer::setDirectory(QDir directory)
     workingDirectory = directory;
 }
 
-bool FileRenamer::rename()
+bool FileRenamer::rename(bool isUndo)
 {
     int amountOldFiles = oldFileNameList.size();
     int amountNewNames = newFileNameList.size();
@@ -46,31 +48,37 @@ bool FileRenamer::rename()
             renamingSucceded = workingDirectory.rename(fileToRename, newFileName);
             if (!renamingSucceded)
                 break;
+            // Todo undo if it fails
+        }
+        if (renamingSucceded
+                && workingDirectoryStack.size() < MAX_UNDO_OPERATIONS
+                && !isUndo)
+        {
+            workingDirectoryStack.push_back(workingDirectory);
+            oldFileNameListStack.push_back(oldFileNameList);
+            newFileNameListStack.push_back(newFileNameList);
         }
     }
-    undoPossible = renamingSucceded;
     return renamingSucceded;
 }
 
 bool FileRenamer::isUndoPossible()
 {
-    return undoPossible;
-}
-
-void FileRenamer::deleteLastUndo()
-{
-    undoPossible = false;
+    return (workingDirectoryStack.size() > 0);
 }
 
 bool FileRenamer::undo()
 {
-    if (undoPossible)
+    if (workingDirectoryStack.size() > 0)
     {
-        // Swap old and new file names
-        QStringList temp = oldFileNameList;
-        oldFileNameList = newFileNameList;
-        newFileNameList = temp;
-        return rename();
+        workingDirectory = workingDirectoryStack.back();
+        oldFileNameList = newFileNameListStack.back();
+        newFileNameList = oldFileNameListStack.back();
+        workingDirectoryStack.pop_back();
+        oldFileNameListStack.pop_back();
+        newFileNameListStack.pop_back();
+
+        return rename(true);
     } else
     {
         return false;

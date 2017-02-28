@@ -5,13 +5,15 @@
 #include <QThread>
 #include "directoryparser.h"
 #include "filerenamer.h"
+#include <QDebug>
 
 class DirectoryHandler : public QObject
 {
     Q_OBJECT
-    QThread workerThread;
+    QThread workerThreadDirectory;
 private:
     DirectoryParser directoryParser;
+    FileRenamer fileRenamer;
 
 public:
     explicit DirectoryHandler(QObject *parent = 0);
@@ -25,12 +27,18 @@ public:
     QStringList getFilesWithoutSuffix();
     QStringList getFilesSuffix();
 
+    void setNewFileNames(QStringList newFileNameList);
+    bool isUndoPossible();
 
 public slots:
     void initializeDirectory(QString path);
+    void rename();
+    void undoRename();
 
 signals:
     void directoryInitialized(const bool &);
+    void renameDone(const bool &);
+    void undoRenameDone(const bool &);
 };
 
 #endif // DIRECTORYHANDLER_H

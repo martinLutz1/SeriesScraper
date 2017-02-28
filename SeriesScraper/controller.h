@@ -3,7 +3,6 @@
 
 #include "message.h"
 #include "settings.h"
-#include "directoryparser.h"
 #include "seriesparser.h"
 #include "seriesdata.h"
 #include "filerenamer.h"
@@ -19,11 +18,10 @@
 class Controller : public QObject
 {
     Q_OBJECT
-    QThread workerThread;
+    QThread workerThreadDirectory;
 private:
     SeriesParser seriesParser;
     SeriesData seriesData;
-    DirectoryParser directoryParser;
     DirectoryHandler *directoryHandler;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
@@ -53,8 +51,8 @@ private:
     void changeNameScheme(int nameScheme);
     void savePoster();
     void setDirectory(QString path);
-    bool renameFiles();
-    bool undoRenameFiles();
+    void renameFiles();
+    void undoRenameFiles();
     void updateView();
     void updateRenameButtonAndSavePoster();
     void removeFileType(int index);
@@ -67,10 +65,14 @@ public:
 public slots:
     void notify(Message &msg);
     void directorySet(const bool &initialized);
+    void renameDone(const bool &success);
+    void undoRenameDone(const bool &success);
 
 signals:
     void sendMessage(Message &msg);
     void initializeDirectory(const QString &);
+    void rename();
+    void undoRename();
 };
 
 #endif // CONTROLLER_H

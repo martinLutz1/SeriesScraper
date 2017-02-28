@@ -231,10 +231,16 @@ void Controller::setSeriesInformation()
 Controller::Controller(QObject *parent) : QObject(parent)
 {
     directoryHandler = new DirectoryHandler;
-    directoryHandler->moveToThread(&workerThread);
+    directoryHandler->moveToThread(&workerThreadDirectory);
+
     connect(this, SIGNAL(initializeDirectory(QString)), directoryHandler, SLOT(initializeDirectory(QString)));
+    connect(this, SIGNAL(rename()), directoryHandler, SLOT(rename()));
+    connect(this, SIGNAL(undoRename()), directoryHandler, SLOT(undoRename()));
     connect(directoryHandler, SIGNAL(directoryInitialized(bool)), this, SLOT(directorySet(bool)));
-    workerThread.start();
+    connect(directoryHandler, SIGNAL(renameDone(bool)), this, SLOT(renameDone(bool)));
+    connect(directoryHandler, SIGNAL(undoRenameDone(bool)), this, SLOT(undoRenameDone(bool)));
+
+    workerThreadDirectory.start();
 }
 
 Controller::~Controller()
@@ -261,8 +267,8 @@ Controller::~Controller()
         settings.setPath("");
 
     settings.saveSettingsFile();
-    workerThread.quit();
-    workerThread.wait();
+    workerThreadDirectory.quit();
+    workerThreadDirectory.wait();
 }
 
 void Controller::initialize()
@@ -497,88 +503,18 @@ void Controller::savePoster()
 
 void Controller::setDirectory(QString path)
 {
-    // Discard undo action when the path changed
-    // Also update path on gui
-    if (seriesData.getWorkingDirectory().absolutePath() != path)
-    {
-        fileRenamer.deleteLastUndo();
-
-        Message msgDisableUndoRenaming;
-        msgDisableUndoRenaming.type = Message::controller_enableUndoRenaming_view;
-        msgDisableUndoRenaming.data[0].b = false;
-        emit(sendMessage(msgDisableUndoRenaming));
-    }
     emit initializeDirectory(path);
 }
 
-bool Controller::renameFiles()
+void Controller::renameFiles()
 {
-    QDir directory = seriesData.getWorkingDirectory();
-    QStringList newFileNameList = seriesData.getNewFileNames();
-    QStringList oldFileNameList = seriesData.getOldFileNames();
-
-    fileRenamer.setDirectory(directory);
-    fileRenamer.setOldFileNames(oldFileNameList);
-    fileRenamer.setNewFileNames(newFileNameList);
-    bool renameSuccess = fileRenamer.rename();
-
-    if (settings.getSavePosterInDirectory())
-        savePoster();
-
-    if (renameSuccess)
-    {
-        directoryHandler->initializeDirectory(directory.absolutePath());
-
-        // Enable undo action
-        Message msgEnableUndoRenaming;
-        msgEnableUndoRenaming.type = Message::controller_enableUndoRenaming_view;
-        msgEnableUndoRenaming.data[0].b = true;
-        emit(sendMessage(msgEnableUndoRenaming));
-
-        // Success Message
-        QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
-        setStatusMessage(renameSuccessful, MainWindow::statusMessageType::success);
-    } else
-    {
-        // Failure Message
-        QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);
-        setStatusMessage(renameFailure, MainWindow::statusMessageType::error);
-    }
-    Message msgRenameFinished;
-    msgRenameFinished.type = Message::controller_renameFinished_view;
-    emit(sendMessage(msgRenameFinished));
-
-    return renameSuccess;
+    directoryHandler->setNewFileNames(seriesData.getNewFileNames());
+    emit rename();
 }
 
-bool Controller::undoRenameFiles()
+void Controller::undoRenameFiles()
 {
-    if (fileRenamer.isUndoPossible())
-    {
-        bool undoRenameSuccess = fileRenamer.undo();
-
-        if (undoRenameSuccess)
-        {
-            directoryHandler->initializeDirectory(seriesData.getWorkingDirectory().absolutePath());
-
-            // Success Message
-            QString undoRenameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingSuccessful);
-            setStatusMessage(undoRenameSuccessful, MainWindow::statusMessageType::success);
-        } else
-        {
-            // Failure Message
-            QString undoRenameFailure = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingFailed);
-            setStatusMessage(undoRenameFailure, MainWindow::statusMessageType::error);
-        }
-        Message msgRenameFinished;
-        msgRenameFinished.type = Message::controller_renameFinished_view;
-        emit(sendMessage(msgRenameFinished));
-
-        return undoRenameSuccess;
-    } else
-    {
-        return false;
-    }
+    emit undoRename();
 }
 
 void Controller::updateView()
@@ -1024,4 +960,59 @@ void Controller::directorySet(const bool &initialized)
 
     updateNewFileNames();
     updateView();
+}
+
+void Controller::renameDone(const bool &success)
+{
+    if (settings.getSavePosterInDirectory())
+        savePoster();
+
+    if (success)
+    {
+        // Success Message
+        QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
+        setStatusMessage(renameSuccessful, MainWindow::statusMessageType::success);
+    } else
+    {
+        // Failure Message
+        QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);
+        setStatusMessage(renameFailure, MainWindow::statusMessageType::error);
+    }
+    // Update undo action
+    Message msgEnableUndoRenaming;
+    msgEnableUndoRenaming.type = Message::controller_enableUndoRenaming_view;
+    msgEnableUndoRenaming.data[0].b = directoryHandler->isUndoPossible();
+    emit(sendMessage(msgEnableUndoRenaming));
+
+    setDirectory(directoryHandler->getDirectoryPathInput());
+
+    Message msgRenameFinished;
+    msgRenameFinished.type = Message::controller_renameFinished_view;
+    emit(sendMessage(msgRenameFinished));
+}
+
+void Controller::undoRenameDone(const bool &success)
+{
+    if (success)
+    {
+        // Success Message
+        QString undoRenameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingSuccessful);
+        setStatusMessage(undoRenameSuccessful, MainWindow::statusMessageType::success);
+    } else
+    {
+        // Failure Message
+        QString undoRenameFailure = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingFailed);
+        setStatusMessage(undoRenameFailure, MainWindow::statusMessageType::error);
+    }
+    // Update undo action
+    Message msgEnableUndoRenaming;
+    msgEnableUndoRenaming.type = Message::controller_enableUndoRenaming_view;
+    msgEnableUndoRenaming.data[0].b = directoryHandler->isUndoPossible();
+    emit(sendMessage(msgEnableUndoRenaming));
+
+    setDirectory(directoryHandler->getDirectoryPathInput());
+
+    Message msgRenameFinished;
+    msgRenameFinished.type = Message::controller_renameFinished_view;
+    emit(sendMessage(msgRenameFinished));
 }

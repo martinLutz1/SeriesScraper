@@ -298,6 +298,11 @@ QString DirectoryParser::getDirectoryPathInput()
     return directoryPathInput;
 }
 
+QDir DirectoryParser::getDirectory()
+{
+    return directory;
+}
+
 int DirectoryParser::getFoundSeason()
 {
     return foundSeason;

@@ -8,7 +8,6 @@
 
 class DirectoryParser
 {
-
 private:
     QDir directory;
     bool directorySet = false;
@@ -45,6 +44,7 @@ public:
     QString getDirectoryViaStructure(int level, int selection);
     bool getStructureContainsRoot();
     QString getDirectoryPathInput();
+    QDir getDirectory();
     int getFoundSeason();
     QStringList getFiles();
     QStringList getFilesWithoutSuffix();
