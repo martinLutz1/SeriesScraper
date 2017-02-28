@@ -8,6 +8,7 @@
 
 class DirectoryParser
 {
+
 private:
     QDir directory;
     bool directorySet = false;
@@ -48,7 +49,6 @@ public:
     QStringList getFiles();
     QStringList getFilesWithoutSuffix();
     QStringList getFilesSuffix();
-
 };
 
 #endif // DIRECTORYPARSER_H

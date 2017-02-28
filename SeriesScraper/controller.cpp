@@ -8,7 +8,7 @@ void Controller::initializeFileTypes()
     bool loadingSuccessful = fileTypeHandler.loadFileTypeFile();
 
     QStringList fileTypes = fileTypeHandler.getFileTypes();
-    directoryParser.setFileTypes(fileTypes);
+    directoryHandler->setFileTypes(fileTypes);
 
     Message msgSetFileTypes;
     msgSetFileTypes.type = Message::controller_setFileTypes_settings;
@@ -17,7 +17,6 @@ void Controller::initializeFileTypes()
 
     if (!loadingSuccessful)
     {
-        // Todo localize
         QString fileFormatNotFound = interfaceLanguageHandler.getTranslation(LanguageData::fileFormatNotFound);
         setStatusMessage(fileFormatNotFound, MainWindow::statusMessageType::error);
     }
@@ -231,6 +230,11 @@ void Controller::setSeriesInformation()
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
+    directoryHandler = new DirectoryHandler;
+    directoryHandler->moveToThread(&workerThread);
+    connect(this, SIGNAL(initializeDirectory(QString)), directoryHandler, SLOT(initializeDirectory(QString)));
+    connect(directoryHandler, SIGNAL(directoryInitialized(bool)), this, SLOT(directorySet(bool)));
+    workerThread.start();
 }
 
 Controller::~Controller()
@@ -251,12 +255,14 @@ Controller::~Controller()
 
     if (savePath)
     {
-        QString path = directoryParser.getDirectoryPathInput();
+        QString path = directoryHandler->getDirectoryPathInput();
         settings.setPath(path);
     } else
         settings.setPath("");
 
     settings.saveSettingsFile();
+    workerThread.quit();
+    workerThread.wait();
 }
 
 void Controller::initialize()
@@ -443,11 +449,8 @@ void Controller::changeSaveSeries(bool saveSeries)
 void Controller::changeSavePath(bool savePath)
 {
     if (savePath)
-    {
         setDirectory(settings.getPath());
-        updateNewFileNames();
-        updateView();
-    }
+
     Message msgSavePath;
     msgSavePath.type = Message::controller_savePath_settings;
     msgSavePath.data[0].b = savePath;
@@ -492,7 +495,7 @@ void Controller::savePoster()
     }
 }
 
-bool Controller::setDirectory(QString path)
+void Controller::setDirectory(QString path)
 {
     // Discard undo action when the path changed
     // Also update path on gui
@@ -505,40 +508,7 @@ bool Controller::setDirectory(QString path)
         msgDisableUndoRenaming.data[0].b = false;
         emit(sendMessage(msgDisableUndoRenaming));
     }
-
-    bool directoryExists = directoryParser.initializeDirectory(path);
-    QDir newDirectory("");
-    QStringList newOldFileNames;
-    QStringList newOldFileNamesWithoutSuffixes;
-    QStringList newSuffixes;
-
-    // Update directory and file infos
-    if (directoryExists)
-    {
-        newDirectory = QDir(path);
-        newOldFileNames = directoryParser.getFiles();
-        newSuffixes = directoryParser.getFilesSuffix();
-        newOldFileNamesWithoutSuffixes = directoryParser.getFilesWithoutSuffix();
-
-        fileDownloader.setFilePath(path, "poster.jpg");
-
-        std::vector<QStringList> pathStructure = directoryParser.getPathStructure();
-        bool containsRoot = directoryParser.getStructureContainsRoot();
-
-        Message msgUpdateDirectoryWidget;
-        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
-        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
-        msgUpdateDirectoryWidget.data[1].b = containsRoot;
-        msgUpdateDirectoryWidget.data[2].qsPointer = &path;
-        emit(sendMessage(msgUpdateDirectoryWidget));
-    }
-
-    seriesData.setWorkingDirectory(newDirectory);
-    seriesData.setOldFileNames(newOldFileNames);
-    seriesData.setOldFileNamesWithoutSuffix(newOldFileNamesWithoutSuffixes);
-    seriesData.setSuffixes(newSuffixes);
-
-    return directoryExists;
+    emit initializeDirectory(path);
 }
 
 bool Controller::renameFiles()
@@ -557,12 +527,7 @@ bool Controller::renameFiles()
 
     if (renameSuccess)
     {
-        directoryParser.initializeDirectory(directory.absolutePath());
-        QStringList renamedFiles = directoryParser.getFiles();
-        QStringList renamedFilesWithoutSuffix = directoryParser.getFilesWithoutSuffix();
-        seriesData.setOldFileNames(renamedFiles);
-        seriesData.setOldFileNamesWithoutSuffix(renamedFilesWithoutSuffix);
-        updateView();
+        directoryHandler->initializeDirectory(directory.absolutePath());
 
         // Enable undo action
         Message msgEnableUndoRenaming;
@@ -594,12 +559,7 @@ bool Controller::undoRenameFiles()
 
         if (undoRenameSuccess)
         {
-            directoryParser.initializeDirectory(seriesData.getWorkingDirectory().absolutePath());
-            QStringList renamedFiles = directoryParser.getFiles();
-            QStringList renamedFilesWithoutSuffix = directoryParser.getFilesWithoutSuffix();
-            seriesData.setOldFileNames(renamedFiles);
-            seriesData.setOldFileNamesWithoutSuffix(renamedFilesWithoutSuffix);
-            updateView();
+            directoryHandler->initializeDirectory(seriesData.getWorkingDirectory().absolutePath());
 
             // Success Message
             QString undoRenameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::undoRenamingSuccessful);
@@ -676,10 +636,9 @@ void Controller::removeFileType(int index)
     fileTypeHandler.removeFileType(index);
     QStringList fileTypes = fileTypeHandler.getFileTypes();
 
-    directoryParser.setFileTypes(fileTypes);
+    directoryHandler->setFileTypes(fileTypes);
     QDir directory = seriesData.getWorkingDirectory();
     setDirectory(directory.absolutePath());
-    updateView();
 
     Message msgRemoveFileType;
     msgRemoveFileType.type = Message::controller_removeFileType_settings;
@@ -702,7 +661,7 @@ void Controller::notify(Message &msg)
             int season = 1;
             if (settings.getAutoSetDetectedSeason())
             {
-                int foundSeason = directoryParser.getFoundSeason();
+                int foundSeason = directoryHandler->getFoundSeason();
                 if (foundSeason > 0 && foundSeason <= 100)
                 {
                     season = foundSeason;
@@ -736,25 +695,19 @@ void Controller::notify(Message &msg)
     {
         QString path = *msg.data[0].qsPointer;
         setDirectory(path);
-        updateNewFileNames();
-        updateView();
         break;
     }
     case Message::view_switchToDirectory_controller:
     {
         int level = msg.data[0].i;
         int selection = msg.data[1].i;
-        QString path = directoryParser.getDirectoryViaStructure(level, selection);
+        QString path = directoryHandler->getDirectoryViaStructure(level, selection);
         setDirectory(path);
-        updateNewFileNames();
-        updateView();
         break;
     }
     case Message::view_updateDirectory_controller:
     {
-        setDirectory(directoryParser.getDirectoryPathInput());
-        updateNewFileNames();
-        updateView();
+        setDirectory(directoryHandler->getDirectoryPathInput());
         break;
     }
     case Message::view_changeEpisodeName_controller:
@@ -783,7 +736,7 @@ void Controller::notify(Message &msg)
     }
     case Message::view_rename_controller:
     {
-        int foundSeason = directoryParser.getFoundSeason();
+        int foundSeason = directoryHandler->getFoundSeason();
         int selectedSeason =  seriesData.getSelectedSeason();
 
         if (foundSeason == 0 || foundSeason == selectedSeason)
@@ -990,10 +943,9 @@ void Controller::notify(Message &msg)
         int position = fileTypeHandler.addFileType(fileType);
 
         QStringList fileTypes = fileTypeHandler.getFileTypes();
-        directoryParser.setFileTypes(fileTypes);
+        directoryHandler->setFileTypes(fileTypes);
         QDir directory = seriesData.getWorkingDirectory();
         setDirectory(directory.absolutePath());
-        updateView();
 
         Message msgAddFileTypeSettings;
         msgAddFileTypeSettings.type = Message::controller_addFileType_settings;
@@ -1034,4 +986,42 @@ void Controller::notify(Message &msg)
     default:
         break;
     }
+}
+
+void Controller::directorySet(const bool &initialized)
+{
+    QString path = directoryHandler->getDirectoryPathInput();
+    QDir newDirectory("");
+    QStringList newOldFileNames;
+    QStringList newOldFileNamesWithoutSuffixes;
+    QStringList newSuffixes;
+
+    // Update directory and file infos
+    if (initialized)
+    {
+        newDirectory = QDir(path);
+        newOldFileNames = directoryHandler->getFiles();
+        newSuffixes = directoryHandler->getFilesSuffix();
+        newOldFileNamesWithoutSuffixes = directoryHandler->getFilesWithoutSuffix();
+
+        fileDownloader.setFilePath(path, "poster.jpg");
+
+        std::vector<QStringList> pathStructure = directoryHandler->getPathStructure();
+        bool containsRoot = directoryHandler->getStructureContainsRoot();
+
+        Message msgUpdateDirectoryWidget;
+        msgUpdateDirectoryWidget.type = Message::controller_updateDirectoryWidget_view;
+        msgUpdateDirectoryWidget.data[0].qsListVectorPointer = &pathStructure;
+        msgUpdateDirectoryWidget.data[1].b = containsRoot;
+        msgUpdateDirectoryWidget.data[2].qsPointer = &path;
+        emit(sendMessage(msgUpdateDirectoryWidget));
+    }
+
+    seriesData.setWorkingDirectory(newDirectory);
+    seriesData.setOldFileNames(newOldFileNames);
+    seriesData.setOldFileNamesWithoutSuffix(newOldFileNamesWithoutSuffixes);
+    seriesData.setSuffixes(newSuffixes);
+
+    updateNewFileNames();
+    updateView();
 }

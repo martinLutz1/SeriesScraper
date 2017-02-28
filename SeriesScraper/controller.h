@@ -12,15 +12,19 @@
 #include "interfacelanguagehandler.h"
 #include "filetypehandler.h"
 #include "filedownloader.h"
+#include "directoryhandler.h"
 #include <QObject>
+#include <QThread>
 
 class Controller : public QObject
 {
     Q_OBJECT
+    QThread workerThread;
 private:
     SeriesParser seriesParser;
     SeriesData seriesData;
     DirectoryParser directoryParser;
+    DirectoryHandler *directoryHandler;
     FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
     FileTypeHandler fileTypeHandler;
@@ -48,7 +52,7 @@ private:
     void changeSavePath(bool savePath);
     void changeNameScheme(int nameScheme);
     void savePoster();
-    bool setDirectory(QString path);
+    void setDirectory(QString path);
     bool renameFiles();
     bool undoRenameFiles();
     void updateView();
@@ -62,9 +66,11 @@ public:
 
 public slots:
     void notify(Message &msg);
+    void directorySet(const bool &initialized);
 
 signals:
     void sendMessage(Message &msg);
+    void initializeDirectory(const QString &);
 };
 
 #endif // CONTROLLER_H
