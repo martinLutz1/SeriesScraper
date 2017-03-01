@@ -19,5 +19,7 @@
         <file>images/error.png</file>
         <file>images/undo.png</file>
         <file>images/folder_video.png</file>
+        <file>images/check-20.png</file>
+        <file>images/error-20.png</file>
     </qresource>
 </RCC>

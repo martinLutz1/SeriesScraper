@@ -296,23 +296,22 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
     if (isEmpty)
     {
         ui->seriesLineEdit->setStyleSheet(colorWhite);
-        ui->correctSeriesLabel->setText("");
         ui->correctSeriesLabel->hide();
         progressIndicatorSeries->stopAnimation();
         disableSeriesProgressbar();
-    } else if(status)
+    } else if (status)
     {
         ui->seriesLineEdit->setStyleSheet(colorGreen);
-        ui->correctSeriesLabel->setText(checkmark);
         progressIndicatorSeries->hide();
         progressIndicatorSeries->stopAnimation();
+        ui->correctSeriesLabel->setPixmap(QPixmap(":/images/check-20.png"));
         ui->correctSeriesLabel->show();
     } else
     {
         ui->seriesLineEdit->setStyleSheet(colorRed);
-        ui->correctSeriesLabel->setText(times);
         progressIndicatorSeries->hide();
         progressIndicatorSeries->stopAnimation();
+        ui->correctSeriesLabel->setPixmap(QPixmap(":/images/error-20.png"));
         ui->correctSeriesLabel->show();
     }
 }
