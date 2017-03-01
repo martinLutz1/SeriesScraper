@@ -172,6 +172,7 @@ void Controller::updateNewFileNames()
     QStringList suffixList = seriesData.getSuffixes();
 
     QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season, amountEpisodes, episodeList);
+    qDebug() << newFileNamesWithoutSuffix;
 
     seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
 }

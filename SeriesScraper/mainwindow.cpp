@@ -1037,13 +1037,8 @@ bool MainWindow::updateRow(int row, QString oldFileName, QString newFileName, bo
     // Check if row items already exist to prevent multiple creations
     if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL)
     {
-        QString oldTableFileName = ui->episodeNameTable->item(row, 0)->text();
-        QString newTableFileName = ui->episodeNameTable->item(row, 0)->text();
-        if (oldTableFileName != oldFileName)
-            ui->episodeNameTable->item(row, 0)->setText(oldFileName);
-
-        if (newTableFileName != newFileName)
-            ui->episodeNameTable->item(row, 1)->setText(newFileName);
+        ui->episodeNameTable->item(row, 0)->setText(oldFileName);
+        ui->episodeNameTable->item(row, 1)->setText(newFileName);
     }
     else // Not existing
     {
