@@ -219,7 +219,7 @@ void MainWindow::setUpMenuBar()
     fileMenu->addAction(savePosterAction);
     fileMenu->addAction(undoRenameAction);
     helpMenu->addAction(aboutAction);
-    viewMenu->addAction(settingsAction);
+    fileMenu->addAction(settingsAction);
     viewMenu->addAction(fullScreenAction);
 
     ui->menuBar->addMenu(fileMenu);
