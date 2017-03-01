@@ -7,7 +7,6 @@
 #include <QMainWindow>
 #include <QDir>
 #include <QLabel>
-#include <QProgressBar>
 #include <QGraphicsBlurEffect>
 #include <QStyleFactory>
 #include <QMessageBox>
@@ -28,12 +27,9 @@ class MainWindow : public QMainWindow
 private:
     Ui::MainWindow *ui;
     QTimer *seriesTextChangeTimer;
-    QTimer *progressBarTimer;
-    QTimer *disableSeriesProgressbarTimer;
     QTimer *clearStatusTextTimer;
     QLabel *seriesStatusLabel;
     QLabel *statusBarTypeImageLabel;
-    QProgressBar *seriesProgressBar;
     QPoint *tableItemPoint;
     QGraphicsBlurEffect *blur;
     CustomShadowEffect *shadow;
@@ -91,6 +87,8 @@ private:
     void clearDirectoryWidget();
     void updateDirectoryWidgetVisibility();
     void changeToDarkTheme();
+    void showSeriesLoadingAnimation();
+    void hideSeriesLoadingAnimation();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -109,8 +107,6 @@ private slots:
     void openDirectory();
     void onUpdateDirectory();
     void startSeriesTextChangeTimer();
-    void disableSeriesProgressbar();
-    void updateProgressbar();
     void onCellClicked(int row, int coloumn);
     void onSeriesTextChanged();
     void onSeasonChanged(int index);

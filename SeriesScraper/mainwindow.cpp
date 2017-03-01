@@ -23,13 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     seriesTextChangeTimer = new QTimer(this);
-    progressBarTimer = new QTimer(this);
-    disableSeriesProgressbarTimer = new QTimer(this);
     clearStatusTextTimer = new QTimer(this);
-    seriesProgressBar = new QProgressBar(this);
     seriesStatusLabel = new QLabel(this);
     statusBarTypeImageLabel = new QLabel();
-    blur = new QGraphicsBlurEffect(ui->episodeNameTable);
     shadow = new CustomShadowEffect(ui->episodeLineEdit);
     progressIndicatorPath = new QProgressIndicator;
     progressIndicatorSeries = new QProgressIndicator;
@@ -60,8 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->seasonComboBox, SIGNAL(activated(int)), this, SLOT(onSeasonChanged(int)));
     QObject::connect(ui->seriesLanguageComboBox, SIGNAL(activated(int)), this, SLOT(onSeriesLanguageChanged(int)));
     QObject::connect(ui->renameButton, SIGNAL(clicked(bool)), this , SLOT(onRenameButtonPressed()));
-    QObject::connect(disableSeriesProgressbarTimer, SIGNAL(timeout()), this, SLOT(disableSeriesProgressbar()));
-    QObject::connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressbar()));
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
     QObject::connect(clearStatusTextTimer, SIGNAL(timeout()), this, SLOT(clearStatusText()));
 }
@@ -76,14 +70,10 @@ MainWindow::~MainWindow()
 
     delete ui;
     delete seriesTextChangeTimer;
-    delete progressBarTimer;
-    delete disableSeriesProgressbarTimer;
     delete clearStatusTextTimer;
     delete seriesStatusLabel;
     delete statusBarTypeImageLabel;
-    delete seriesProgressBar;
     delete tableItemPoint;
-    delete blur;
     delete shadow;
     delete renameConfirmationMessageBox;
     delete posterConfirmationMessageBox;
@@ -176,11 +166,6 @@ void MainWindow::setUpTable()
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
     ui->episodeNameTable->setStyleSheet(imageBackground);
-
-    // Table progressbar
-    blur->setEnabled(false);
-    ui->episodeNameTable->setGraphicsEffect(blur);
-    seriesProgressBar->setHidden(true);
 
     // Table failure message
     seriesStatusLabel->setText("Not found");
@@ -297,21 +282,16 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->seriesLineEdit->setStyleSheet(colorWhite);
         ui->correctSeriesLabel->hide();
         progressIndicatorSeries->stopAnimation();
-        disableSeriesProgressbar();
     } else if (status)
     {
         ui->seriesLineEdit->setStyleSheet(colorGreen);
-        progressIndicatorSeries->hide();
-        progressIndicatorSeries->stopAnimation();
         ui->correctSeriesLabel->setPixmap(QPixmap(":/images/check-20.png"));
-        ui->correctSeriesLabel->show();
+        hideSeriesLoadingAnimation();
     } else
     {
         ui->seriesLineEdit->setStyleSheet(colorRed);
-        progressIndicatorSeries->hide();
-        progressIndicatorSeries->stopAnimation();
         ui->correctSeriesLabel->setPixmap(QPixmap(":/images/error-20.png"));
-        ui->correctSeriesLabel->show();
+        hideSeriesLoadingAnimation();
     }
 }
 
@@ -323,7 +303,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int windowWidth = this->centralWidget()->width();
     int episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER;
     int episodeTableX = UNIVERSAL_SPACER;
-    int episodeTableY = UNIVERSAL_SPACER;
     int controlHeight = ui->centralControlElementWidget->height();
     int episodeTableHeight = windowHeight - 3 * UNIVERSAL_SPACER - controlHeight;
     int controlWidth = windowWidth - 2 * UNIVERSAL_SPACER;
@@ -366,12 +345,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
     }
 
-    int seriesProgressbarWidth = episodeTableWidth / 2;
-    int seriesProgressbarX = episodeTableX + episodeTableWidth / 2 - seriesProgressbarWidth / 2;
-    int seriesProgressbarY = episodeTableY + episodeTableHeight / 2 - seriesProgressBar->height() / 2;
-    int seriesStatusLabelX = episodeTableX + episodeTableWidth / 2 - seriesStatusLabel->width() / 2;
-    int seriesStatusLabelY = episodeTableY + episodeTableHeight / 2 + seriesProgressBar->height();
-
     QRect activatedTableItemRect = ui->episodeNameTable->visualItemRect(ui->episodeNameTable->item(tableItemPoint->x(), tableItemPoint->y()));
     int episodeLineEditWidth = (activatedTableItemRect.width() - 150 > 0) ? activatedTableItemRect.width() - 150  : 0;
     int episodeLineEditHeight = activatedTableItemRect.height();
@@ -380,8 +353,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     // Move
     ui->episodeLineEdit->move(episodeLineEditX, episodeLineEditY);
-    seriesProgressBar->move(seriesProgressbarX, seriesProgressbarY);
-    seriesStatusLabel->move(seriesStatusLabelX, seriesStatusLabelY);
     ui->centralControlElementWidget->move(UNIVERSAL_SPACER, controlY);
 
     //Resize
@@ -390,7 +361,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.47);
     ui->additionalInfoScrollArea->setFixedHeight(episodeTableHeight);
     ui->episodeLineEdit->setFixedSize(episodeLineEditWidth, episodeLineEditHeight);
-    seriesProgressBar->setFixedWidth(seriesProgressbarWidth);
     ui->centralControlElementWidget->setFixedWidth(controlWidth);
 
     updateDirectoryWidgetVisibility();
@@ -515,6 +485,20 @@ void MainWindow::changeToDarkTheme()
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
     if (ui->episodeNameTable->itemAt(1,1) == NULL)
         clearTable();
+}
+
+void MainWindow::showSeriesLoadingAnimation()
+{
+    progressIndicatorSeries->startAnimation();
+    ui->correctSeriesLabel->hide();
+    progressIndicatorSeries->show();
+}
+
+void MainWindow::hideSeriesLoadingAnimation()
+{
+    progressIndicatorSeries->stopAnimation();
+    progressIndicatorSeries->hide();
+    ui->correctSeriesLabel->show();
 }
 
 void MainWindow::clearTable()
@@ -684,35 +668,11 @@ void MainWindow::startSeriesTextChangeTimer()
     seriesTextChangeTimer->start(1000);
 }
 
-void MainWindow::disableSeriesProgressbar()
-{
-    disableSeriesProgressbarTimer->stop();
-    ui->episodeNameTable->setEnabled(true);
-    seriesProgressBar->setHidden(true);
-    seriesProgressBar->setValue(0);
-    seriesStatusLabel->setHidden(true);
-    blur->setEnabled(false);
-    progressIncrement = 1;
-}
-
-void MainWindow::updateProgressbar()
-{
-    int progress = seriesProgressBar->value();
-    progress += progressIncrement;
-    if (progress > 100) {
-        progress = 100;
-        progressBarTimer->stop();
-    }
-    seriesProgressBar->setValue(progress);
-}
-
 void MainWindow::onSeriesTextChanged()
 {
     seriesTextChangeTimer->stop();
+    showSeriesLoadingAnimation();
     QString seriesText = ui->seriesLineEdit->text();
-    progressIndicatorSeries->startAnimation();
-    ui->correctSeriesLabel->hide();
-    progressIndicatorSeries->show();
 
     Message msg;
     msg.type = Message::view_changeSeriesText_controller;
@@ -929,19 +889,7 @@ void MainWindow::notify(Message &msg)
     }
     case Message::controller_startSeriesLoading_view:
     {
-        // Hide to avoid delay with blur
-        ui->episodeNameTable->setHidden(true);
-        blur->setEnabled(true);
-        ui->episodeNameTable->setEnabled(false);
-        ui->episodeNameTable->repaint();
-
-        // Show after applying all effects and repainting
-        ui->episodeNameTable->setHidden(false);
-        seriesProgressBar->setValue(0);
-        seriesProgressBar->setHidden(false);
-        progressBarTimer->start(5);
-
-        disableGUIControl();
+        showSeriesLoadingAnimation();
         break;
     }
     case Message::controller_addNameScheme_view:
@@ -991,19 +939,12 @@ void MainWindow::notify(Message &msg)
     }
     case Message::controller_successSeriesLoading_view:
     {
-        progressIncrement = 10;
-        disableSeriesProgressbarTimer->start(200);
-        ui->selectionButton->setEnabled(true);
-        enableGUIControl();
+        setSeriesAvailableStatus(true, false);
         break;
     }
     case Message::controller_failureSeriesLoading_view:
     {
-        seriesStatusLabel->setHidden(false);
-        progressIncrement = 1;
-        disableSeriesProgressbarTimer->start(2000);
-        ui->selectionButton->setEnabled(true);
-        enableGUIControl();
+        setSeriesAvailableStatus(false, false);
         break;
     }
     case Message::controller_renameFinished_view:

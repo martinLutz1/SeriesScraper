@@ -34,7 +34,7 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
         if (scrapingSuccessful)
         {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());
-            setAmountSeasons();
+            scrapingSuccessful = setAmountSeasons();
             lastScrapedSeries = searchFor;
         }
     }
@@ -110,7 +110,7 @@ bool TMDbSeriesParser::setAmountSeasons()
          } else
          {
              amountSeasons = amountSeasonsValue.toInt();
-             return true;
+             return (amountSeasons > 0);
          }
     }
     return false;

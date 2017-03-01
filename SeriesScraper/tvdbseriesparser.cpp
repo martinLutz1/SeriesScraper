@@ -35,7 +35,7 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
             seriesFullName = seriesArray.at(0).toObject().value("seriesName").toString();
             plot = seriesArray.at(0).toObject().value("overview").toString();
             lastScrapedSeries = series;
-            setAmountSeasons();
+            scrapingSuccessful = setAmountSeasons();
             posterUrl = posterBaseUrl + seriesID + "-1.jpg";
         }
     }
@@ -95,6 +95,9 @@ bool TVDBSeriesParser::setAmountSeasons()
             newAmountSeasons = std::max(newAmountSeasons, seasonArray.at(i).toString().toInt());
 
         amountSeasons = newAmountSeasons;
+
+        if (amountSeasons == 0)
+            scrapingSuccessful = false;
     }
     return scrapingSuccessful;
 }
