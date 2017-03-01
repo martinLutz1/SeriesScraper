@@ -169,8 +169,16 @@ void DirectoryParser::setPathStructure(int depth)
 
                 directoryToFind = workingDirectory.dirName();
                 directoryListToSearch = naturalSort(parentDir.entryList());
+                int newDirectoryPosition = getDirectoryPositionInList(directoryListToSearch, directoryToFind);
 
-                currentDirectoryPositionList << QString::number(getDirectoryPositionInList(directoryListToSearch, directoryToFind));
+                if (newDirectoryPosition == -1) // Workaround for not seeing Volumes on network drives on macOS
+                {
+                    directoryListToSearch << workingDirectory.dirName();
+                    directoryListToSearch = naturalSort(directoryListToSearch);
+                    newDirectoryPosition = getDirectoryPositionInList(directoryListToSearch, directoryToFind);
+                }
+
+                currentDirectoryPositionList <<  QString::number(newDirectoryPosition);
                 pathStructure.push_back(directoryListToSearch);
 
                 if (parentDir.isRoot() && (depth != i + 1))
