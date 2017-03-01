@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include "customshadoweffect.h"
+#include "QProgressIndicator.h"
 #include "keypresseater.h"
 #include "aboutdialog.h"
 #include "message.h"
@@ -36,6 +37,8 @@ private:
     QPoint *tableItemPoint;
     QGraphicsBlurEffect *blur;
     CustomShadowEffect *shadow;
+    QProgressIndicator *progressIndicatorPath;
+    QProgressIndicator *progressIndicatorSeries;
     KeyPressEater *keyPressEaterEscape;
     KeyPressEater *keyPressEaterEnter;
     QMessageBox *renameConfirmationMessageBox;

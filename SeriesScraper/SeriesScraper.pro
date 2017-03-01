@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     baseseriesparser.cpp \
     filedownloader.cpp \
     tvdbseriesparser.cpp \
-    directoryhandler.cpp
+    directoryhandler.cpp \
+    QProgressIndicator.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -73,7 +74,8 @@ HEADERS  += mainwindow.h \
     baseseriesparser.h \
     filedownloader.h \
     tvdbseriesparser.h \
-    directoryhandler.h
+    directoryhandler.h \
+    QProgressIndicator.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

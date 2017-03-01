@@ -403,7 +403,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="directoryWidgethorizontalLayout">
+             <layout class="QHBoxLayout" name="directoryWidgetHorizontalLayout">
               <item>
                <widget class="QComboBox" name="pathStructure4ComboBox">
                 <property name="minimumSize">
@@ -611,13 +611,13 @@
                <widget class="QLabel" name="correctSeriesLabel">
                 <property name="minimumSize">
                  <size>
-                  <width>15</width>
+                  <width>20</width>
                   <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>15</width>
+                  <width>20</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -845,11 +845,10 @@
      </layout>
     </widget>
    </widget>
-   <zorder>episodeNameTable</zorder>
    <zorder>episodeLineEdit</zorder>
    <zorder>additionalInfoScrollArea</zorder>
    <zorder>centralControlElementWidget</zorder>
-   <zorder></zorder>
+   <zorder>episodeNameTable</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">

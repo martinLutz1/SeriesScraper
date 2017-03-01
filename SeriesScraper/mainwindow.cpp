@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBarTypeImageLabel = new QLabel();
     blur = new QGraphicsBlurEffect(ui->episodeNameTable);
     shadow = new CustomShadowEffect(ui->episodeLineEdit);
+    progressIndicatorPath = new QProgressIndicator;
+    progressIndicatorSeries = new QProgressIndicator;
     tableItemPoint = new QPoint;
 
     pathStructureComboBoxList[0] = ui->pathStructure1ComboBox;
@@ -95,6 +97,8 @@ MainWindow::~MainWindow()
     delete fullScreenAction;
     delete keyPressEaterEscape;
     delete keyPressEaterEnter;
+    delete progressIndicatorPath;
+    delete progressIndicatorSeries;
     for (int i = 0; i < NUMBER_PATH_STRUCTURE_COMBOBOXES; i++)
         delete pathStructureComboBoxList[i];
 }
@@ -113,6 +117,7 @@ void MainWindow::setUpGUI()
 {
     statusBarTypeImageLabel->setTextFormat(Qt::RichText);
     this->statusBar()->addWidget(statusBarTypeImageLabel);
+    ui->seriesLineEditHorizontalLayout->addWidget(progressIndicatorSeries);
 
     this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
 
@@ -265,6 +270,7 @@ void MainWindow::setUpEpisodeEdit()
 
 void MainWindow::setUpDirectoryWidget()
 {
+    ui->directoryWidgetHorizontalLayout->addWidget(progressIndicatorPath);
     directoryEntriesMenu = new QMenu(this);
 
     QObject::connect(ui->pathStructureContentButton, SIGNAL(clicked()), this, SLOT(onPathStructureContentButtonClicked()));
@@ -291,18 +297,23 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
     {
         ui->seriesLineEdit->setStyleSheet(colorWhite);
         ui->correctSeriesLabel->setText("");
-        setAmountSeasons(0);
+        ui->correctSeriesLabel->hide();
+        progressIndicatorSeries->stopAnimation();
         disableSeriesProgressbar();
     } else if(status)
     {
         ui->seriesLineEdit->setStyleSheet(colorGreen);
         ui->correctSeriesLabel->setText(checkmark);
-        ui->seasonComboBox->setCurrentIndex(0);
+        progressIndicatorSeries->hide();
+        progressIndicatorSeries->stopAnimation();
+        ui->correctSeriesLabel->show();
     } else
     {
         ui->seriesLineEdit->setStyleSheet(colorRed);
         ui->correctSeriesLabel->setText(times);
-        setAmountSeasons(0);
+        progressIndicatorSeries->hide();
+        progressIndicatorSeries->stopAnimation();
+        ui->correctSeriesLabel->show();
     }
 }
 
@@ -464,6 +475,7 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, b
     {
         chosenPath = QDir::homePath();
     }
+    progressIndicatorPath->stopAnimation();
 }
 
 void MainWindow::clearDirectoryWidget()
@@ -657,6 +669,7 @@ void MainWindow::openDirectory()
 
     if (!directoryPath.isNull() && dir.exists())
     {
+        progressIndicatorPath->startAnimation();
         chosenPath = directoryPath;
         ui->directoryUpdateButton->setEnabled(true);
 
@@ -706,6 +719,9 @@ void MainWindow::onSeriesTextChanged()
 {
     seriesTextChangeTimer->stop();
     QString seriesText = ui->seriesLineEdit->text();
+    progressIndicatorSeries->startAnimation();
+    ui->correctSeriesLabel->hide();
+    progressIndicatorSeries->show();
 
     Message msg;
     msg.type = Message::view_changeSeriesText_controller;
@@ -771,11 +787,7 @@ void MainWindow::onDirectoryEntryClicked(QAction *clickedAction)
                 QDesktopServices::openUrl(QUrl::fromLocalFile(chosenPath.absolutePath()));
                 break;
             }
-            Message msgSwitchToFolder;
-            msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
-            msgSwitchToFolder.data[0].i = 0;
-            msgSwitchToFolder.data[1].i = i;
-            emit(sendMessage(msgSwitchToFolder));
+            onDirectoryComboBoxEntryClicked(0, i);
             break;
         }
     }
@@ -803,6 +815,7 @@ void MainWindow::onDirectoryComboBox4EntryClicked(int selection)
 
 void MainWindow::onDirectoryComboBoxEntryClicked(int level, int selection)
 {
+    progressIndicatorPath->startAnimation();
     Message msgSwitchToFolder;
     msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
     msgSwitchToFolder.data[0].i = level;
