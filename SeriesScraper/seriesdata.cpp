@@ -32,19 +32,13 @@ void SeriesData::setSuffixes(QStringList newSuffixList)
     suffixesList = newSuffixList;
 }
 
-void SeriesData::setEpisode(int index, QString newEpisode)
+void SeriesData::setNewFileName(int index, QString newFileName)
 {
-    if (index == episodesList.size() - 1 && newEpisode == "") // Last item
-        episodesList.removeLast();
-    else
-    {
-       while (index >= episodesList.size())
-            episodesList.push_back(" ");
+    while (index >= newFileNamesWithoutSuffix.size())
+        newFileNamesWithoutSuffix.push_back("");
 
-        QString newEpisodeWithoutSpecialCharacters = removeSpecialCharacters(newEpisode);
-        episodesList[index] = newEpisodeWithoutSpecialCharacters;
-    }
-    amountEpisodes = episodesList.size();
+    newFileNamesWithoutSuffix[index] = removeSpecialCharacters(newFileName);
+    amountEpisodes = newFileNamesWithoutSuffix.size();
 }
 
 void SeriesData::setEpisodes(QStringList newEpisodeList)
@@ -72,11 +66,6 @@ void SeriesData::setSelectedSeason(int newSelectedSeason)
 {
     if (newSelectedSeason <= amountSeasons)
         selectedSeason = newSelectedSeason;
-}
-
-void SeriesData::setNewFileNames(QStringList newFileNames)
-{
-    this->newFileNames = newFileNames;
 }
 
 void SeriesData::setNewFileNamesWithoutSuffix(QStringList newFileNamesWithoutSuffix)
@@ -170,6 +159,15 @@ int SeriesData::getSelectedSeason()
 
 QStringList SeriesData::getNewFileNames()
 {
+    QStringList newFileNames;
+    int minimumSize = std::min(newFileNamesWithoutSuffix.size(), suffixesList.size());
+    for (int i = 0; i < minimumSize; i++)
+    {
+        if (newFileNamesWithoutSuffix.at(i).isEmpty() || suffixesList.at(i).isEmpty())
+            newFileNames << "";
+        else
+            newFileNames << (newFileNamesWithoutSuffix.at(i) + "." + suffixesList.at(i));
+    }
     return newFileNames;
 }
 

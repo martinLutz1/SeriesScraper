@@ -28,9 +28,7 @@ private:
     Ui::MainWindow *ui;
     QTimer *seriesTextChangeTimer;
     QTimer *clearStatusTextTimer;
-    QLabel *seriesStatusLabel;
     QLabel *statusBarTypeImageLabel;
-    QPoint *tableItemPoint;
     QGraphicsBlurEffect *blur;
     CustomShadowEffect *shadow;
     QProgressIndicator *progressIndicatorPath;
@@ -65,15 +63,14 @@ private:
     bool fullScreenEnabled = false;
     bool seriesInformationEnabled = false;
     QString directorySelectionText = "Directory selection";
+    QString openThisFolderText = "Open this folder";
 
     void disableGUIControl();
     void enableGUIControl();
     void setUpGUI();
-    void setUpKeyEvents();
     void setUpTable();
     void setUpMenuBar();
     void setUpConfirmationMessageBoxes();
-    void setUpEpisodeEdit();
     void setUpDirectoryWidget();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
@@ -107,14 +104,12 @@ private slots:
     void openDirectory();
     void onUpdateDirectory();
     void startSeriesTextChangeTimer();
-    void onCellClicked(int row, int coloumn);
     void onSeriesTextChanged();
     void onSeasonChanged(int index);
     void onSeriesLanguageChanged(int index);
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
-    void onChangeEpisodeText();
-    void onTableEnter();
+    void onTableEntryChanged(int row, int coloumn);
     void onDirectoryEntryClicked(QAction* clickedAction);
     void onDirectoryComboBox1EntryClicked(int selection);
     void onDirectoryComboBox2EntryClicked(int selection);

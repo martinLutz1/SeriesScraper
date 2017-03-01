@@ -13,7 +13,7 @@ public:
     {
         view_changeSeriesText_controller,
         view_changeSeason_controller,
-        view_changeEpisodeName_controller,
+        view_changeNewFileName_controller,
         view_getEpisodeName_controller,
         view_changeDirectory_controller,
         view_updateDirectory_controller,

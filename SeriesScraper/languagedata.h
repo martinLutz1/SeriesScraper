@@ -43,6 +43,7 @@ public:
         no,
         notFound,
         oldName,
+        openThisFolder,
         overridePoster,
         path,
         poster,

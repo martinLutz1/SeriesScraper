@@ -171,14 +171,8 @@ void Controller::updateNewFileNames()
     QStringList episodeList = seriesData.getEpisodes();
     QStringList suffixList = seriesData.getSuffixes();
 
-    QStringList newFileNames;
     QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season, amountEpisodes, episodeList);
 
-    int minimumSize = std::min(newFileNamesWithoutSuffix.size(), suffixList.size());
-    for (int i = 0; i < minimumSize; i++)
-        newFileNames << (newFileNamesWithoutSuffix.at(i) + "." + suffixList.at(i));
-
-    seriesData.setNewFileNames(newFileNames);
     seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
 }
 
@@ -646,28 +640,12 @@ void Controller::notify(Message &msg)
         setDirectory(directoryHandler->getDirectoryPathInput());
         break;
     }
-    case Message::view_changeEpisodeName_controller:
+    case Message::view_changeNewFileName_controller:
     {
-        int episode = msg.data[0].i;
-        QString newEpisodeName = *msg.data[1].qsPointer;
-        QString oldEpisodeName = seriesData.getEpisode(episode);
-        if (oldEpisodeName != newEpisodeName) // Only write on change
-        {
-            seriesData.setEpisode(episode, newEpisodeName);
-            updateNewFileNames();
-            updateView();
-        }
-        break;
-    }
-    case Message::view_getEpisodeName_controller:
-    {
-        int episode = msg.data[0].i;
-        QString episodeName = seriesData.getEpisode(episode);
-
-        Message msgReturnEpisodeName;
-        msgReturnEpisodeName.type = Message::controller_returnEpisodeName_view;
-        msgReturnEpisodeName.data[0].qsPointer = &episodeName;
-        emit(sendMessage(msgReturnEpisodeName));
+        int row = msg.data[0].i;
+        QString newFileName = *msg.data[1].qsPointer;
+        seriesData.setNewFileName(row, newFileName);
+        updateView();
         break;
     }
     case Message::view_rename_controller:
