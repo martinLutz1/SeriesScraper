@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     chosenPath(QDir::homePath()),
-    tableRows(0),
     progressIncrement(1)
 {
     ui->setupUi(this);
@@ -399,31 +398,25 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
 {
-    bool oldFileNamesAvaiable = !oldFileNames.empty();
-    bool newFileNamesAvaiable = !newFileNames.empty();
+    bool useColorization = (oldFileNames.empty() || newFileNames.isEmpty());
+    int tableSize = std::max(newFileNames.size(), oldFileNames.size());
 
     setAmountSeasons(amountSeasons);
-    clearTable();
 
-    int tableSize = std::max(newFileNames.size(), oldFileNames.size());
     // Fill up missing items
     while (newFileNames.size() < tableSize)
         newFileNames << "";
     while (oldFileNames.size() < tableSize)
         oldFileNames << "";
     // Fill table
-    for (int i = 0; i < tableSize; i++) {
-        setRow(i, oldFileNames.at(i), newFileNames.at(i));
-    }
-    if (oldFileNamesAvaiable && newFileNamesAvaiable) {
-        for (int i = 0; i < tableSize; i++) {
-            // Disable where not both entries exists
-            if (oldFileNames.at(i).isEmpty())
-                ui->episodeNameTable->item(i,1)->setTextColor(QColor(150, 150, 150));
-            if (newFileNames.at(i).isEmpty())
-                ui->episodeNameTable->item(i,0)->setTextColor(QColor(150, 150, 150));
-        }
-    }
+    for (int i = 0; i < tableSize; i++)
+        updateRow(i, oldFileNames.at(i), newFileNames.at(i), useColorization);
+
+    // Tidy up what is left of unnecessary entries
+    ui->episodeNameTable->setRowCount(tableSize);
+
+    for (int i = ui->episodeNameTable->rowCount(); i >= tableSize; i--)
+        ui->episodeNameTable->removeRow(i);
 }
 
 void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, bool containsRoot, QString path)
@@ -527,9 +520,8 @@ void MainWindow::changeToDarkTheme()
 void MainWindow::clearTable()
 {
     ui->episodeNameTable->setStyleSheet(imageBackground);
-    for (int i = tableRows; i>=0; i--)
+    for (int i = ui->episodeNameTable->rowCount(); i >= 0; i--)
         ui->episodeNameTable->removeRow(i);
-    tableRows = 0;
 }
 
 void MainWindow::setAmountSeasons(int amount)
@@ -1108,7 +1100,7 @@ void MainWindow::notify(Message &msg)
     {
         changeToDarkTheme();
         // Workaround for white table headers
-        setRow(0, "", "");
+        updateRow(0, "", "", true);
         clearTable();
         break;
     }
@@ -1171,29 +1163,49 @@ void MainWindow::notify(Message &msg)
     }
 }
 
-bool MainWindow::setRow(int row, QString oldFileName, QString newFileName)
+bool MainWindow::updateRow(int row, QString oldFileName, QString newFileName, bool noColorization)
 {
     // Check if trying to access rows, that are not existent and not the next possible new row
-    if (row > tableRows)
+    if (row > ui->episodeNameTable->rowCount())
         return false;
     else
         ui->episodeNameTable->setStyleSheet(whiteBackground);
 
     // Check if row items already exist to prevent multiple creations
-    if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL) {
-        ui->episodeNameTable->item(row, 0)->setText(oldFileName);
-        ui->episodeNameTable->item(row, 1)->setText(newFileName);
+    if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL)
+    {
+        QString oldTableFileName = ui->episodeNameTable->item(row, 0)->text();
+        QString newTableFileName = ui->episodeNameTable->item(row, 0)->text();
+        if (oldTableFileName != oldFileName)
+            ui->episodeNameTable->item(row, 0)->setText(oldFileName);
+
+        if (newTableFileName != newFileName)
+            ui->episodeNameTable->item(row, 1)->setText(newFileName);
     }
-    else { // Not existing
-        tableRows++;
+    else // Not existing
+    {
         QTableWidgetItem *oldFile = new QTableWidgetItem(oldFileName);
         QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
         oldFile->setFlags(oldFile->flags() & ~Qt::ItemIsEditable);
-        newFile->setFlags(newFile->flags() & ~Qt::ItemIsEditable);
 
-        ui->episodeNameTable->setRowCount(tableRows);
+        ui->episodeNameTable->insertRow(row);
         ui->episodeNameTable->setItem(row, 0, oldFile);
         ui->episodeNameTable->setItem(row, 1, newFile);
+    }
+
+    // Colorize the table item
+    if (oldFileName.isEmpty() && !newFileName.isEmpty() && !noColorization)
+    {
+        ui->episodeNameTable->item(row, 1)->setTextColor(QColor(150, 150, 150));
+    }
+    else if (!oldFileName.isEmpty() && newFileName.isEmpty() && !noColorization)
+    {
+        ui->episodeNameTable->item(row, 0)->setTextColor(QColor(150, 150, 150));
+    }
+    else
+    {
+        ui->episodeNameTable->item(row, 0)->setTextColor(QColor(0, 0, 0));
+        ui->episodeNameTable->item(row, 1)->setTextColor(QColor(0, 0, 0));
     }
     return true;
 }

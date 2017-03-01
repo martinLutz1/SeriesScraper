@@ -58,7 +58,6 @@ private:
     QAction *fullScreenAction;
 
     QDir chosenPath;
-    int tableRows;
     int progressIncrement;
     QString whiteBackground;
     QString imageBackground;
@@ -105,7 +104,7 @@ public:
     ~MainWindow();
 
 private slots:
-    bool setRow(int row, QString oldFileName, QString newFileName);
+    bool updateRow(int row, QString oldFileName, QString newFileName, bool noColorization);
     void clearTable();
     void openDirectory();
     void onUpdateDirectory();
