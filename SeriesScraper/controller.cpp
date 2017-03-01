@@ -936,7 +936,6 @@ void Controller::directorySet(const bool &initialized)
     seriesData.setOldFileNamesWithoutSuffix(newOldFileNamesWithoutSuffixes);
     seriesData.setSuffixes(newSuffixes);
 
-    updateNewFileNames();
     updateView();
 }
 
