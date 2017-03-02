@@ -241,6 +241,7 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
     {
         ui->seriesLineEdit->setStyleSheet(colorWhite);
         ui->correctSeriesLabel->hide();
+        progressIndicatorSeries->show();
         progressIndicatorSeries->stopAnimation();
     } else if (status)
     {
@@ -389,7 +390,6 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, b
     {
         chosenPath = QDir::homePath();
     }
-    progressIndicatorPath->stopAnimation();
 }
 
 void MainWindow::clearDirectoryWidget()
@@ -597,7 +597,6 @@ void MainWindow::openDirectory()
 
     if (!directoryPath.isNull() && dir.exists())
     {
-        progressIndicatorPath->startAnimation();
         chosenPath = directoryPath;
         ui->directoryUpdateButton->setEnabled(true);
 
@@ -618,7 +617,7 @@ void MainWindow::onUpdateDirectory()
 
 void MainWindow::startSeriesTextChangeTimer()
 {
-    seriesTextChangeTimer->start(1000);
+    seriesTextChangeTimer->start(700);
 }
 
 void MainWindow::onSeriesTextChanged()
@@ -714,7 +713,6 @@ void MainWindow::onDirectoryComboBox4EntryClicked(int selection)
 
 void MainWindow::onDirectoryComboBoxEntryClicked(int level, int selection)
 {
-    progressIndicatorPath->startAnimation();
     Message msgSwitchToFolder;
     msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
     msgSwitchToFolder.data[0].i = level;
@@ -817,6 +815,16 @@ void MainWindow::notify(Message &msg)
     case Message::controller_startSeriesLoading_view:
     {
         showSeriesLoadingAnimation();
+        break;
+    }
+    case Message::controller_startDirectoryLoading_view:
+    {
+        progressIndicatorPath->startAnimation();
+        break;
+    }
+    case Message::controller_stopDirectoryLoading_view:
+    {
+        progressIndicatorPath->stopAnimation();
         break;
     }
     case Message::controller_addNameScheme_view:

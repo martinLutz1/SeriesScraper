@@ -309,17 +309,6 @@ bool Controller::loadSeries(QString series, int season)
             newPosterUrl = seriesParser.getPosterUrl();
             newPlot = seriesParser.getPlot();
             newAirDate = seriesParser.getSeriesYear();
-
-            // Finish loading animation
-            Message msgSuccessLoading;
-            msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
-            emit(sendMessage(msgSuccessLoading));
-        } else // No series found
-        {
-            // Finish loading animation with failure message
-            Message msgFailureLoading;
-            msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
-            emit(sendMessage(msgFailureLoading));
         }
     } else
         seriesParser.scrapeSeries(""); // Reset
@@ -337,6 +326,19 @@ bool Controller::loadSeries(QString series, int season)
 
     updateNewFileNames();
     updateView();
+
+    // Send status to view
+    if (seriesFound && !series.isEmpty())
+    {
+        Message msgSuccessLoading;
+        msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
+        emit(sendMessage(msgSuccessLoading));
+    } else if (!seriesFound && !series.isEmpty())
+    {
+        Message msgFailureLoading;
+        msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
+        emit(sendMessage(msgFailureLoading));
+    }
     return seriesFound;
 }
 
@@ -495,6 +497,9 @@ void Controller::savePoster()
 
 void Controller::setDirectory(QString path)
 {
+    Message msgStartDirectoryLoading;
+    msgStartDirectoryLoading.type = Message::controller_startDirectoryLoading_view;
+    emit sendMessage(msgStartDirectoryLoading);
     emit initializeDirectory(path);
 }
 
@@ -586,10 +591,6 @@ void Controller::notify(Message &msg)
         // Only load series on change
         if (series != oldSeries)
         {
-            Message msgStartSeriesLoading;
-            msgStartSeriesLoading.type = Message::controller_startSeriesLoading_view;
-            emit sendMessage(msgStartSeriesLoading);
-
             int season = 1;
             if (settings.getAutoSetDetectedSeason())
             {
@@ -937,8 +938,11 @@ void Controller::directorySet(const bool &initialized)
     seriesData.setOldFileNames(newOldFileNames);
     seriesData.setOldFileNamesWithoutSuffix(newOldFileNamesWithoutSuffixes);
     seriesData.setSuffixes(newSuffixes);
-
     updateView();
+
+    Message msgStopDirectoryLoading;
+    msgStopDirectoryLoading.type = Message::controller_stopDirectoryLoading_view;
+    emit sendMessage(msgStopDirectoryLoading);
 }
 
 void Controller::renameDone(const bool &success)
