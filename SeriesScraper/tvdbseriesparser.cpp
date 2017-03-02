@@ -8,10 +8,10 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
 {
     if (lastScrapedSeries == series)
         return true;
-    lastScrapedSeries = series;
 
     seriesID.clear();
     seriesFullName.clear();
+    lastScrapedSeries.clear();
     amountSeasons = 0;
 
     if (series.isEmpty())
@@ -37,6 +37,7 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
             plot = seriesArray.at(0).toObject().value("overview").toString();
             scrapingSuccessful = setAmountSeasons();
             posterUrl = posterBaseUrl + seriesID + "-1.jpg";
+            lastScrapedSeries = series;
         }
     }
     return scrapingSuccessful;

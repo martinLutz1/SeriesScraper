@@ -14,10 +14,10 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
     QString searchFor = series.replace(" ", "+");
     if (lastScrapedSeries == searchFor)
         return true;
-    lastScrapedSeries = searchFor;
 
     seriesID.clear();
     seriesFullName.clear();
+    lastScrapedSeries.clear();
     amountSeasons = 0;
 
     if (series.isEmpty())
@@ -36,6 +36,7 @@ bool TMDbSeriesParser::scrapeSeries(QString series)
         {
             seriesID = QString::number(jsonArray[0].toObject().value("id").toInt());
             scrapingSuccessful = setAmountSeasons();
+            lastScrapedSeries = searchFor;
         }
     }
     return scrapingSuccessful;
@@ -102,16 +103,16 @@ bool TMDbSeriesParser::setAmountSeasons()
     bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
-         QJsonValue amountSeasonsValue = parsedObject.value("number_of_seasons");
-         if (amountSeasonsValue.isUndefined())
-         {
-             amountSeasons = 0;
-             return false;
-         } else
-         {
-             amountSeasons = amountSeasonsValue.toInt();
-             return (amountSeasons > 0);
-         }
+        QJsonValue amountSeasonsValue = parsedObject.value("number_of_seasons");
+        if (amountSeasonsValue.isUndefined())
+        {
+            amountSeasons = 0;
+            return false;
+        } else
+        {
+            amountSeasons = amountSeasonsValue.toInt();
+            return (amountSeasons > 0);
+        }
     }
     return false;
 }

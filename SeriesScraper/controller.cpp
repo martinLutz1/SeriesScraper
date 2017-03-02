@@ -583,9 +583,13 @@ void Controller::notify(Message &msg)
     {
         QString series = *msg.data[0].qsPointer;
         QString oldSeries = seriesParser.getSeriesInput();
-        // Only write on change
+        // Only load series on change
         if (series != oldSeries)
         {
+            Message msgStartSeriesLoading;
+            msgStartSeriesLoading.type = Message::controller_startSeriesLoading_view;
+            emit sendMessage(msgStartSeriesLoading);
+
             int season = 1;
             if (settings.getAutoSetDetectedSeason())
             {

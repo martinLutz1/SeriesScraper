@@ -624,7 +624,6 @@ void MainWindow::startSeriesTextChangeTimer()
 void MainWindow::onSeriesTextChanged()
 {
     seriesTextChangeTimer->stop();
-    showSeriesLoadingAnimation();
     QString seriesText = ui->seriesLineEdit->text();
 
     Message msg;
