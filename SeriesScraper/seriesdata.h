@@ -52,9 +52,8 @@ private:
     QStringList oldFileNames;
     QStringList oldFileNamesWithoutSuffix;
     QDir workingDirectory;
-    int amountEpisodes;
-    int amountSeasons;
-    int selectedSeason;
+    int amountSeasons = 0;
+    int selectedSeason = 1;
     QString selectedLanguage;
     QString airDate;
     QString posterUrl;

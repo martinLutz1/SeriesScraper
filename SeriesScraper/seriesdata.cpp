@@ -2,10 +2,7 @@
 
 #include <QDebug>
 
-SeriesData::SeriesData() :
-    amountEpisodes(0),
-    amountSeasons(0),
-    selectedSeason(1)
+SeriesData::SeriesData()
 {
     workingDirectory = QDir("");
     specialCharacterList << "<" << ">" << ":" << "\"" << "/" << "|" << "?" << "*";
@@ -38,7 +35,6 @@ void SeriesData::setNewFileName(int index, QString newFileName)
         newFileNamesWithoutSuffix.push_back("");
 
     newFileNamesWithoutSuffix[index] = removeSpecialCharacters(newFileName);
-    amountEpisodes = newFileNamesWithoutSuffix.size();
 }
 
 void SeriesData::setEpisodes(QStringList newEpisodeList)
@@ -49,7 +45,6 @@ void SeriesData::setEpisodes(QStringList newEpisodeList)
         epiosodeListWithoutSpecialCharacters << removeSpecialCharacters(newEpisodeList.at(i));
 
     episodesList = epiosodeListWithoutSpecialCharacters;
-    amountEpisodes = episodesList.size();
 }
 
 void SeriesData::setSelectedLanguage(QString languageShortName)
@@ -144,7 +139,7 @@ QString SeriesData::getSelectedLanguage()
 
 int SeriesData::getAmountEpisodes()
 {
-    return amountEpisodes;
+    return episodesList.size();;
 }
 
 int SeriesData::getAmountSeasons()
