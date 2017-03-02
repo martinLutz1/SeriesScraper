@@ -169,11 +169,8 @@ void Controller::updateNewFileNames()
     int season = seriesData.getSelectedSeason();
     int amountEpisodes = seriesData.getAmountEpisodes();
     QStringList episodeList = seriesData.getEpisodes();
-    QStringList suffixList = seriesData.getSuffixes();
 
     QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season, amountEpisodes, episodeList);
-    qDebug() << newFileNamesWithoutSuffix;
-
     seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
 }
 

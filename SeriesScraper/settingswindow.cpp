@@ -139,6 +139,7 @@ void SettingsWindow::notify(Message &msg)
             break;
         }
         }
+        break;
     }
     case Message::controller_saveSeries_settings:
     {
@@ -324,7 +325,7 @@ void SettingsWindow::onSeriesParserChanged()
 {
     bool tmdb = ui->tmdbRadioButton->isChecked();
     bool omdb = ui->omdbRadioButton->isChecked();
-    bool tvdb = ui->tvdbRadioButton->isCheckable();
+    bool tvdb = ui->tvdbRadioButton->isChecked();
 
     Message msgSeriesParserChanged;
     msgSeriesParserChanged.type = Message::settings_changeSeriesParser_controller;

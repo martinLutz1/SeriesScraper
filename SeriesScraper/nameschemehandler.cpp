@@ -83,10 +83,16 @@ QString NameSchemeHandler::getFileName(QString series, QString airDate, int seas
 QStringList NameSchemeHandler::getFileNameList(QString series, QString airDate, int season, int amountEpisodes, QStringList episodeName)
 {
     QStringList fileNameList;
-    for (int i = 0; i < amountEpisodes; i++)
+    if (amountEpisodes == episodeName.size())
     {
-        QString fileName = getFileName(series, airDate, season, i, episodeName.at(i));
-        fileNameList << fileName;
+        for (int i = 0; i < amountEpisodes; i++)
+        {
+            QString episode = "";
+            if (episodeName.size() > i)
+                episode = episodeName.at(i);
+            QString fileName = getFileName(series, airDate, season, i, episode);
+            fileNameList << fileName;
+        }
     }
     return fileNameList;
 }
