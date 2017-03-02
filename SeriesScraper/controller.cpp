@@ -417,13 +417,6 @@ void Controller::changeSeries(QString series, int season)
     msgSeriesSet.data[0].b = seriesSet;
     msgSeriesSet.data[1].b = isEmpty;
     emit(sendMessage(msgSeriesSet));
-
-    // Update series and season on view
-    Message msgSetSeries;
-    msgSetSeries.type = Message::controller_setSeries_view;
-    msgSetSeries.data[0].qsPointer = &series;
-    msgSetSeries.data[1].i = seriesData.getSelectedSeason();
-    emit(sendMessage(msgSetSeries));
 }
 
 void Controller::changeSaveSeries(bool saveSeries)
