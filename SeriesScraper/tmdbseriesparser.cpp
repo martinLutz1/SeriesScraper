@@ -48,8 +48,6 @@ QStringList TMDbSeriesParser::getSeason(int season, QString language)
     QString requestUrl = tmdbUrl  + "tv/" + seriesID + "?api_key=" + authentificationKey + "&language="
             + language + "&append_to_response=" + seasonNumberText;
 
-    qDebug() << requestUrl;
-
     bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {

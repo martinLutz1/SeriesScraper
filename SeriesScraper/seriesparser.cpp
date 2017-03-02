@@ -55,7 +55,6 @@ QStringList SeriesParser::getEpisodeList(int season, QString language)
     if (season > getAmountSeasons()) // Dont load not existing seasons
         seasonToLoad = 1;
 
-    QStringList s = seriesParserVector.at(selectedSeriesParser)->getSeason(seasonToLoad, language);
     return seriesParserVector.at(selectedSeriesParser)->getSeason(seasonToLoad, language);
 }
 
