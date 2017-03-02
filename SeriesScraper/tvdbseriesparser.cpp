@@ -8,6 +8,7 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
 {
     if (lastScrapedSeries == series)
         return true;
+    lastScrapedSeries = series;
 
     seriesID.clear();
     seriesFullName.clear();
@@ -34,7 +35,6 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
             seriesID = QString::number(seriesArray.at(0).toObject().value("id").toInt());
             seriesFullName = seriesArray.at(0).toObject().value("seriesName").toString();
             plot = seriesArray.at(0).toObject().value("overview").toString();
-            lastScrapedSeries = series;
             scrapingSuccessful = setAmountSeasons();
             posterUrl = posterBaseUrl + seriesID + "-1.jpg";
         }
