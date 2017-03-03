@@ -14,7 +14,6 @@ class DirectoryHandler : public QObject
 private:
     DirectoryParser directoryParser;
     FileRenamer fileRenamer;
-
     bool renameFiles(bool isUndo = false);
 
 public:

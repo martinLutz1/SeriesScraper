@@ -52,8 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
     QObject::connect(clearStatusTextTimer, SIGNAL(timeout()), this, SLOT(clearStatusText()));
     QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
-    QObject::connect(hideRenameProgressTimer, SIGNAL(timeout()), this, SLOT(hideRenameProgressWidget()));
-   // QObject::connect(renameSlideProgressAnimation, SIGNAL(finished()), ui->renameProgressScrollArea, SLOT(hide()));
+    QObject::connect(hideRenameProgressTimer, SIGNAL(timeout()), this, SLOT(slideOutRenameProgressWidget()));
+    QObject::connect(renameSlideProgressAnimation, SIGNAL(finished()), this, SLOT(hideRenameProgressWidget()));
 }
 
 MainWindow::~MainWindow()
@@ -290,7 +290,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int controlWidth = windowWidth - 2 * UNIVERSAL_SPACER;
     int controlY = episodeTableX + episodeTableHeight + UNIVERSAL_SPACER;
     int renameProgressWidgetWidth = ui->renameProgressScrollArea->width();
-    int renameProgressWidgetHeight = ui->renameProgressScrollArea->height();
     int renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
 
     if (seriesInformationEnabled)
@@ -331,13 +330,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
     }
 
-    // Move rename progress widget
-    ui->renameProgressScrollArea->move(renameProgressWidgetX, ui->renameProgressScrollArea->y());
-    renameSlideProgressAnimation->setStartValue(QRect(renameProgressWidgetX, (-1)*(renameProgressWidgetHeight), renameProgressWidgetWidth, renameProgressWidgetHeight));
-    renameSlideProgressAnimation->setEndValue(QRect(renameProgressWidgetX, -1, renameProgressWidgetWidth, renameProgressWidgetHeight));
-
     // Move
     ui->centralControlElementWidget->move(UNIVERSAL_SPACER, controlY);
+    ui->renameProgressScrollArea->move(renameProgressWidgetX, ui->renameProgressScrollArea->y());
 
     //Resize
     ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
@@ -485,13 +480,20 @@ void MainWindow::hideSeriesLoadingAnimation()
 
 void MainWindow::showRenameProgress()
 {
+    int renameProgressWidgetWidth = ui->renameProgressScrollArea->width();
+    int renameProgressWidgetHeight = ui->renameProgressScrollArea->height();
+    int renameProgressWidgetX = ui->renameProgressScrollArea->x();
+    renameSlideProgressAnimation->setStartValue(QRect(renameProgressWidgetX, (-1)*(renameProgressWidgetHeight), renameProgressWidgetWidth, renameProgressWidgetHeight));
+    renameSlideProgressAnimation->setEndValue(QRect(renameProgressWidgetX, -1, renameProgressWidgetWidth, renameProgressWidgetHeight));
+
+    isRenameProgressHiding = false;
     renameSlideProgressAnimation->start();
     ui->renameProgressScrollArea->show();
 }
 
 void MainWindow::hideRenameProgress()
 {
-    hideRenameProgressTimer->start(2000);
+    hideRenameProgressTimer->start(1500);
 }
 
 void MainWindow::updateRenameProgress(int amountFiles, int currentFile, QString oldFileName)
@@ -837,10 +839,28 @@ void MainWindow::onPathStructureContentButtonClicked()
     directoryEntriesMenu->exec(QCursor::pos());
 }
 
-void MainWindow::hideRenameProgressWidget()
+void MainWindow::slideOutRenameProgressWidget()
 {
     hideRenameProgressTimer->stop();
-    ui->renameProgressScrollArea->hide();
+    isRenameProgressHiding = true;
+
+    int renameProgressWidgetWidth = ui->renameProgressScrollArea->width();
+    int renameProgressWidgetHeight = ui->renameProgressScrollArea->height();
+    int renameProgressWidgetX = ui->renameProgressScrollArea->x();
+    int renameProgressWidgetY = ui->renameProgressScrollArea->y();
+
+    renameSlideProgressAnimation->setStartValue(QRect(renameProgressWidgetX, renameProgressWidgetY, renameProgressWidgetWidth, renameProgressWidgetHeight));
+    renameSlideProgressAnimation->setEndValue(QRect(renameProgressWidgetX, (-1)*renameProgressWidgetHeight, renameProgressWidgetWidth, renameProgressWidgetHeight));
+    renameSlideProgressAnimation->start();
+}
+
+void MainWindow::hideRenameProgressWidget()
+{
+    if (isRenameProgressHiding)
+    {
+        ui->renameProgressScrollArea->hide();
+        updateRenameProgress(0, 0, "");
+    }
 }
 
 void MainWindow::onSeriesLanguageChanged(int index)

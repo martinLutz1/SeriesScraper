@@ -5,12 +5,13 @@ bool DirectoryHandler::renameFiles(bool isUndo)
     bool renameSuccess = fileRenamer.isRenamePossible();
     if (renameSuccess)
     {
+        fileRenamer.prepareRename();
         int amountToRename = fileRenamer.getRenameAmount();
         for (int i = 0; i < amountToRename; i++)
         {
             QString oldFileName = fileRenamer.getOldFileName(i);
             QString newFileName = fileRenamer.getNewFileName(i);
-            emit updateRenameProgress(amountToRename, i+1, oldFileName, newFileName);
+            emit updateRenameProgress(amountToRename, i + 1, oldFileName, newFileName);
 
             renameSuccess = fileRenamer.renameFile(i);
             if (!renameSuccess)

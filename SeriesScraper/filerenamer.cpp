@@ -44,20 +44,34 @@ QString FileRenamer::getNewFileName(int index)
     return newFileName;
 }
 
+void FileRenamer::prepareRename()
+{
+    QStringList preparedOldFileNameList;
+    QStringList preparedNewFileNameList;
+    int maxAmount = std::min(oldFileNameList.size(), newFileNameList.size());
+
+    for (int i = 0; i < maxAmount; i++)
+    {
+        bool emptyFileName = oldFileNameList.at(i).isEmpty();
+        bool emptyNewName = newFileNameList.at(i).isEmpty();
+        bool hasAlreadyNewName = (newFileNameList.at(i) == oldFileNameList.at(i));
+
+        // Dont add empty file names and files with the same name
+        if (!emptyFileName && !emptyNewName && !hasAlreadyNewName)
+        {
+            preparedOldFileNameList << oldFileNameList.at(i);
+            preparedNewFileNameList << newFileNameList.at(i);
+        }
+    }
+    oldFileNameList = preparedOldFileNameList;
+    newFileNameList = preparedNewFileNameList;
+}
+
 bool FileRenamer::renameFile(int index)
 {
     QString fileToRename = oldFileNameList.at(index);
     QString newFileName = newFileNameList.at(index);
-
-    bool emptyFileName = fileToRename.isEmpty();
-    bool emptyNewName = newFileName.isEmpty();
-    bool hasAlreadyNewName = (newFileName == fileToRename);
-
-    // Do not rename empty file names and files with the same name
-    if (emptyFileName || hasAlreadyNewName || emptyNewName)
-        return false;
-    else
-        return workingDirectory.rename(fileToRename, newFileName);
+    return workingDirectory.rename(fileToRename, newFileName);
 }
 
 void FileRenamer::addToUndoQueue()

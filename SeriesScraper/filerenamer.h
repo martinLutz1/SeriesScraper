@@ -16,6 +16,7 @@ public:
     int getRenameAmount();
     QString getOldFileName(int index);
     QString getNewFileName(int index);
+    void prepareRename(); // Must be called before calling renameFile!
     bool renameFile(int index);
     void addToUndoQueue();
     bool isRenamePossible();

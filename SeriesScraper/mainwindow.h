@@ -67,6 +67,7 @@ private:
     bool seriesInformationEnabled = false;
     QString directorySelectionText = "Directory selection";
     QString openThisFolderText = "Open this folder";
+    bool isRenameProgressHiding = false;
 
     void disableGUIControl();
     void enableGUIControl();
@@ -131,6 +132,7 @@ private slots:
     void showSettingsWindow();
     void toggleFullScreen();
     void onPathStructureContentButtonClicked();
+    void slideOutRenameProgressWidget();
     void hideRenameProgressWidget();
 
 public slots:
