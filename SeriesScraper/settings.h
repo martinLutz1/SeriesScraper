@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QFile>
-#include <Qrect>
+#include <QRect>
 #include "jsonloader.h"
 
 

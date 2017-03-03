@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1050</width>
     <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1000</width>
+    <width>1050</width>
     <height>520</height>
    </size>
   </property>
@@ -366,7 +366,7 @@
           <item>
            <layout class="QVBoxLayout" name="pathVerticalLayout">
             <property name="spacing">
-             <number>-1</number>
+             <number>6</number>
             </property>
             <property name="bottomMargin">
              <number>0</number>
@@ -999,7 +999,6 @@
    <zorder>centralControlElementWidget</zorder>
    <zorder>episodeNameTable</zorder>
    <zorder>renameProgressScrollArea</zorder>
-   <zorder>horizontalLayoutWidget_6</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">
@@ -1014,8 +1013,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
-     <height>22</height>
+     <width>1050</width>
+     <height>19</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

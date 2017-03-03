@@ -55,7 +55,6 @@ private:
     QAction *fullScreenAction;
 
     QDir chosenPath;
-    int progressIncrement;
     QString whiteBackground;
     QString imageBackground;
     QStringList nameSchemeItemList;

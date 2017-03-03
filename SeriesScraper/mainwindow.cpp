@@ -4,7 +4,6 @@
 #include "seriesparser.h"
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QTimer>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
 #include <QDesktopServices>
@@ -12,14 +11,13 @@
 
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
-#define MINIMUM_WINDOW_WIDTH 870
+#define MINIMUM_WINDOW_WIDTH 1050
 #define MINIMUM_PATH_STRUCTURE_BOX_SIZE 150
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    chosenPath(QDir::homePath()),
-    progressIncrement(1)
+    chosenPath(QDir::homePath())
 {
     ui->setupUi(this);
     seriesTextChangeTimer = new QTimer(this);
@@ -130,6 +128,7 @@ void MainWindow::setUpGUI()
     undoRenameAction->setEnabled(false);
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
+    ui->correctSeriesLabel->hide();
 
     this->activateWindow();
 }
@@ -291,6 +290,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int controlY = episodeTableX + episodeTableHeight + UNIVERSAL_SPACER;
     int renameProgressWidgetWidth = ui->renameProgressScrollArea->width();
     int renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
+    qDebug() << windowWidth;
 
     if (seriesInformationEnabled)
     {
