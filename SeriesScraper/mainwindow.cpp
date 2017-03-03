@@ -1164,19 +1164,26 @@ bool MainWindow::updateRow(int row, QString oldFileName, QString newFileName, bo
         ui->episodeNameTable->setItem(row, 1, newFile);
     }
 
+    QColor greyedOut = QColor(100, 100, 100);
+    QColor black = QColor(0, 0, 0);
     // Colorize the table item
     if (oldFileName.isEmpty() && !newFileName.isEmpty() && !noColorization)
     {
-        ui->episodeNameTable->item(row, 1)->setTextColor(QColor(150, 150, 150));
+        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOut);
     }
     else if (!oldFileName.isEmpty() && newFileName.isEmpty() && !noColorization)
     {
-        ui->episodeNameTable->item(row, 0)->setTextColor(QColor(150, 150, 150));
+        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOut);
+    }
+    else if (oldFileName == newFileName)
+    {
+        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOut);
+        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOut);
     }
     else
     {
-        ui->episodeNameTable->item(row, 0)->setTextColor(QColor(0, 0, 0));
-        ui->episodeNameTable->item(row, 1)->setTextColor(QColor(0, 0, 0));
+        ui->episodeNameTable->item(row, 0)->setTextColor(black);
+        ui->episodeNameTable->item(row, 1)->setTextColor(black);
     }
     return true;
 }

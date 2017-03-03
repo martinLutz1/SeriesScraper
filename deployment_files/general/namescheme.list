@@ -1,6 +1,6 @@
 |Simple| <series> - S<season(2)>E<episode(2)> - <episodeName>
 |Simple alt.| <series> - s<season(2)>e<episode(2)> - <episodeName>
-|Simple removed umlauts| <series> - S<season(2)>E<episode(2)> - <episodeName> |replace(ä=ae|ü=ue|ö=oe|Ä=Ae|U=Ue|Ö=Oe|ß=ss)|
+|Simple removed umlauts| <series> - S<season(2)>E<episode(2)> - <episodeName> |replace(ä=ae|ü=ue|ö=oe|Ä=Ae|Ü=Ue|Ö=Oe|ß=ss)|
 |No separation| <series> S<season(2)>E<episode(2)> <episodeName>
 |No separation alt.| <series> s<season(2)>e<episode(2)> <episodeName>
 |[] Decoration| [<series>] - S<season(2)>E<episode(2)> - <episodeName>
