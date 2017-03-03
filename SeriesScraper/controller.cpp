@@ -231,6 +231,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
     connect(directoryHandler, SIGNAL(directoryInitialized(bool)), this, SLOT(directorySet(bool)));
     connect(directoryHandler, SIGNAL(renameDone(bool)), this, SLOT(renameDone(bool)));
     connect(directoryHandler, SIGNAL(undoRenameDone(bool)), this, SLOT(undoRenameDone(bool)));
+    connect(directoryHandler, SIGNAL(updateRenameProgress(int,int,QString,QString)), this, SLOT(renameProgressUpdate(int,int,QString,QString)));
 
     workerThreadDirectory.start();
 }
@@ -498,12 +499,20 @@ void Controller::setDirectory(QString path)
 
 void Controller::renameFiles()
 {
+    Message msgRenameStarted;
+    msgRenameStarted.type = Message::controller_renameStarted_view;
+    emit sendMessage(msgRenameStarted);
+
     directoryHandler->setNewFileNames(seriesData.getNewFileNames());
     emit rename();
 }
 
 void Controller::undoRenameFiles()
 {
+    Message msgRenameStarted;
+    msgRenameStarted.type = Message::controller_renameStarted_view;
+    emit sendMessage(msgRenameStarted);
+
     emit undoRename();
 }
 
@@ -991,4 +1000,18 @@ void Controller::undoRenameDone(const bool &success)
     Message msgRenameFinished;
     msgRenameFinished.type = Message::controller_renameFinished_view;
     emit(sendMessage(msgRenameFinished));
+}
+
+void Controller::renameProgressUpdate(const int &totalObjects, const int &currentObject, const QString &oldName, const QString &newName)
+{
+    QString oldFileName = oldName;
+    QString newFileName = newName;
+
+    Message msgUpdateRenameProgress;
+    msgUpdateRenameProgress.type = Message::controller_updateRenameProgess_view;
+    msgUpdateRenameProgress.data[0].i = totalObjects;
+    msgUpdateRenameProgress.data[1].i = currentObject;
+    msgUpdateRenameProgress.data[2].qsPointer = &oldFileName;
+    msgUpdateRenameProgress.data[3].qsPointer = &newFileName;
+    emit sendMessage(msgUpdateRenameProgress);
 }

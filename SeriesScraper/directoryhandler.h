@@ -15,6 +15,8 @@ private:
     DirectoryParser directoryParser;
     FileRenamer fileRenamer;
 
+    bool renameFiles(bool isUndo = false);
+
 public:
     explicit DirectoryHandler(QObject *parent = 0);
     void setFileTypes(QStringList fileTypes);
@@ -39,6 +41,7 @@ signals:
     void directoryInitialized(const bool &);
     void renameDone(const bool &);
     void undoRenameDone(const bool &);
+    void updateRenameProgress(const int &, const int &, const QString &, const QString &);
 };
 
 #endif // DIRECTORYHANDLER_H

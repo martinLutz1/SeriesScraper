@@ -24,8 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     seriesTextChangeTimer = new QTimer(this);
     clearStatusTextTimer = new QTimer(this);
+    hideRenameProgressTimer = new QTimer(this);
     statusBarTypeImageLabel = new QLabel();
-    shadow = new CustomShadowEffect(ui->episodeLineEdit);
+    shadow = new CustomShadowEffect(ui->renameProgressScrollArea);
     progressIndicatorPath = new QProgressIndicator;
     progressIndicatorSeries = new QProgressIndicator;
 
@@ -38,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setUpMenuBar();
     setUpConfirmationMessageBoxes();
     setUpDirectoryWidget();
+    setUpRenameProgressWidget();
     setUpGUI();
 
     QObject::connect(ui->selectionButton, SIGNAL(clicked(bool)), this, SLOT(openDirectory()));
@@ -50,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->nameSchemeComboBox, SIGNAL(activated(int)), this, SLOT(onNameSchemeChanged(int)));
     QObject::connect(clearStatusTextTimer, SIGNAL(timeout()), this, SLOT(clearStatusText()));
     QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
+    QObject::connect(hideRenameProgressTimer, SIGNAL(timeout()), this, SLOT(hideRenameProgressWidget()));
+   // QObject::connect(renameSlideProgressAnimation, SIGNAL(finished()), ui->renameProgressScrollArea, SLOT(hide()));
 }
 
 MainWindow::~MainWindow()
@@ -63,8 +67,10 @@ MainWindow::~MainWindow()
     delete ui;
     delete seriesTextChangeTimer;
     delete clearStatusTextTimer;
+    delete hideRenameProgressTimer;
     delete statusBarTypeImageLabel;
     delete shadow;
+    delete renameSlideProgressAnimation;
     delete renameConfirmationMessageBox;
     delete posterConfirmationMessageBox;
     delete fileMenu;
@@ -124,7 +130,6 @@ void MainWindow::setUpGUI()
     undoRenameAction->setEnabled(false);
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
-    ui->episodeLineEdit->hide();
 
     this->activateWindow();
 }
@@ -235,6 +240,22 @@ void MainWindow::setUpDirectoryWidget()
     ui->pathStructureContentButton->setEnabled(false);
 }
 
+void MainWindow::setUpRenameProgressWidget()
+{
+    ui->renameProgressWidget->setLayout(ui->renamingProgressVerticalLayout);
+    ui->renamingProgressBar->setMinimum(0);
+
+    shadow->setBlurRadius(40.0);
+    shadow->setDistance(6.0);
+    shadow->setColor(QColor(0, 0, 0, 150));
+
+    renameSlideProgressAnimation = new QPropertyAnimation(ui->renameProgressScrollArea, "geometry");
+    renameSlideProgressAnimation->setDuration(400);
+
+    ui->renameProgressScrollArea->hide();
+    ui->renameProgressScrollArea->setGraphicsEffect(shadow);
+}
+
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
 {
     if (isEmpty)
@@ -268,10 +289,14 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int episodeTableHeight = windowHeight - 3 * UNIVERSAL_SPACER - controlHeight;
     int controlWidth = windowWidth - 2 * UNIVERSAL_SPACER;
     int controlY = episodeTableX + episodeTableHeight + UNIVERSAL_SPACER;
+    int renameProgressWidgetWidth = ui->renameProgressScrollArea->width();
+    int renameProgressWidgetHeight = ui->renameProgressScrollArea->height();
+    int renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
 
     if (seriesInformationEnabled)
     {
         episodeTableWidth = 0.77 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
         int additionalInfoWidth = 0.23 * (windowWidth - 2 * UNIVERSAL_SPACER);
         int additionalInfoHeight = episodeTableHeight;
 
@@ -305,6 +330,11 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         ui->infoGroupBox->move(UNIVERSAL_SPACER, infoBoxY);
         ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
     }
+
+    // Move rename progress widget
+    ui->renameProgressScrollArea->move(renameProgressWidgetX, ui->renameProgressScrollArea->y());
+    renameSlideProgressAnimation->setStartValue(QRect(renameProgressWidgetX, (-1)*(renameProgressWidgetHeight), renameProgressWidgetWidth, renameProgressWidgetHeight));
+    renameSlideProgressAnimation->setEndValue(QRect(renameProgressWidgetX, -1, renameProgressWidgetWidth, renameProgressWidgetHeight));
 
     // Move
     ui->centralControlElementWidget->move(UNIVERSAL_SPACER, controlY);
@@ -451,6 +481,40 @@ void MainWindow::hideSeriesLoadingAnimation()
     progressIndicatorSeries->stopAnimation();
     progressIndicatorSeries->hide();
     ui->correctSeriesLabel->show();
+}
+
+void MainWindow::showRenameProgress()
+{
+    renameSlideProgressAnimation->start();
+    ui->renameProgressScrollArea->show();
+}
+
+void MainWindow::hideRenameProgress()
+{
+    hideRenameProgressTimer->start(2000);
+}
+
+void MainWindow::updateRenameProgress(int amountFiles, int currentFile, QString oldFileName)
+{
+    if (ui->renamingProgressBar->maximum() != amountFiles)
+        ui->renamingProgressBar->setMaximum(amountFiles);
+    ui->renamingProgressBar->setValue(currentFile);
+
+    ui->renamingProgressCurrentObjectLabel->setText(QString::number(currentFile));
+    ui->renamingProgressTotalObjectsLabel->setText(QString::number(amountFiles));
+
+    QFontMetrics fm(ui->renamingProgressCurrentFileLabel->font());
+    bool chopedOff = false;
+    int currentFileTextWidth = fm.width(oldFileName);
+    while (currentFileTextWidth >= ui->additionalInfoScrollArea->width() - ui->renamingProgressFileOutputLabel->width() + 10)
+    {
+        oldFileName.chop(2);
+        currentFileTextWidth = fm.width(oldFileName);
+        chopedOff = true;
+    }
+    if (chopedOff)
+        oldFileName += "...";
+    ui->renamingProgressCurrentFileLabel->setText(oldFileName);
 }
 
 void MainWindow::clearTable()
@@ -642,7 +706,6 @@ void MainWindow::onSeasonChanged(int index)
 
 void MainWindow::onRenameButtonPressed()
 {
-    disableGUIControl();
     Message renameMsg;
     renameMsg.type = Message::view_rename_controller;
     emit(sendMessage(renameMsg));
@@ -774,6 +837,12 @@ void MainWindow::onPathStructureContentButtonClicked()
     directoryEntriesMenu->exec(QCursor::pos());
 }
 
+void MainWindow::hideRenameProgressWidget()
+{
+    hideRenameProgressTimer->stop();
+    ui->renameProgressScrollArea->hide();
+}
+
 void MainWindow::onSeriesLanguageChanged(int index)
 {
     Message msgChangeSeriesLanguage;
@@ -882,8 +951,25 @@ void MainWindow::notify(Message &msg)
         setSeriesAvailableStatus(false, false);
         break;
     }
+    case Message::controller_renameStarted_view:
+    {
+        disableGUIControl();
+        showRenameProgress();
+        break;
+    }
+    case Message::controller_updateRenameProgess_view:
+    {
+        int amountFiles = msg.data[0].i;
+        int currentFile = msg.data[1].i;
+        QString oldFileName = *msg.data[2].qsPointer;
+        QString newFileName = *msg.data[3].qsPointer;
+        Q_UNUSED(newFileName); // Not displayed currently, maybe later?
+        updateRenameProgress(amountFiles, currentFile, oldFileName);
+        break;
+    }
     case Message::controller_renameFinished_view:
     {
+        hideRenameProgress();
         enableGUIControl();
         break;
     }

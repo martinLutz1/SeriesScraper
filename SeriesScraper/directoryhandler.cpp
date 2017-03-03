@@ -1,5 +1,27 @@
 #include "directoryhandler.h"
 
+bool DirectoryHandler::renameFiles(bool isUndo)
+{
+    bool renameSuccess = fileRenamer.isRenamePossible();
+    if (renameSuccess)
+    {
+        int amountToRename = fileRenamer.getRenameAmount();
+        for (int i = 0; i < amountToRename; i++)
+        {
+            QString oldFileName = fileRenamer.getOldFileName(i);
+            QString newFileName = fileRenamer.getNewFileName(i);
+            emit updateRenameProgress(amountToRename, i+1, oldFileName, newFileName);
+
+            renameSuccess = fileRenamer.renameFile(i);
+            if (!renameSuccess)
+                break;
+        }
+        if (renameSuccess && !isUndo)
+            fileRenamer.addToUndoQueue();
+    }
+    return renameSuccess;
+}
+
 DirectoryHandler::DirectoryHandler(QObject *parent) : QObject(parent)
 {
 
@@ -68,21 +90,20 @@ void DirectoryHandler::initializeDirectory(QString path)
         fileRenamer.setDirectory(directoryParser.getDirectory());
         fileRenamer.setOldFileNames(directoryParser.getFiles());
     }
-
     emit directoryInitialized(initialized);
 }
 
 void DirectoryHandler::rename()
 {
-    bool renameSuccess = fileRenamer.rename();
+    bool renameSuccess = renameFiles();
     emit renameDone(renameSuccess);
 }
 
 void DirectoryHandler::undoRename()
 {
-    if (fileRenamer.isUndoPossible())
+    if (fileRenamer.isUndoPossible() && fileRenamer.prepareUndo())
     {
-        bool undoSuccess = fileRenamer.undo();
+        bool undoSuccess = renameFiles(true);
         emit undoRenameDone(undoSuccess);
     }
 }

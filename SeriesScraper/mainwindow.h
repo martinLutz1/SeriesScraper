@@ -11,6 +11,7 @@
 #include <QStyleFactory>
 #include <QMessageBox>
 #include <QComboBox>
+#include <QPropertyAnimation>
 #include "customshadoweffect.h"
 #include "QProgressIndicator.h"
 #include "keypresseater.h"
@@ -28,9 +29,11 @@ private:
     Ui::MainWindow *ui;
     QTimer *seriesTextChangeTimer;
     QTimer *clearStatusTextTimer;
+    QTimer *hideRenameProgressTimer;
     QLabel *statusBarTypeImageLabel;
     QGraphicsBlurEffect *blur;
     CustomShadowEffect *shadow;
+    QPropertyAnimation *renameSlideProgressAnimation;
     QProgressIndicator *progressIndicatorPath;
     QProgressIndicator *progressIndicatorSeries;
     KeyPressEater *keyPressEaterEscape;
@@ -72,6 +75,7 @@ private:
     void setUpMenuBar();
     void setUpConfirmationMessageBoxes();
     void setUpDirectoryWidget();
+    void setUpRenameProgressWidget();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
@@ -86,6 +90,9 @@ private:
     void changeToDarkTheme();
     void showSeriesLoadingAnimation();
     void hideSeriesLoadingAnimation();
+    void showRenameProgress();
+    void hideRenameProgress();
+    void updateRenameProgress(int amountFiles, int currentFile, QString oldFileName);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -124,6 +131,7 @@ private slots:
     void showSettingsWindow();
     void toggleFullScreen();
     void onPathStructureContentButtonClicked();
+    void hideRenameProgressWidget();
 
 public slots:
     void notify(Message &msg);

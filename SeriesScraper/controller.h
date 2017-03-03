@@ -5,7 +5,6 @@
 #include "settings.h"
 #include "seriesparser.h"
 #include "seriesdata.h"
-#include "filerenamer.h"
 #include "serieslanguagehandler.h"
 #include "nameschemehandler.h"
 #include "interfacelanguagehandler.h"
@@ -23,7 +22,6 @@ private:
     SeriesParser seriesParser;
     SeriesData seriesData;
     DirectoryHandler *directoryHandler;
-    FileRenamer fileRenamer;
     NameSchemeHandler nameSchemeHandler;
     FileTypeHandler fileTypeHandler;
     SeriesLanguageHandler seriesLanguageHandler;
@@ -67,6 +65,7 @@ public slots:
     void directorySet(const bool &initialized);
     void renameDone(const bool &success);
     void undoRenameDone(const bool &success);
+    void renameProgressUpdate(const int &totalObjects, const int &currentObject, const QString &oldName, const QString &newName);
 
 signals:
     void sendMessage(Message &msg);

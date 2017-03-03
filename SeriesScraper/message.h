@@ -58,6 +58,8 @@ public:
         controller_startSeriesLoading_view,
         controller_successSeriesLoading_view,
         controller_failureSeriesLoading_view,
+        controller_renameStarted_view,
+        controller_updateRenameProgess_view,
         controller_renameFinished_view,
         controller_enableUndoRenaming_view,
         controller_addNameScheme_view,
@@ -92,7 +94,7 @@ public:
         controller_setFileTypes_settings,
         controller_addFileType_settings,
         controller_removeFileType_settings,
-        controller_replaceFileType_settings,
+        controller_replaceFileType_settings
     };
 
     union MessageData {
