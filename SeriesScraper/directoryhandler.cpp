@@ -16,7 +16,7 @@ bool DirectoryHandler::renameFiles(bool isUndo)
             if (!renameSuccess)
                 break;
         }
-        if (renameSuccess && !isUndo)
+        if (renameSuccess && !isUndo && fileRenamer.isSpaceOnUndoQueue())
             fileRenamer.addToUndoQueue();
     }
     return renameSuccess;

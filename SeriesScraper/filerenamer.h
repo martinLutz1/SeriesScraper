@@ -16,11 +16,11 @@ public:
     int getRenameAmount();
     QString getOldFileName(int index);
     QString getNewFileName(int index);
-    bool rename(bool isUndo = false);
     bool renameFile(int index);
     void addToUndoQueue();
     bool isRenamePossible();
     bool isUndoPossible();
+    bool isSpaceOnUndoQueue();
     bool prepareUndo();
 
 private:
