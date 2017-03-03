@@ -506,7 +506,7 @@ void MainWindow::updateRenameProgress(int amountFiles, int currentFile, QString 
     QFontMetrics fm(ui->renamingProgressCurrentFileLabel->font());
     bool chopedOff = false;
     int currentFileTextWidth = fm.width(oldFileName);
-    while (currentFileTextWidth >= ui->additionalInfoScrollArea->width() - ui->renamingProgressFileOutputLabel->width() + 10)
+    while (currentFileTextWidth >= ui->renameProgressScrollArea->width() - ui->renamingProgressFileOutputLabel->width() - 4 * 10)
     {
         oldFileName.chop(2);
         currentFileTextWidth = fm.width(oldFileName);
