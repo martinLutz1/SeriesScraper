@@ -61,6 +61,8 @@ private:
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
     QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
     QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
+    QColor greyedOutColor = QColor(100, 100, 100);
+    QColor normalColor = QColor(0, 0, 0);
     QPixmap seriesImage;
     bool fullScreenEnabled = false;
     bool seriesInformationEnabled = false;

@@ -290,7 +290,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int controlY = episodeTableX + episodeTableHeight + UNIVERSAL_SPACER;
     int renameProgressWidgetWidth = ui->renameProgressScrollArea->width();
     int renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
-    qDebug() << windowWidth;
 
     if (seriesInformationEnabled)
     {
@@ -457,6 +456,8 @@ void MainWindow::changeToDarkTheme()
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
     shadow->setColor(QColor(255, 255, 255, 150));
+    greyedOutColor = QColor(155, 155, 155);
+    normalColor = QColor(255, 255, 255);
 
     qApp->setPalette(darkPalette);
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
@@ -1168,26 +1169,24 @@ bool MainWindow::updateRow(int row, QString oldFileName, QString newFileName, bo
         ui->episodeNameTable->setItem(row, 1, newFile);
     }
 
-    QColor greyedOut = QColor(100, 100, 100);
-    QColor black = QColor(0, 0, 0);
     // Colorize the table item
     if (oldFileName.isEmpty() && !newFileName.isEmpty() && !noColorization)
     {
-        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOut);
+        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOutColor);
     }
     else if (!oldFileName.isEmpty() && newFileName.isEmpty() && !noColorization)
     {
-        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOut);
+        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOutColor);
     }
     else if (oldFileName == newFileName)
     {
-        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOut);
-        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOut);
+        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOutColor);
+        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOutColor);
     }
     else
     {
-        ui->episodeNameTable->item(row, 0)->setTextColor(black);
-        ui->episodeNameTable->item(row, 1)->setTextColor(black);
+        ui->episodeNameTable->item(row, 0)->setTextColor(normalColor);
+        ui->episodeNameTable->item(row, 1)->setTextColor(normalColor);
     }
     return true;
 }
