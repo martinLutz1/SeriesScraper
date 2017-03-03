@@ -508,7 +508,8 @@ void MainWindow::updateRenameProgress(int amountFiles, int currentFile, QString 
     QFontMetrics fm(ui->renamingProgressCurrentFileLabel->font());
     bool chopedOff = false;
     int currentFileTextWidth = fm.width(oldFileName);
-    while (currentFileTextWidth >= ui->renameProgressScrollArea->width() - ui->renamingProgressFileOutputLabel->width() - 4 * 10)
+    while (currentFileTextWidth >= ui->renameProgressScrollArea->width()
+           - ui->renamingProgressFileOutputLabel->width() - 4 * UNIVERSAL_SPACER - 5)
     {
         oldFileName.chop(2);
         currentFileTextWidth = fm.width(oldFileName);
@@ -649,6 +650,9 @@ void MainWindow::changeLocalization(QStringList translationList)
     undoRenameConfirmationBox->setText(translationList.at(LanguageData::undoRenamingDetailed));
     undoRenameConfirmationBox->setButtonText(0, translationList.at(LanguageData::yes));
     undoRenameConfirmationBox->setButtonText(1, translationList.at(LanguageData::no));
+    // Renaming progress widget
+    ui->renamingLabel->setText(translationList.at(LanguageData::renaming) + ":");
+    ui->renamingProgressFileOutputLabel->setText(translationList.at(LanguageData::file) + ":");
     // Misc
     directorySelectionText = translationList.at(LanguageData::directorySelection);
     openThisFolderText = translationList.at(LanguageData::openThisFolder);

@@ -39,6 +39,7 @@
     "Remove":"Remove",
     "Rename":"Rename",
     "RenameFailed":"Renaming failed",
+		"Renaming":"Renaming",
     "RenameSuccess":"Files successfully renamed!",
     "Reset":"Reset",
     "ResetAll":"Reset everything",

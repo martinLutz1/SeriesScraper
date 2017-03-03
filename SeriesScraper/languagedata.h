@@ -54,6 +54,7 @@ public:
         remove,
         rename,
         renameFailed,
+        renaming,
         renameSuccess,
         reset,
         resetAll,
