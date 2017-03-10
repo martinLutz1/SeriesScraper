@@ -552,7 +552,7 @@ void Controller::updateRenameButtonAndSavePoster()
 
     bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
     bool seriesSet = !seriesData.getSeries().isEmpty();
-    bool enableRenameButton = seriesSet & directorySet & differentFileNames;
+    bool enableRenameButton = directorySet & differentFileNames;
     bool enableSavePoster = seriesSet & directorySet & !seriesData.getPosterUrl().isEmpty();
 
     Message msgEnableRenameButton;
@@ -650,6 +650,7 @@ void Controller::notify(Message &msg)
         int row = msg.data[0].i;
         QString newFileName = *msg.data[1].qsPointer;
         seriesData.setNewFileName(row, newFileName);
+        updateRenameButtonAndSavePoster();
         updateView();
         break;
     }

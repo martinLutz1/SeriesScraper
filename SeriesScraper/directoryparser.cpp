@@ -4,6 +4,24 @@
 #include <QDebug>
 #include "mainwindow.h" // Path structure box number
 
+int DirectoryParser::getNameSchemeType(QString filename)
+{
+    bool isSeasonAndEpisode = seasonAndEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
+    if (isSeasonAndEpisode)
+        return seasonAndEpisode;
+
+
+    bool isSeasonXOrDotEpisode = seasonXorDotEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
+    if (isSeasonXOrDotEpisode)
+        return seasonXorDotEpisode;
+
+    bool isDigitOnly = digitOnlySeasonAndEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
+    if (isDigitOnly)
+        return digitOnly;
+
+    return none;
+}
+
 QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 {
     QFileInfoList sortedFiles;
@@ -22,6 +40,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     {
         for (int i = 0; i < files.size(); i++)
         {
+            qDebug() << getNameSchemeType(fileList.at(i));
             while (sortedFiles.size() <= position.at(i))  // Prepare space
                 sortedFiles.push_back(QFileInfo(""));
             if (position.at(i) >= 0)
@@ -210,7 +229,6 @@ void DirectoryParser::setPathStructure(int depth)
 
 void DirectoryParser::setFileInformation()
 {
-    directory.setFilter(QDir::Files);
     QFileInfoList fileInfoList = directory.entryInfoList(filter);
     QFileInfoList sortedFileInfoList = sortFiles(fileInfoList);
 
@@ -241,16 +259,10 @@ void DirectoryParser::setFileInformation()
     suffixes = newSuffixes;
 }
 
-DirectoryParser::DirectoryParser() : foundSeason(0)
+DirectoryParser::DirectoryParser()
 {
     directory.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     directory.setSorting(QDir::NoSort);
-    directory.setPath("");
-
-    seasonAndEpisodeExpression.setPattern("(s)[0-9]+(.*)(e)[0-9]+");
-    seasonNumberExpression.setPattern("(s)[0-9]*");
-    episodeNumberExpression.setPattern("(e)[0-9]*");
-    numberExpression.setPattern("[0-9]*$");
 }
 
 void DirectoryParser::setFileTypes(QStringList fileTypes)
