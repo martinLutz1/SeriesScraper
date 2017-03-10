@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include <QCollator>
 #include <QDebug>
+#include <cmath>
 #include "mainwindow.h" // Path structure box number
 
 int DirectoryParser::getNameSchemeType(QString filename)
@@ -40,7 +41,6 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     {
         for (int i = 0; i < files.size(); i++)
         {
-            qDebug() << getNameSchemeType(fileList.at(i));
             while (sortedFiles.size() <= position.at(i))  // Prepare space
                 sortedFiles.push_back(QFileInfo(""));
             if (position.at(i) >= 0)
@@ -85,6 +85,89 @@ QStringList DirectoryParser::naturalSort(QStringList toSort)
     return sorted;
 }
 
+int DirectoryParser::getSeason(QString fileName, int amountFiles)
+{
+    QRegularExpressionMatch seasonNumberMatch;
+    int type = getNameSchemeType(fileName);
+    int season = 0;
+
+    switch (type)
+    {
+    case seasonAndEpisode:
+    {
+        QRegularExpressionMatch seasonAndEpisodeMatch;
+        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
+                (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
+
+        if (seasonAndEpisodeMatch.hasMatch())
+        {
+            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
+            seasonNumberMatch = seasonNumberExpression.match(seasonAndEpisodeText, 0);
+            QString seasonNumberText = seasonNumberMatch.captured();
+            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
+            season = seasonNumberMatch.captured().toInt();
+        }
+        break;
+    }
+    case seasonXorDotEpisode:
+    {
+        QRegularExpressionMatch seasonXorDotEpisodeMatch;
+        seasonXorDotEpisodeMatch = seasonXorDotEpisodeExpression.match
+                (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
+
+        if (seasonXorDotEpisodeMatch.hasMatch())
+        {
+            QString seasonAndEpisodeText = seasonXorDotEpisodeMatch.captured();
+            seasonNumberMatch = seasonXorDotNumberExpression.match(seasonAndEpisodeText, 0);
+            QString seasonNumberText = seasonNumberMatch.captured();
+            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
+
+            season = seasonNumberMatch.captured().toInt();
+        }
+        break;
+    }
+    case digitOnly:
+    {
+        QRegularExpressionMatch digitOnlyMatch;
+        digitOnlyMatch = digitOnlySeasonAndEpisodeExpression.match
+                (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
+
+        if (digitOnlyMatch.hasMatch())
+        {
+            QString seasonAndEpisodeText = digitOnlyMatch.captured();
+
+            // Remove episode digits
+            for (int i = 1; true; i++)
+            {
+                if ((amountFiles - pow(10, i)) <= 0)
+                {
+                    seasonAndEpisodeText.chop(i+1);
+                    break;
+                }
+            }
+            season = seasonAndEpisodeText.toInt();
+        }
+        break;
+    }
+    }
+    return season;
+}
+
+int DirectoryParser::getEpisodePositionOfSeasonAndEpisode(QString fileName)
+{
+
+}
+
+int DirectoryParser::getEpisodePositionOfSeasonXorDotEpisode(QString fileName)
+{
+
+}
+
+int DirectoryParser::getEpisodePositionOfDigitOnly(QString fileName)
+{
+
+}
+
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 {
     std::vector<int> episodePosition;
@@ -92,22 +175,19 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     QRegularExpressionMatch episodeNumberMatch;
     QRegularExpressionMatch seasonNumberMatch;
 
-    // Set season
+    int newFoundSeason = 0;
     if (episodeList.size() > 0)
+        newFoundSeason = getSeason(episodeList.at(0), episodeList.size());
+    for (int i = 0; i < episodeList.size(); i++)
     {
-        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
-                (episodeList.at(0).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
-
-        if (seasonAndEpisodeMatch.hasMatch())
+        int found = getSeason(episodeList.at(i), episodeList.size());
+        if (found != newFoundSeason)
         {
-            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
-
-            seasonNumberMatch = seasonNumberExpression.match(seasonAndEpisodeText, 0);
-            QString seasonNumberText = seasonNumberMatch.captured();
-            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
-            foundSeason = seasonNumberMatch.captured().toInt();
+            newFoundSeason = 0;
+            break;
         }
     }
+    foundSeason = newFoundSeason;
 
     // Get episode positions
     for (int i = 0; i < episodeList.size(); i++)

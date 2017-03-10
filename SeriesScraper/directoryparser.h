@@ -10,13 +10,13 @@ class DirectoryParser
 {
 private:
     QRegularExpression seasonAndEpisodeExpression = QRegularExpression("(s|S)[0-9]+(.*)(e|E)[0-9]+"); // S01E01
-    QRegularExpression seasonNumberExpression = QRegularExpression("(s|S)[0-9]*"); // E01
-    QRegularExpression episodeNumberExpression = QRegularExpression("(e|E)[0-9]*"); // S01
-    QRegularExpression seasonXorDotEpisodeExpression = QRegularExpression("[0-9]+(x|.)[0-9]+"); // 1x1 / 1.1
-    QRegularExpression episodeXorDotNumberExpression = QRegularExpression("[0-9]+(x)"); // 1x / 1.
-    QRegularExpression seasonXorDotNumberExpression = QRegularExpression("(x)[0-9]+"); // x1 / .1
+    QRegularExpression seasonNumberExpression = QRegularExpression("(s|S)[0-9]*"); // S01
+    QRegularExpression episodeNumberExpression = QRegularExpression("(e|E)[0-9]*"); // E01
+    QRegularExpression seasonXorDotEpisodeExpression = QRegularExpression("[0-9]+(x|\\.)[0-9]+"); // 1x1 / 1.1
+    QRegularExpression seasonXorDotNumberExpression = QRegularExpression("[0-9]+(x|\\.)"); // 1x / 1.
+    QRegularExpression epiosdeXorDotNumberExpression = QRegularExpression("(x|\\.)[0-9]+"); // x1 / .1
     QRegularExpression digitOnlySeasonAndEpisodeExpression = QRegularExpression("[0-9]+[0-9]+[0-9]+"); // 101
-    QRegularExpression numberExpression = QRegularExpression("[0-9]*$");
+    QRegularExpression numberExpression = QRegularExpression("[0-9]+");
     QDir directory = QDir("");
     bool directorySet = false;
     QString directoryPathInput;
@@ -33,6 +33,10 @@ private:
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
     QStringList naturalSort(QStringList toSort);
+    int getSeason(QString fileName, int amountFiles);
+    int getEpisodePositionOfSeasonAndEpisode(QString fileName);
+    int getEpisodePositionOfSeasonXorDotEpisode(QString fileName);
+    int getEpisodePositionOfDigitOnly(QString fileName);
     std::vector<int> getEpisodePositions(QStringList episodeList);
     int getDirectoryPositionInList(QStringList directoryList, QString directoryToFind);
     void setPathStructure(int depth);
