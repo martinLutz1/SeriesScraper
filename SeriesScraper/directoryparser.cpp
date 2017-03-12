@@ -189,8 +189,6 @@ int DirectoryParser::getEpisodeLengthOfDigitOnly(int amountFiles)
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 {
     std::vector<int> episodePosition;
-    QRegularExpressionMatch seasonAndEpisodeMatch;
-    QRegularExpressionMatch episodeNumberMatch;
 
     int newFoundSeason = 0;
     for (int i = 0; i < episodeList.size(); i++)
