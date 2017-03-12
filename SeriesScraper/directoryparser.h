@@ -12,9 +12,9 @@ private:
     QRegularExpression seasonAndEpisodeExpression = QRegularExpression("(s|S)[0-9]+(.*)(e|E)[0-9]+"); // S01E01
     QRegularExpression seasonNumberExpression = QRegularExpression("(s|S)[0-9]*"); // S01
     QRegularExpression episodeNumberExpression = QRegularExpression("(e|E)[0-9]*"); // E01
-    QRegularExpression seasonXorDotEpisodeExpression = QRegularExpression("[0-9]+(x|\\.)[0-9]+"); // 1x1 / 1.1
-    QRegularExpression seasonXorDotNumberExpression = QRegularExpression("[0-9]+(x|\\.)"); // 1x / 1.
-    QRegularExpression epiosdeXorDotNumberExpression = QRegularExpression("(x|\\.)[0-9]+"); // x1 / .1
+    QRegularExpression seasonSeparatorEpisodeExpression = QRegularExpression("[0-9]+(x|X|\\.|\\-)[0-9]+"); // 1x1 / 1.1 / 1-1
+    QRegularExpression seasonSeparatorNumberExpression = QRegularExpression("[0-9]+(x|X|\\.|\\-)"); // 1x / 1. / 1-
+    QRegularExpression episodeSeparatorNumberExpression = QRegularExpression("(x|X|\\.|\\-)[0-9]+"); // x1 / .1 / -1
     QRegularExpression digitOnlySeasonAndEpisodeExpression = QRegularExpression("[0-9]+[0-9]+[0-9]+"); // 101
     QRegularExpression numberExpression = QRegularExpression("[0-9]+");
     QDir directory = QDir("");
@@ -27,16 +27,17 @@ private:
     QStringList suffixes;
     std::vector<QStringList> pathStructure;
     bool containsRoot = false;
-    enum nameSchemeType {seasonAndEpisode, seasonXorDotEpisode, digitOnly, none};
+    enum nameSchemeType {seasonAndEpisode, seasonSeparatorEpisode, digitOnly, none};
 
     int getNameSchemeType(QString filename);
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
     QStringList naturalSort(QStringList toSort);
-    int getSeason(QString fileName, int amountFiles);
+    int getSeason(QString fileName, int amountFiles, int type);
     int getEpisodePositionOfSeasonAndEpisode(QString fileName);
-    int getEpisodePositionOfSeasonXorDotEpisode(QString fileName);
-    int getEpisodePositionOfDigitOnly(QString fileName);
+    int getEpisodePositionOfSeasonSeparatorEpisode(QString fileName);
+    int getEpisodePositionOfDigitOnly(QString fileName, int amountFiles);
+    int getEpisodeLengthOfDigitOnly(int amountFiles);
     std::vector<int> getEpisodePositions(QStringList episodeList);
     int getDirectoryPositionInList(QStringList directoryList, QString directoryToFind);
     void setPathStructure(int depth);

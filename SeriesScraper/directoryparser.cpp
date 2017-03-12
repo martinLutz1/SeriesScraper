@@ -11,10 +11,9 @@ int DirectoryParser::getNameSchemeType(QString filename)
     if (isSeasonAndEpisode)
         return seasonAndEpisode;
 
-
-    bool isSeasonXOrDotEpisode = seasonXorDotEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
-    if (isSeasonXOrDotEpisode)
-        return seasonXorDotEpisode;
+    bool isSeasonSeparatorEpisode = seasonSeparatorEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
+    if (isSeasonSeparatorEpisode)
+        return seasonSeparatorEpisode;
 
     bool isDigitOnly = digitOnlySeasonAndEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
     if (isDigitOnly)
@@ -85,67 +84,47 @@ QStringList DirectoryParser::naturalSort(QStringList toSort)
     return sorted;
 }
 
-int DirectoryParser::getSeason(QString fileName, int amountFiles)
+int DirectoryParser::getSeason(QString fileName, int amountFiles, int type)
 {
-    QRegularExpressionMatch seasonNumberMatch;
-    int type = getNameSchemeType(fileName);
     int season = 0;
-
     switch (type)
     {
     case seasonAndEpisode:
     {
-        QRegularExpressionMatch seasonAndEpisodeMatch;
-        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
+        QRegularExpressionMatch seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
                 (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
 
         if (seasonAndEpisodeMatch.hasMatch())
         {
             QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
-            seasonNumberMatch = seasonNumberExpression.match(seasonAndEpisodeText, 0);
-            QString seasonNumberText = seasonNumberMatch.captured();
-            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
-            season = seasonNumberMatch.captured().toInt();
+            QString seasonNumberText = seasonNumberExpression.match(seasonAndEpisodeText, 0).captured();
+            season = numberExpression.match(seasonNumberText, 0).captured().toInt();
         }
         break;
     }
-    case seasonXorDotEpisode:
+    case seasonSeparatorEpisode:
     {
-        QRegularExpressionMatch seasonXorDotEpisodeMatch;
-        seasonXorDotEpisodeMatch = seasonXorDotEpisodeExpression.match
+        QRegularExpressionMatch seasonSeparatorEpisodeMatch = seasonSeparatorEpisodeExpression.match
                 (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
 
-        if (seasonXorDotEpisodeMatch.hasMatch())
+        if (seasonSeparatorEpisodeMatch.hasMatch())
         {
-            QString seasonAndEpisodeText = seasonXorDotEpisodeMatch.captured();
-            seasonNumberMatch = seasonXorDotNumberExpression.match(seasonAndEpisodeText, 0);
-            QString seasonNumberText = seasonNumberMatch.captured();
-            seasonNumberMatch = numberExpression.match(seasonNumberText, 0);
-
-            season = seasonNumberMatch.captured().toInt();
+            QString seasonSeparatorEpisodeText = seasonSeparatorEpisodeMatch.captured();
+            QString seasonNumberText = seasonSeparatorNumberExpression.match(seasonSeparatorEpisodeText, 0).captured();
+            season = numberExpression.match(seasonNumberText, 0).captured().toInt();
         }
         break;
     }
     case digitOnly:
     {
-        QRegularExpressionMatch digitOnlyMatch;
-        digitOnlyMatch = digitOnlySeasonAndEpisodeExpression.match
+        QRegularExpressionMatch digitOnlyMatch = digitOnlySeasonAndEpisodeExpression.match
                 (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
 
         if (digitOnlyMatch.hasMatch())
         {
-            QString seasonAndEpisodeText = digitOnlyMatch.captured();
-
-            // Remove episode digits
-            for (int i = 1; true; i++)
-            {
-                if ((amountFiles - pow(10, i)) <= 0)
-                {
-                    seasonAndEpisodeText.chop(i+1);
-                    break;
-                }
-            }
-            season = seasonAndEpisodeText.toInt();
+            QString digitOnlyText = digitOnlyMatch.captured();
+            int seasonLength = digitOnlyText.length() - getEpisodeLengthOfDigitOnly(amountFiles);
+            season = digitOnlyText.left(seasonLength).toInt();
         }
         break;
     }
@@ -155,17 +134,56 @@ int DirectoryParser::getSeason(QString fileName, int amountFiles)
 
 int DirectoryParser::getEpisodePositionOfSeasonAndEpisode(QString fileName)
 {
+    QRegularExpressionMatch seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
+            (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
 
+    if (seasonAndEpisodeMatch.hasMatch())
+    {
+        QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
+        QString episodeNumberText = episodeNumberExpression.match(seasonAndEpisodeText, 0).captured();
+        return numberExpression.match(episodeNumberText, 0).captured().toInt() - 1;
+    }
+    else
+        return -1;
 }
 
-int DirectoryParser::getEpisodePositionOfSeasonXorDotEpisode(QString fileName)
+int DirectoryParser::getEpisodePositionOfSeasonSeparatorEpisode(QString fileName)
 {
+    QRegularExpressionMatch seasonSeparatorEpisodeMatch = seasonSeparatorEpisodeExpression.match
+            (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
 
+    if (seasonSeparatorEpisodeMatch.hasMatch())
+    {
+        QString seasonSeparatorEpisodeText = seasonSeparatorEpisodeMatch.captured();
+        QString episodeNumberText = episodeSeparatorNumberExpression.match(seasonSeparatorEpisodeText, 0).captured();
+        return numberExpression.match(episodeNumberText, 0).captured().toInt() - 1;
+    }
+    else
+        return -1;
 }
 
-int DirectoryParser::getEpisodePositionOfDigitOnly(QString fileName)
+int DirectoryParser::getEpisodePositionOfDigitOnly(QString fileName, int amountFiles)
 {
+    QRegularExpressionMatch digitOnlyMatch = digitOnlySeasonAndEpisodeExpression.match
+            (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
 
+    if (digitOnlyMatch.hasMatch())
+    {
+        QString digitOnlyText = digitOnlyMatch.captured();
+        int episodeLenght = getEpisodeLengthOfDigitOnly(amountFiles);
+        return digitOnlyText.right(episodeLenght).toInt() - 1;
+    }
+    else
+        return -1;
+}
+
+int DirectoryParser::getEpisodeLengthOfDigitOnly(int amountFiles)
+{
+    for (int i = 1; true; i++)
+    {
+        if ((amountFiles - pow(10, i)) <= 0)
+            return i + 1;
+    }
 }
 
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
@@ -173,46 +191,54 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     std::vector<int> episodePosition;
     QRegularExpressionMatch seasonAndEpisodeMatch;
     QRegularExpressionMatch episodeNumberMatch;
-    QRegularExpressionMatch seasonNumberMatch;
 
     int newFoundSeason = 0;
-    if (episodeList.size() > 0)
-        newFoundSeason = getSeason(episodeList.at(0), episodeList.size());
     for (int i = 0; i < episodeList.size(); i++)
     {
-        int found = getSeason(episodeList.at(i), episodeList.size());
-        if (found != newFoundSeason)
+        int type = getNameSchemeType(episodeList.at(i));
+        // Season
+        int found = getSeason(episodeList.at(i), episodeList.size(), type);
+        if (i == 0) // Set season to compare
+            newFoundSeason = found;
+        else
         {
-            newFoundSeason = 0;
+            if (found != newFoundSeason)
+            {
+                newFoundSeason = 0;
+                break;
+            }
+        }
+
+        // Episode positions
+        int foundPosition;
+        switch (type)
+        {
+        case seasonAndEpisode:
+            foundPosition = getEpisodePositionOfSeasonAndEpisode(episodeList.at(i));
+            break;
+        case seasonSeparatorEpisode:
+            foundPosition = getEpisodePositionOfSeasonSeparatorEpisode(episodeList.at(i));
+            break;
+        case digitOnly:
+            foundPosition = getEpisodePositionOfDigitOnly(episodeList.at(i), episodeList.size());
+            break;
+        case none:
+        default:
+            foundPosition = -1;
             break;
         }
+        episodePosition.push_back(foundPosition);
+
     }
     foundSeason = newFoundSeason;
 
-    // Get episode positions
-    for (int i = 0; i < episodeList.size(); i++)
-    {
-        seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
-                (episodeList.at(i).toLower(), 0, QRegularExpression::PartialPreferCompleteMatch);
-
-        if (seasonAndEpisodeMatch.hasMatch())
-        {
-            QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
-
-            episodeNumberMatch = episodeNumberExpression.match(seasonAndEpisodeText, 0);
-            QString episodeNumberText = episodeNumberMatch.captured();
-            episodeNumberMatch = numberExpression.match(episodeNumberText, 0);
-            int foundEpisodePosition = episodeNumberMatch.captured().toInt() - 1;
-            episodePosition.push_back(foundEpisodePosition);
-        }
-    }
-
-    // Return empty vector, if multiple indexes with the same position exist
+    // Return empty vector, if multiple indexes with the same position exist or not all positions were found
     std::vector<int> sortedEpisodePositions = episodePosition;
     std::sort(sortedEpisodePositions.begin(), sortedEpisodePositions.end());
     for (int i = 1; i < int(sortedEpisodePositions.size()); i++)
     {
-        if (sortedEpisodePositions.at(i - 1) == sortedEpisodePositions.at(i))
+        if ((i == 1 && sortedEpisodePositions.at(0) == -1)
+                || (sortedEpisodePositions.at(i - 1) == sortedEpisodePositions.at(i)))
             return std::vector<int>();
     }
     return episodePosition;
@@ -222,9 +248,8 @@ int DirectoryParser::getDirectoryPositionInList(QStringList directoryList, QStri
 {
     for (int i = 0; i < directoryList.size(); i++)
     {
-        if (directoryList.at(i) == directoryToFind) {
+        if (directoryList.at(i) == directoryToFind)
             return i;
-        }
     }
     return -1; // Not found
 }
