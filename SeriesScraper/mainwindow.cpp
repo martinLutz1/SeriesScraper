@@ -345,7 +345,10 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
 {
-    bool useColorization = (oldFileNames.empty() || newFileNames.isEmpty());
+    // Avoid firing cell changed signals
+    QObject::disconnect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
+
+    bool noColorization = (oldFileNames.empty() || newFileNames.isEmpty());
     int tableSize = std::max(newFileNames.size(), oldFileNames.size());
 
     setAmountSeasons(amountSeasons);
@@ -355,15 +358,18 @@ void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, 
         newFileNames << "";
     while (oldFileNames.size() < tableSize)
         oldFileNames << "";
+
     // Fill table
     for (int i = 0; i < tableSize; i++)
-        updateRow(i, oldFileNames.at(i), newFileNames.at(i), useColorization);
+        updateRow(i, oldFileNames.at(i), newFileNames.at(i), noColorization);
 
     // Tidy up what is left of unnecessary entries
     ui->episodeNameTable->setRowCount(tableSize);
 
     for (int i = ui->episodeNameTable->rowCount(); i >= tableSize; i--)
         ui->episodeNameTable->removeRow(i);
+
+    QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
 }
 
 void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, bool containsRoot, QString path)
@@ -1178,7 +1184,7 @@ bool MainWindow::updateRow(int row, QString oldFileName, QString newFileName, bo
     {
         ui->episodeNameTable->item(row, 0)->setTextColor(greyedOutColor);
     }
-    else if (oldFileName == newFileName)
+    else if ((oldFileName == newFileName) && !noColorization)
     {
         ui->episodeNameTable->item(row, 0)->setTextColor(greyedOutColor);
         ui->episodeNameTable->item(row, 1)->setTextColor(greyedOutColor);

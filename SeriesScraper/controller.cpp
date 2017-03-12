@@ -485,7 +485,7 @@ void Controller::savePoster()
     {
         Message msgPosterAlreadyExists;
         msgPosterAlreadyExists.type = Message::controller_posterAlreadyExists_view;
-        emit(sendMessage(msgPosterAlreadyExists));
+        emit sendMessage(msgPosterAlreadyExists);
     }
 }
 
@@ -955,12 +955,14 @@ void Controller::renameDone(const bool &success)
 
     if (success)
     {
-        // Success Message
+        // Clear new file names
+        seriesData.setNewFileNamesWithoutSuffix(QStringList());
+        // Success message
         QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful, MainWindow::statusMessageType::success);
     } else
     {
-        // Failure Message
+        // Failure message
         QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);
         setStatusMessage(renameFailure, MainWindow::statusMessageType::error);
     }
