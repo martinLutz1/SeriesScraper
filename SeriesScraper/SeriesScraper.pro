@@ -13,7 +13,7 @@ TARGET = SeriesScraper
 TEMPLATE = app
 
 SOURCES += main.cpp \
-        mainwindow.cpp \
+    mainwindow.cpp \
     directoryparser.cpp \
     application.cpp \
     languagedata.cpp \
@@ -94,8 +94,7 @@ unix:!macx {
     QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./;
 }
 
-
-FORMS    += mainwindow.ui \
+FORMS += mainwindow.ui \
     aboutdialog.ui \
     settingswindow.ui
 

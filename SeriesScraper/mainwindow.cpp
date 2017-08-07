@@ -1074,6 +1074,13 @@ void MainWindow::notify(Message &msg)
         seriesTextChangeTimer->stop(); // Avoid double loading
         break;
     }
+    case Message::controller_setSeason_view:
+    {
+        int season = msg.data[0].i - 1;
+        ui->seasonComboBox->setCurrentIndex(season);
+        seriesTextChangeTimer->stop(); // Avoid double loading
+        break;
+    }
     case Message::controller_updateDirectoryWidget_view:
     {
         std::vector<QStringList> pathStructure = *msg.data[0].qsListVectorPointer;

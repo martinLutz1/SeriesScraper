@@ -48,6 +48,7 @@ public:
         controller_updateView_view,
         controller_seriesSet_view,
         controller_setSeries_view,
+        controller_setSeason_view,
         controller_startDirectoryLoading_view,
         controller_stopDirectoryLoading_view,
         controller_setPath_view,

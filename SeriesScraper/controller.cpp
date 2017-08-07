@@ -170,7 +170,8 @@ void Controller::updateNewFileNames()
     int amountEpisodes = seriesData.getAmountEpisodes();
     QStringList episodeList = seriesData.getEpisodes();
 
-    QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season, amountEpisodes, episodeList);
+    QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season,
+                                                                              amountEpisodes, episodeList);
     seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
 }
 
@@ -231,7 +232,8 @@ Controller::Controller(QObject *parent) : QObject(parent)
     connect(directoryHandler, SIGNAL(directoryInitialized(bool)), this, SLOT(directorySet(bool)));
     connect(directoryHandler, SIGNAL(renameDone(bool)), this, SLOT(renameDone(bool)));
     connect(directoryHandler, SIGNAL(undoRenameDone(bool)), this, SLOT(undoRenameDone(bool)));
-    connect(directoryHandler, SIGNAL(updateRenameProgress(int,int,QString,QString)), this, SLOT(renameProgressUpdate(int,int,QString,QString)));
+    connect(directoryHandler, SIGNAL(updateRenameProgress(int,int,QString,QString)),
+            this, SLOT(renameProgressUpdate(int,int,QString,QString)));
 
     workerThreadDirectory.start();
 }
@@ -461,7 +463,8 @@ void Controller::changeNameScheme(int nameScheme)
     else
     {
         QString nameSchemeLineNotFound = interfaceLanguageHandler.getTranslation(LanguageData::nameSchemeLineNotFound);
-        setStatusMessage(nameSchemeLineNotFound + " " +  QString::number(nameScheme + 1), MainWindow::statusMessageType::error);
+        setStatusMessage(nameSchemeLineNotFound + " " +
+                         QString::number(nameScheme + 1), MainWindow::statusMessageType::error);
     }
 
     settings.setNameScheme(newNameScheme);
@@ -602,7 +605,16 @@ void Controller::notify(Message &msg)
                     season = foundSeason;
                 }
             }
+
             changeSeries(series, season);
+
+            if (settings.getAutoSetDetectedSeason())
+            {
+                Message msgSetSeasonInView;
+                msgSetSeasonInView.type = Message::controller_setSeason_view;
+                msgSetSeasonInView.data[0].i = season;
+                emit(sendMessage(msgSetSeasonInView));
+            }
         }
         break;
     }
@@ -701,9 +713,11 @@ void Controller::notify(Message &msg)
     case Message::view_forceSavePoster_conroller:
     {
         if (fileDownloader.saveFileAsImage(true))
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved),
+                             MainWindow::statusMessageType::success);
         else
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved),
+                             MainWindow::statusMessageType::error);
         break;
     }
     case Message::view_setWindowRect_controller:
@@ -1005,7 +1019,8 @@ void Controller::undoRenameDone(const bool &success)
     emit(sendMessage(msgRenameFinished));
 }
 
-void Controller::renameProgressUpdate(const int &totalObjects, const int &currentObject, const QString &oldName, const QString &newName)
+void Controller::renameProgressUpdate(const int &totalObjects, const int &currentObject,
+                                      const QString &oldName, const QString &newName)
 {
     QString oldFileName = oldName;
     QString newFileName = newName;
