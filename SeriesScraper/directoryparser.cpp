@@ -3,6 +3,7 @@
 #include <QCollator>
 #include <QDebug>
 #include <cmath>
+#include <unordered_map>
 #include "mainwindow.h" // Path structure box number
 
 int DirectoryParser::getNameSchemeType(QString filename)
@@ -132,7 +133,7 @@ int DirectoryParser::getSeason(QString fileName, int amountFiles, int type)
     return season;
 }
 
-int DirectoryParser::getEpisodePositionOfSeasonAndEpisode(QString fileName)
+int DirectoryParser::getEpisodePositionOfSeasonAndEpisode(QString fileName, std::vector<int> positions)
 {
     QRegularExpressionMatch seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
             (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -141,13 +142,24 @@ int DirectoryParser::getEpisodePositionOfSeasonAndEpisode(QString fileName)
     {
         QString seasonAndEpisodeText = seasonAndEpisodeMatch.captured();
         QString episodeNumberText = episodeNumberExpression.match(seasonAndEpisodeText, 0).captured();
-        return numberExpression.match(episodeNumberText, 0).captured().toInt() - 1;
+        int episode = numberExpression.match(episodeNumberText, 0).captured().toInt() - 1;
+        for (auto pos : positions)
+        {
+            // Duplicate found
+            if (episode == pos)
+            {
+                return -1;
+            }
+        }
+        return episode;
     }
     else
+    {
         return -1;
+    }
 }
 
-int DirectoryParser::getEpisodePositionOfSeasonSeparatorEpisode(QString fileName)
+int DirectoryParser::getEpisodePositionOfSeasonSeparatorEpisode(QString fileName, std::vector<int> positions)
 {
     QRegularExpressionMatch seasonSeparatorEpisodeMatch = seasonSeparatorEpisodeExpression.match
             (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -156,13 +168,24 @@ int DirectoryParser::getEpisodePositionOfSeasonSeparatorEpisode(QString fileName
     {
         QString seasonSeparatorEpisodeText = seasonSeparatorEpisodeMatch.captured();
         QString episodeNumberText = episodeSeparatorNumberExpression.match(seasonSeparatorEpisodeText, 0).captured();
-        return numberExpression.match(episodeNumberText, 0).captured().toInt() - 1;
+        int episode =  numberExpression.match(episodeNumberText, 0).captured().toInt() - 1;
+        for (auto pos : positions)
+        {
+            // Duplicate found
+            if (episode == pos)
+            {
+                return -1;
+            }
+        }
+        return episode;
     }
     else
+    {
         return -1;
+    }
 }
 
-int DirectoryParser::getEpisodePositionOfDigitOnly(QString fileName, int amountFiles)
+int DirectoryParser::getEpisodePositionOfDigitOnly(QString fileName, int amountFiles, std::vector<int> positions)
 {
     QRegularExpressionMatch digitOnlyMatch = digitOnlySeasonAndEpisodeExpression.match
             (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -171,10 +194,21 @@ int DirectoryParser::getEpisodePositionOfDigitOnly(QString fileName, int amountF
     {
         QString digitOnlyText = digitOnlyMatch.captured();
         int episodeLenght = getEpisodeLengthOfDigitOnly(amountFiles);
-        return digitOnlyText.right(episodeLenght).toInt() - 1;
+        int episode =  digitOnlyText.right(episodeLenght).toInt() - 1;
+        for (auto pos : positions)
+        {
+            // Duplicate found
+            if (episode == pos)
+            {
+                return -1;
+            }
+        }
+        return episode;
     }
     else
+    {
         return -1;
+    }
 }
 
 int DirectoryParser::getEpisodeLengthOfDigitOnly(int amountFiles)
@@ -189,22 +223,20 @@ int DirectoryParser::getEpisodeLengthOfDigitOnly(int amountFiles)
 std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 {
     std::vector<int> episodePosition;
+    std::unordered_map<int, int> foundSeasonToNumberOccurency;
 
-    int newFoundSeason = 0;
     for (int i = 0; i < episodeList.size(); i++)
     {
         int type = getNameSchemeType(episodeList.at(i));
         // Season
-        int found = getSeason(episodeList.at(i), episodeList.size(), type);
-        if (i == 0) // Set season to compare
-            newFoundSeason = found;
+        int foundSeason = getSeason(episodeList.at(i), episodeList.size(), type);
+        if (foundSeasonToNumberOccurency.find(foundSeason) == foundSeasonToNumberOccurency.end())
+        {
+            foundSeasonToNumberOccurency.emplace(foundSeason, 1);
+        }
         else
         {
-            if (found != newFoundSeason)
-            {
-                newFoundSeason = 0;
-                break;
-            }
+            foundSeasonToNumberOccurency.at(foundSeason)++;
         }
 
         // Episode positions
@@ -212,13 +244,13 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
         switch (type)
         {
         case seasonAndEpisode:
-            foundPosition = getEpisodePositionOfSeasonAndEpisode(episodeList.at(i));
+            foundPosition = getEpisodePositionOfSeasonAndEpisode(episodeList.at(i), episodePosition);
             break;
         case seasonSeparatorEpisode:
-            foundPosition = getEpisodePositionOfSeasonSeparatorEpisode(episodeList.at(i));
+            foundPosition = getEpisodePositionOfSeasonSeparatorEpisode(episodeList.at(i), episodePosition);
             break;
         case digitOnly:
-            foundPosition = getEpisodePositionOfDigitOnly(episodeList.at(i), episodeList.size());
+            foundPosition = getEpisodePositionOfDigitOnly(episodeList.at(i), episodeList.size(), episodePosition);
             break;
         case none:
         default:
@@ -226,19 +258,54 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
             break;
         }
         episodePosition.push_back(foundPosition);
-
     }
-    foundSeason = newFoundSeason;
 
-    // Return empty vector, if multiple indexes with the same position exist or not all positions were found
+    // Set found season to the one that occured the most
+    int mostOccurencies = 0;
+    for (auto iter : foundSeasonToNumberOccurency)
+    {
+        if (iter.second > mostOccurencies)
+        {
+            mostOccurencies = iter.second;
+            foundSeason = iter.first;
+        }
+    }
+
     std::vector<int> sortedEpisodePositions = episodePosition;
+    std::vector<int> emptyPositions;
     std::sort(sortedEpisodePositions.begin(), sortedEpisodePositions.end());
+
     for (int i = 1; i < int(sortedEpisodePositions.size()); i++)
     {
-        if ((i == 1 && sortedEpisodePositions.at(0) == -1)
-                || (sortedEpisodePositions.at(i - 1) == sortedEpisodePositions.at(i)))
-            return std::vector<int>();
+        auto emptySpaceSize = sortedEpisodePositions.at(i) - sortedEpisodePositions.at(i - 1);
+        // Double entries, overwrite the first occurence
+        if (emptySpaceSize == 0 && sortedEpisodePositions.at(i) != -1)
+        {
+            emptyPositions.push_back(sortedEpisodePositions.at(i - 1));
+        }
+        // Collect empty positions
+        else
+        {
+            for (int j = 1; j < emptySpaceSize; j++)
+            {
+                emptyPositions.push_back(sortedEpisodePositions.at(i - 1) + j);
+            }
+        }
     }
+
+    // Not found position. Fill the empty space in episodePosition with them.
+    if (sortedEpisodePositions.at(0) == -1)
+    {
+        for (int &iter : episodePosition)
+        {
+            if (iter == -1 && !emptyPositions.empty())
+            {
+                iter = emptyPositions.front();
+                emptyPositions.erase(emptyPositions.begin());
+            }
+        }
+    }
+
     return episodePosition;
 }
 

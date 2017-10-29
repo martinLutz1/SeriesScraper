@@ -34,9 +34,9 @@ private:
     QFileInfoList naturalSort(QFileInfoList files);
     QStringList naturalSort(QStringList toSort);
     int getSeason(QString fileName, int amountFiles, int type);
-    int getEpisodePositionOfSeasonAndEpisode(QString fileName);
-    int getEpisodePositionOfSeasonSeparatorEpisode(QString fileName);
-    int getEpisodePositionOfDigitOnly(QString fileName, int amountFiles);
+    int getEpisodePositionOfSeasonAndEpisode(QString fileName, std::vector<int> positions);
+    int getEpisodePositionOfSeasonSeparatorEpisode(QString fileName, std::vector<int> positions);
+    int getEpisodePositionOfDigitOnly(QString fileName, int amountFiles, std::vector<int> positions);
     int getEpisodeLengthOfDigitOnly(int amountFiles);
     std::vector<int> getEpisodePositions(QStringList episodeList);
     int getDirectoryPositionInList(QStringList directoryList, QString directoryToFind);

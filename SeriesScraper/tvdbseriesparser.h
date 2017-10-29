@@ -3,6 +3,7 @@
 
 #include "baseseriesparser.h"
 #include <QStringList>
+#include <QByteArray>
 
 class TVDBSeriesParser : public BaseSeriesParser
 {
@@ -10,6 +11,8 @@ public:
     TVDBSeriesParser();
     bool scrapeSeries(QString series);
     QStringList getSeason(int season, QString language);
+    bool downloadPoster();
+
 
 private:
     const QString apiKey = "99DBAA5F3B8BB8B7";
@@ -22,6 +25,7 @@ private:
     QString currentLanguage;
     QString authToken;
     bool loggedIn = false;
+    QByteArray poster;
 
     bool authenticate();
     bool setAmountSeasons();

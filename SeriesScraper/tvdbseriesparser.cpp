@@ -36,7 +36,7 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
             seriesFullName = seriesArray.at(0).toObject().value("seriesName").toString();
             plot = seriesArray.at(0).toObject().value("overview").toString();
             scrapingSuccessful = setAmountSeasons();
-            posterUrl = posterBaseUrl + seriesID + "-1.jpg";
+            posterUrl = baseUrl + "series/" + seriesID + "/images/query?keyType=poster";
             lastScrapedSeries = series;
         }
     }

@@ -97,7 +97,7 @@
      </widget>
      <widget class="QRadioButton" name="omdbRadioButton">
       <property name="enabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="geometry">
        <rect>
@@ -106,6 +106,9 @@
         <width>60</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="toolTip">
+       <string>Currently not supported</string>
       </property>
       <property name="text">
        <string>OMDb</string>

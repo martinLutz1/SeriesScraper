@@ -47,6 +47,11 @@ bool FileDownloader::downloadFile(QString url)
     return downloadingSuccessful;
 }
 
+void FileDownloader::setData(QByteArray *data)
+{
+    downloadedData = *data;
+}
+
 QByteArray *FileDownloader::getDownloadedData()
 {
     return &downloadedData;
