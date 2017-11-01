@@ -44,7 +44,6 @@ SOURCES += main.cpp \
     tvdbseriesparser.cpp \
     directoryhandler.cpp \
     QProgressIndicator.cpp \
-    filedownloader.cpp \
     genericfiledownloader.cpp
 
 HEADERS  += mainwindow.h \
@@ -75,7 +74,6 @@ HEADERS  += mainwindow.h \
     interfacelanguagehandler.h \
     baseseriesparser.h \
     basefiledownloader.h \
-    filedownloader.h \
     tvdbseriesparser.h \
     directoryhandler.h \
     QProgressIndicator.h \
