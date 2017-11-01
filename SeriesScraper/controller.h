@@ -9,7 +9,7 @@
 #include "nameschemehandler.h"
 #include "interfacelanguagehandler.h"
 #include "filetypehandler.h"
-#include "filedownloader.h"
+#include "genericfiledownloader.h"
 #include "directoryhandler.h"
 #include <QObject>
 #include <QThread>
@@ -26,7 +26,7 @@ private:
     FileTypeHandler fileTypeHandler;
     SeriesLanguageHandler seriesLanguageHandler;
     InterfaceLanguageHandler interfaceLanguageHandler;
-    FileDownloader fileDownloader;
+    GenericFileDownloader fileDownloader;
     Settings settings;
 
     void initializeFileTypes();

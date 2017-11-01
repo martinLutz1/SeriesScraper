@@ -8,8 +8,8 @@ class OMDbSeriesParser : public BaseSeriesParser
 {
 public:
     OMDbSeriesParser();
-    bool scrapeSeries(QString series);
-    QStringList getSeason(int season, QString language="en-EN");
+    bool scrapeSeries(QString series) override;
+    QStringList getSeason(int season, QString language="en-EN") override;
 };
 
 #endif // OMDBSERIESPARSER_H

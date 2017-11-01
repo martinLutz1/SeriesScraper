@@ -89,14 +89,14 @@ void SeriesData::setAirDate(QString airDate)
     this->airDate = airDate;
 }
 
-void SeriesData::setPosterUrl(QString posterUrl)
-{
-    this->posterUrl = posterUrl;
-}
-
 void SeriesData::setPlot(QString plot)
 {
     this->plot = plot;
+}
+
+void SeriesData::setPosterUrl(QString posterUrl)
+{
+    this->posterUrl = posterUrl;
 }
 
 //----------------------- Getter -----------------------//
@@ -191,14 +191,14 @@ QString SeriesData::getAirDate()
     return airDate;
 }
 
-QString SeriesData::getPosterUrl()
-{
-    return posterUrl;
-}
-
 QString SeriesData::getPlot()
 {
     return plot;
+}
+
+QString SeriesData::getPosterUrl()
+{
+    return posterUrl;
 }
 
 QString SeriesData::removeSpecialCharacters(QString string)

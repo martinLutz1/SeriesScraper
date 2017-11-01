@@ -43,7 +43,7 @@ bool FileDownloader::downloadFile(QString url)
     } else
         qDebug() << "Failure at downloading file:" << reply->errorString();
 
-    delete reply;
+    reply->deleteLater();
     return downloadingSuccessful;
 }
 

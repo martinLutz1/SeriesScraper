@@ -35,9 +35,10 @@ bool TVDBSeriesParser::scrapeSeries(QString series)
             seriesID = QString::number(seriesArray.at(0).toObject().value("id").toInt());
             seriesFullName = seriesArray.at(0).toObject().value("seriesName").toString();
             plot = seriesArray.at(0).toObject().value("overview").toString();
-            scrapingSuccessful = setAmountSeasons();
-            posterUrl = baseUrl + "series/" + seriesID + "/images/query?keyType=poster";
             lastScrapedSeries = series;
+
+            setPosterUrl();
+            scrapingSuccessful = setAmountSeasons();
         }
     }
     return scrapingSuccessful;
@@ -76,6 +77,7 @@ bool TVDBSeriesParser::authenticate()
     {
         authToken = "Bearer " + parsedObject.value("token").toString();
     }
+
     return scrapingSuccessful;
 }
 
@@ -93,12 +95,36 @@ bool TVDBSeriesParser::setAmountSeasons()
 
         int newAmountSeasons = 0;
         for (int i = 0; i < seasonArray.size(); i++)
+        {
             newAmountSeasons = std::max(newAmountSeasons, seasonArray.at(i).toString().toInt());
+        }
 
         amountSeasons = newAmountSeasons;
 
         if (amountSeasons == 0)
+        {
             scrapingSuccessful = false;
+        }
+    }
+    return scrapingSuccessful;
+}
+
+bool TVDBSeriesParser::setPosterUrl()
+{
+    QString url = baseUrl + "series/" + seriesID + "/images/query?keyType=poster";
+    QJsonObject headerArguments;
+    headerArguments.insert("Authorization", authToken);
+    headerArguments.insert("Accept-Language", "en");
+    bool scrapingSuccessful = scrapeJsonObjectViaGet(url, headerArguments);
+    if (scrapingSuccessful)
+    {
+        QJsonArray posterArray = parsedObject.value("data").toArray();
+
+        scrapingSuccessful = !posterArray.isEmpty();
+        if (scrapingSuccessful)
+        {
+            posterUrl = posterBaseUrl + posterArray.first().toObject().value("fileName").toString();
+        }
     }
     return scrapingSuccessful;
 }

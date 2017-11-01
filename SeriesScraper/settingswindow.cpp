@@ -516,7 +516,6 @@ void SettingsWindow::onFileTypeChanged(QListWidgetItem *item)
     if (index >= 0)
     {
         QString changedFileType = item->text();
-        qDebug() << changedFileType;
         Message msgChangeFileType;
         msgChangeFileType.type = Message::settings_replaceFileType_controller;
         msgChangeFileType.data[0].i = index;

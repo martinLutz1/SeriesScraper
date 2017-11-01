@@ -1,61 +1,52 @@
 #include "seriesparser.h"
 
-SeriesParser::SeriesParser() : selectedSeriesParser(0)
+SeriesParser::SeriesParser()
 {
-    seriesParserVector.push_back(&tmdbSeriesParser);
-    seriesParserVector.push_back(&omdbSeriesParser);
-    seriesParserVector.push_back(&tvdbSeriesParser);
+    setSeriesParser(selectedSeriesParser);
 }
 
-void SeriesParser::setSeriesParser(int seriesParser)
+SeriesParser::~SeriesParser()
 {
-    if (seriesParser >= 0 && seriesParser <= 2)
-        selectedSeriesParser = seriesParser;
+    parser = nullptr;
 }
 
-int SeriesParser::getSeriesParser()
+void SeriesParser::setSeriesParser(int selectedSeriesParser)
+{
+    switch (selectedSeriesParser)
+    {
+    case seriesParser::tmdb:
+        this->selectedSeriesParser = selectedSeriesParser;
+        parser = &tmdbSeriesParser;
+        break;
+
+    case seriesParser::omdb:
+        this->selectedSeriesParser = selectedSeriesParser;
+        parser = &omdbSeriesParser;
+        break;
+
+    case seriesParser::tvdb:
+        this->selectedSeriesParser = selectedSeriesParser;
+        parser = &tvdbSeriesParser;
+        break;
+    default:
+        qDebug() << "Selected not available series parser with index " + QString::number(selectedSeriesParser);
+        break;
+    }
+}
+
+int SeriesParser::getSeriesParserIndex()
 {
     return selectedSeriesParser;
 }
 
-bool SeriesParser::scrapeSeries(QString series)
+void SeriesParser::setSeriesInput(QString series)
 {
     seriesInput = series;
-    return seriesParserVector.at(selectedSeriesParser)->scrapeSeries(series);
 }
 
-QString SeriesParser::getSeriesName()
+BaseSeriesParser *SeriesParser::getSeriesParser()
 {
-    return seriesParserVector.at(selectedSeriesParser)->getSeriesName();
-}
-
-QString SeriesParser::getSeriesYear()
-{
-    return seriesParserVector.at(selectedSeriesParser)->getYear();
-}
-
-QString SeriesParser::getPosterUrl()
-{
-    return seriesParserVector.at(selectedSeriesParser)->getPosterUrl();
-}
-
-QString SeriesParser::getPlot()
-{
-    return seriesParserVector.at(selectedSeriesParser)->getPlot();
-}
-
-int SeriesParser::getAmountSeasons()
-{
-    return seriesParserVector.at(selectedSeriesParser)->getAmountSeasons();
-}
-
-QStringList SeriesParser::getEpisodeList(int season, QString language)
-{
-    int seasonToLoad = season;
-    if (season > getAmountSeasons()) // Dont load not existing seasons
-        seasonToLoad = 1;
-
-    return seriesParserVector.at(selectedSeriesParser)->getSeason(seasonToLoad, language);
+    return parser;
 }
 
 QString SeriesParser::getSeriesInput()

@@ -63,12 +63,14 @@ bool JsonScraper::parseReply(QNetworkReply *reply)
         {
             parsedObject = doc.object();
             return true;
-        } else
+        }
+        else
         {
             qDebug() << "Not found";
             return false;
         }
-    } else
+    }
+    else
     {
         qDebug() << "Failure" << reply->errorString();
         return false;

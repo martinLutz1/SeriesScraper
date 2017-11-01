@@ -4,9 +4,18 @@ BaseSeriesParser::BaseSeriesParser()
 {
 }
 
+BaseSeriesParser::~BaseSeriesParser()
+{
+}
+
 int BaseSeriesParser::getAmountSeasons()
 {
     return amountSeasons;
+}
+
+QString BaseSeriesParser::getPosterUrl()
+{
+    return posterUrl;
 }
 
 QString BaseSeriesParser::getYear()
@@ -17,11 +26,6 @@ QString BaseSeriesParser::getYear()
 QString BaseSeriesParser::getSeriesName()
 {
     return seriesFullName;
-}
-
-QString BaseSeriesParser::getPosterUrl()
-{
-    return posterUrl;
 }
 
 QString BaseSeriesParser::getPlot()

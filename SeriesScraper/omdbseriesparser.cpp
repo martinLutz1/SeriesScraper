@@ -53,4 +53,3 @@ QStringList OMDbSeriesParser::getSeason(int season, QString language /* unused *
     }
     return episodeList;
 }
-

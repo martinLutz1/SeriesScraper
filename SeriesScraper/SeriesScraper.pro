@@ -40,10 +40,12 @@ SOURCES += main.cpp \
     serieslanguagehandler.cpp \
     interfacelanguagehandler.cpp \
     baseseriesparser.cpp \
-    filedownloader.cpp \
+    basefiledownloader.cpp \
     tvdbseriesparser.cpp \
     directoryhandler.cpp \
-    QProgressIndicator.cpp
+    QProgressIndicator.cpp \
+    filedownloader.cpp \
+    genericfiledownloader.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -72,10 +74,12 @@ HEADERS  += mainwindow.h \
     serieslanguagehandler.h \
     interfacelanguagehandler.h \
     baseseriesparser.h \
+    basefiledownloader.h \
     filedownloader.h \
     tvdbseriesparser.h \
     directoryhandler.h \
-    QProgressIndicator.h
+    QProgressIndicator.h \
+    genericfiledownloader.h
 
 win32 {
     RC_FILE = images/icon/winIcon.rc

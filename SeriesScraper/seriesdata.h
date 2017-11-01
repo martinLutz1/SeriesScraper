@@ -5,7 +5,6 @@
 #include <QStringList>
 #include <QDir>
 
-
 class SeriesData
 {
 public:
@@ -23,8 +22,8 @@ public:
     void setOldFileNamesWithoutSuffix(QStringList oldFileNamesWithoutSuffix);
     void setWorkingDirectory(QDir directory);
     void setAirDate(QString airDate);
-    void setPosterUrl(QString posterUrl);
     void setPlot(QString plot);
+    void setPosterUrl(QString posterUrl);
 
     QString getSeries();
     QString getSuffix(int index);
@@ -41,8 +40,8 @@ public:
     QStringList getOldFileNamesWithoutSuffix();
     QDir getWorkingDirectory();
     QString getAirDate();
-    QString getPosterUrl();
     QString getPlot();
+    QString getPosterUrl();
 
 private:
     QString series;
@@ -56,8 +55,8 @@ private:
     int selectedSeason = 1;
     QString selectedLanguage;
     QString airDate;
-    QString posterUrl;
     QString plot;
+    QString posterUrl;
 
     QStringList specialCharacterList;
     QString removeSpecialCharacters(QString string);

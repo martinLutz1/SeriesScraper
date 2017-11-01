@@ -186,10 +186,11 @@ void Controller::setStatusMessage(QString status, int type)
 
 void Controller::setSeriesInformation()
 {
-    QString posterUrl = seriesData.getPosterUrl();
-    QByteArray *poster = NULL;
-    if (fileDownloader.downloadFile(posterUrl))
+    QByteArray *poster = nullptr;
+    if (fileDownloader.downloadFile(seriesData.getPosterUrl()))
+    {
         poster = fileDownloader.getDownloadedData();
+    }
     QString totalEpisodes = QString::number(seriesData.getAmountEpisodes());
     QString season = QString::number(seriesData.getSelectedSeason());
     QString totalSeasons = QString::number(seriesData.getAmountSeasons());
@@ -200,7 +201,7 @@ void Controller::setSeriesInformation()
     // Set default values for view, if no series set
     if (seriesName.isEmpty() && totalSeasons == "0")
     {
-        poster = NULL;
+        poster = nullptr;
         totalEpisodes = "-";
         season = "-";
         totalSeasons = "-";
@@ -278,14 +279,14 @@ void Controller::initialize()
 bool Controller::loadSeries(QString series, int season)
 {
     // Set default values
+    QString newPosterUrl("");
     QString newSeriesName("");
     QString newAirDate("");
     QString newPlot("");
-    QString newPosterUrl("");
-    int newSelectedSeason = 1;
-    int newAmountSeasons = 0;
+    int newSelectedSeason(1);
+    int newAmountSeasons(0);
     QStringList newEpisodeList;
-    bool seriesFound = false;
+    bool seriesFound(false);
 
     // Dont scrape the empty string
     if (!series.isEmpty())
@@ -295,34 +296,39 @@ bool Controller::loadSeries(QString series, int season)
         msgStartLoading.type = Message::controller_startSeriesLoading_view;
         emit(sendMessage(msgStartLoading));
 
-        seriesFound = seriesParser.scrapeSeries(series);
+        seriesParser.setSeriesInput(series);
+        seriesFound = seriesParser.getSeriesParser()->scrapeSeries(series);
         if (seriesFound)
         {
             QString seriesLanguage = seriesData.getSelectedLanguage();
-            newAmountSeasons = seriesParser.getAmountSeasons();
+            newAmountSeasons = seriesParser.getSeriesParser()->getAmountSeasons();
 
             int seasonToLoad = season;
             if (season > newAmountSeasons) // Avoid loading not existing seasons
             {
                 seasonToLoad = 1;
             }
-            newEpisodeList = seriesParser.getEpisodeList(seasonToLoad, seriesLanguage);
+            newEpisodeList = seriesParser.getSeriesParser()->getSeason(seasonToLoad, seriesLanguage);
             newSelectedSeason = seasonToLoad;
-            newSeriesName = seriesParser.getSeriesName();
-            newPosterUrl = seriesParser.getPosterUrl();
-            newPlot = seriesParser.getPlot();
-            newAirDate = seriesParser.getSeriesYear();
+            newSeriesName = seriesParser.getSeriesParser()->getSeriesName();
+            newPlot = seriesParser.getSeriesParser()->getPlot();
+            newAirDate = seriesParser.getSeriesParser()->getYear();
+            newPosterUrl = seriesParser.getSeriesParser()->getPosterUrl();
         }
-    } else
-        seriesParser.scrapeSeries(""); // Reset
+    }
+    else // Reset
+    {
+        seriesParser.setSeriesInput("");
+        seriesParser.getSeriesParser()->scrapeSeries("");
+    }
 
     seriesData.setSeries(newSeriesName);
     seriesData.setAirDate(newAirDate);
-    seriesData.setPosterUrl(newPosterUrl);
     seriesData.setPlot(newPlot);
     seriesData.setAmountSeasons(newAmountSeasons);
     seriesData.setSelectedSeason(newSelectedSeason);
     seriesData.setEpisodes(newEpisodeList);
+    seriesData.setPosterUrl(newPosterUrl);
 
     if (settings.getShowSeriesInfo())
         setSeriesInformation();
@@ -336,7 +342,8 @@ bool Controller::loadSeries(QString series, int season)
         Message msgSuccessLoading;
         msgSuccessLoading.type = Message::controller_successSeriesLoading_view;
         emit(sendMessage(msgSuccessLoading));
-    } else if (!seriesFound && !series.isEmpty())
+    }
+    else if (!seriesFound && !series.isEmpty())
     {
         Message msgFailureLoading;
         msgFailureLoading.type = Message::controller_failureSeriesLoading_view;
@@ -397,7 +404,7 @@ void Controller::changeSeriesParser(int selectedSeriesParser)
     msgChangeSeriesParser.data[0].i = selectedSeriesParser;
     emit(sendMessage(msgChangeSeriesParser));
 
-    int oldSeriesParser = seriesParser.getSeriesParser();
+    int oldSeriesParser = seriesParser.getSeriesParserIndex();
     if (selectedSeriesParser != oldSeriesParser)
     {
         QString series = seriesParser.getSeriesInput();
@@ -480,11 +487,17 @@ void Controller::savePoster()
     if (!fileDownloader.fileExists())
     {
         if (fileDownloader.saveFileAsImage())
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved), MainWindow::statusMessageType::success);
+        {
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterSaved),
+                             MainWindow::statusMessageType::success);
+        }
         else
-            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved), MainWindow::statusMessageType::error);
+        {
+            setStatusMessage(interfaceLanguageHandler.getTranslation(LanguageData::posterNotSaved),
+                             MainWindow::statusMessageType::error);
+        }
     }
-    else
+    else // Poster already exists
     {
         Message msgPosterAlreadyExists;
         msgPosterAlreadyExists.type = Message::controller_posterAlreadyExists_view;
@@ -974,7 +987,8 @@ void Controller::renameDone(const bool &success)
         // Success message
         QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful, MainWindow::statusMessageType::success);
-    } else
+    }
+    else
     {
         // Failure message
         QString renameFailure = interfaceLanguageHandler.getTranslation(LanguageData::renameFailed);

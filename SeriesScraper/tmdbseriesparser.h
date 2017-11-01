@@ -8,8 +8,8 @@ class TMDbSeriesParser : public BaseSeriesParser
 {
 public:
     TMDbSeriesParser();
-    bool scrapeSeries(QString series);
-    QStringList getSeason(int season, QString language);
+    bool scrapeSeries(QString series) override;
+    QStringList getSeason(int season, QString language) override;
 
 private:
     const QString authentificationKey = "020a07e5192867b0bbae8ffb841498e5";

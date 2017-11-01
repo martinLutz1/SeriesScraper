@@ -80,7 +80,8 @@ bool TMDbSeriesParser::setSeriesInformation(QString seasonNumberText)
         posterUrl = "";
         plot = "";
         return false;
-    } else
+    }
+    else
     {
         year = yearValue.toString().left(4);
         seriesFullName = seriesFullNameValue.toString();

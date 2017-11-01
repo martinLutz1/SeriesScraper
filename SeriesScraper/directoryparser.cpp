@@ -294,7 +294,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     }
 
     // Not found position. Fill the empty space in episodePosition with them.
-    if (sortedEpisodePositions.at(0) == -1)
+    if (!sortedEpisodePositions.empty() && sortedEpisodePositions.at(0) == -1)
     {
         for (int &iter : episodePosition)
         {
