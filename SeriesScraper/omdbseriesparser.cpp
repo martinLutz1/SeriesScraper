@@ -12,7 +12,9 @@ OMDbSeriesParser::OMDbSeriesParser()
 bool OMDbSeriesParser::scrapeSeries(QString series)
 {
     if (lastScrapedSeries == series)
+    {
         return true;
+    }
 
     seriesFullName.clear();
     year.clear();
@@ -20,9 +22,11 @@ bool OMDbSeriesParser::scrapeSeries(QString series)
     amountSeasons = 0;
 
     if (series.isEmpty())
+    {
         return false;
+    }
 
-    QString requestUrl = "http://www.omdbapi.com/?t=" + series + "&r=json";
+    QString requestUrl = baseUrl + series + "&r=json";
     bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
@@ -40,16 +44,20 @@ QStringList OMDbSeriesParser::getSeason(int season, QString language /* unused *
 {   
     Q_UNUSED(language);
     QStringList episodeList;
-    QString requestUrl = "http://www.omdbapi.com/?t=" + seriesFullName + "&season=" + QString::number(season);
+    QString requestUrl = baseUrl + seriesFullName + "&season=" + QString::number(season);
 
     bool scrapingSuccessful = scrapeJsonObjectViaGet(requestUrl);
     if (scrapingSuccessful)
     {
         QJsonArray episodeArray = parsedObject.value("Episodes").toArray();
         for (int i = 0; i < episodeArray.size(); i++)
+        {
             episodeList << episodeArray[i].toObject().value("Title").toString();
+        }
         if (!episodeArray.isEmpty())
+        {
             year = episodeArray[0].toObject().value("Released").toString().left(4);
+        }
     }
     return episodeList;
 }
