@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1050</width>
+    <width>1500</width>
     <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1050</width>
-    <height>520</height>
+    <height>620</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -70,200 +70,388 @@
    <widget class="QScrollArea" name="additionalInfoScrollArea">
     <property name="geometry">
      <rect>
-      <x>640</x>
+      <x>1000</x>
       <y>10</y>
-      <width>200</width>
+      <width>201</width>
       <height>421</height>
      </rect>
     </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
     <property name="widgetResizable">
      <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
     <widget class="QWidget" name="scrollAreaWidgetContents">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>0</y>
-       <width>198</width>
-       <height>419</height>
+       <y>8</y>
+       <width>199</width>
+       <height>403</height>
       </rect>
      </property>
-     <widget class="QLabel" name="posterInfoLabel">
+     <widget class="QWidget" name="horizontalLayoutWidget_4">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>111</width>
-        <height>211</height>
+        <x>0</x>
+        <y>0</y>
+        <width>191</width>
+        <height>401</height>
        </rect>
       </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="seriesNameInfoLabelData">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>230</y>
-        <width>200</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-       </font>
-      </property>
-      <property name="text">
-       <string>seriesName</string>
-      </property>
-     </widget>
-     <widget class="QGroupBox" name="infoGroupBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>250</y>
-        <width>181</width>
-        <height>82</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Series info</string>
-      </property>
-      <widget class="QWidget" name="horizontalLayoutWidget_2">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>10</y>
-         <width>181</width>
-         <height>76</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="seriesInfohorizontalLayout">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetDefaultConstraint</enum>
-        </property>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>5</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="airDateInfoLabel">
-            <property name="font">
-             <font>
-              <family>Segoe UI</family>
-             </font>
+      <layout class="QHBoxLayout" name="additionalScrollAreaHorizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="posterInfoLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>120</height>
+              </size>
+             </property>
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>9</height>
+              </size>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="seriesNameInfoLabelData">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+            </font>
+           </property>
+           <property name="text">
+            <string>seriesName</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="infoGroupBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>82</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>82</height>
+            </size>
+           </property>
+           <property name="title">
+            <string>Series info</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <widget class="QWidget" name="horizontalLayoutWidget_2">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>10</y>
+              <width>181</width>
+              <height>76</height>
+             </rect>
             </property>
-            <property name="text">
-             <string>Air date:</string>
-            </property>
+            <layout class="QHBoxLayout" name="seriesInfohorizontalLayout">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="airDateInfoLabel">
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Air date:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="seasonInfoLabel">
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Season:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="totalEpisodesInfoLabel">
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Episode number: </string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QLabel" name="airDateInfoLabelData">
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>aD</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="seasonInfoLabelData">
+                   <property name="text">
+                    <string>s</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="ofInfoLabel">
+                   <property name="text">
+                    <string>/</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="totalSeasonInfoLabelData">
+                   <property name="text">
+                    <string>ts</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Expanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="totalEpisodesInfoLabelData">
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>te</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="seasonInfoLabel">
-            <property name="font">
-             <font>
-              <family>Segoe UI</family>
-             </font>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="plotGroupBox">
+           <property name="title">
+            <string>Plot</string>
+           </property>
+           <widget class="QWidget" name="verticalLayoutWidget_3">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>30</y>
+              <width>81</width>
+              <height>102</height>
+             </rect>
             </property>
-            <property name="text">
-             <string>Season:</string>
-            </property>
+            <layout class="QVBoxLayout" name="plotTextVerticalLayout">
+             <item>
+              <widget class="QPlainTextEdit" name="plotPlainTextEdit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>300</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
+               <property name="undoRedoEnabled">
+                <bool>false</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+               </property>
+               <property name="backgroundVisible">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="totalEpisodesInfoLabel">
-            <property name="font">
-             <font>
-              <family>Segoe UI</family>
-             </font>
-            </property>
-            <property name="text">
-             <string>Episode number: </string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QLabel" name="airDateInfoLabelData">
-            <property name="font">
-             <font>
-              <family>Segoe UI</family>
-             </font>
-            </property>
-            <property name="text">
-             <string>aD</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="seasonInfoLabelData">
-              <property name="text">
-               <string>s</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="ofInfoLabel">
-              <property name="text">
-               <string>/</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="totalSeasonInfoLabelData">
-              <property name="text">
-               <string>ts</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QLabel" name="totalEpisodesInfoLabelData">
-            <property name="font">
-             <font>
-              <family>Segoe UI</family>
-             </font>
-            </property>
-            <property name="text">
-             <string>te</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </widget>
    </widget>
@@ -272,9 +460,21 @@
      <rect>
       <x>10</x>
       <y>440</y>
-      <width>1161</width>
-      <height>91</height>
+      <width>1171</width>
+      <height>200</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>200</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>200</height>
+     </size>
     </property>
     <widget class="QWidget" name="horizontalLayoutWidget_5">
      <property name="geometry">
@@ -282,7 +482,7 @@
        <x>0</x>
        <y>0</y>
        <width>1161</width>
-       <height>91</height>
+       <height>171</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="controlElementshorizontalLayout">
@@ -305,8 +505,8 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>831</width>
-           <height>88</height>
+           <width>631</width>
+           <height>129</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="directorySelectionHorizontalLayout">
@@ -314,7 +514,7 @@
            <number>5</number>
           </property>
           <property name="rightMargin">
-           <number>10</number>
+           <number>5</number>
           </property>
           <property name="bottomMargin">
            <number>10</number>
@@ -331,7 +531,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>20</width>
+                <width>10</width>
                 <height>20</height>
                </size>
               </property>
@@ -364,15 +564,21 @@
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="pathVerticalLayout">
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="QLabel" name="pathLabel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>13</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Segoe UI</family>
@@ -381,6 +587,18 @@
               </property>
               <property name="text">
                <string>Path</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::AutoText</enum>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <property name="indent">
+               <number>3</number>
               </property>
              </widget>
             </item>
@@ -394,6 +612,15 @@
                   <height>26</height>
                  </size>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>220</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="insertPolicy">
+                 <enum>QComboBox::InsertAtBottom</enum>
+                </property>
                </widget>
               </item>
               <item>
@@ -401,6 +628,12 @@
                 <property name="minimumSize">
                  <size>
                   <width>100</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>220</width>
                   <height>26</height>
                  </size>
                 </property>
@@ -414,6 +647,12 @@
                   <height>26</height>
                  </size>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>220</width>
+                  <height>26</height>
+                 </size>
+                </property>
                </widget>
               </item>
               <item>
@@ -424,28 +663,11 @@
                   <height>26</height>
                  </size>
                 </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pathStructureContentButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>50</width>
-                  <height>32</height>
-                 </size>
-                </property>
                 <property name="maximumSize">
                  <size>
-                  <width>50</width>
-                  <height>16777215</height>
+                  <width>300</width>
+                  <height>26</height>
                  </size>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="resource.qrc">
-                  <normaloff>:/images/arrow_down.png</normaloff>:/images/arrow_down.png</iconset>
                 </property>
                </widget>
               </item>
@@ -475,23 +697,30 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="pathStructureContentButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resource.qrc">
+                  <normaloff>:/images/arrow_down.png</normaloff>:/images/arrow_down.png</iconset>
+                </property>
+               </widget>
+              </item>
              </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </item>
@@ -535,7 +764,7 @@
            <x>0</x>
            <y>20</y>
            <width>481</width>
-           <height>70</height>
+           <height>101</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="seriesSelectionHorizontalLayout">
@@ -552,6 +781,12 @@
            <layout class="QVBoxLayout" name="seriesVerticalLayout">
             <item>
              <widget class="QLabel" name="seriesLabel">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>18</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Segoe UI</family>
@@ -560,6 +795,9 @@
               </property>
               <property name="text">
                <string>Series</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
               </property>
              </widget>
             </item>
@@ -576,7 +814,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>200</width>
-                  <height>16777215</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="font">
@@ -632,6 +870,12 @@
            <layout class="QVBoxLayout" name="seasonVerticalLayout">
             <item>
              <widget class="QLabel" name="seasonLabel">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>18</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Segoe UI</family>
@@ -640,6 +884,9 @@
               </property>
               <property name="text">
                <string>Season</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
               </property>
              </widget>
             </item>
@@ -654,7 +901,7 @@
               <property name="maximumSize">
                <size>
                 <width>50</width>
-                <height>16777215</height>
+                <height>26</height>
                </size>
               </property>
               <property name="font">
@@ -670,6 +917,12 @@
            <layout class="QVBoxLayout" name="languageVerticalLayout">
             <item>
              <widget class="QLabel" name="seriesLanguageLabel">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>18</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Segoe UI</family>
@@ -678,6 +931,9 @@
               </property>
               <property name="text">
                <string>Language</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
               </property>
              </widget>
             </item>
@@ -692,7 +948,7 @@
               <property name="maximumSize">
                <size>
                 <width>130</width>
-                <height>16777215</height>
+                <height>26</height>
                </size>
               </property>
               <property name="font">
@@ -711,6 +967,12 @@
               <property name="enabled">
                <bool>true</bool>
               </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>18</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Segoe UI</family>
@@ -722,6 +984,9 @@
               </property>
               <property name="scaledContents">
                <bool>false</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
               </property>
              </widget>
             </item>
@@ -736,7 +1001,7 @@
               <property name="maximumSize">
                <size>
                 <width>160</width>
-                <height>16777215</height>
+                <height>26</height>
                </size>
               </property>
               <property name="font">
@@ -826,6 +1091,8 @@
       </item>
      </layout>
     </widget>
+    <zorder>horizontalLayoutWidget_5</zorder>
+    <zorder>pathLabel</zorder>
    </widget>
    <widget class="QScrollArea" name="renameProgressScrollArea">
     <property name="geometry">
@@ -995,10 +1262,23 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QLineEdit" name="directPathInputLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>340</y>
+      <width>501</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <zorder>episodeNameTable</zorder>
    <zorder>additionalInfoScrollArea</zorder>
    <zorder>centralControlElementWidget</zorder>
-   <zorder>episodeNameTable</zorder>
    <zorder>renameProgressScrollArea</zorder>
+   <zorder>directPathInputLineEdit</zorder>
+   <zorder>plotPlainTextEdit</zorder>
+   <zorder>plotPlainTextEdit</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">
@@ -1013,8 +1293,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1050</width>
-     <height>19</height>
+     <width>1500</width>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

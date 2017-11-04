@@ -12,6 +12,7 @@
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
 #define MINIMUM_WINDOW_WIDTH 1050
+#define MINIMUM_WINDOW_HEIGHT 620
 #define MINIMUM_PATH_STRUCTURE_BOX_SIZE 150
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -24,7 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     clearStatusTextTimer = new QTimer(this);
     hideRenameProgressTimer = new QTimer(this);
     statusBarTypeImageLabel = new QLabel();
-    shadow = new CustomShadowEffect(ui->renameProgressScrollArea);
+    renameShadow = new CustomShadowEffect(ui->renameProgressScrollArea);
+    directPathShadow = new CustomShadowEffect(ui->renameProgressScrollArea);
     progressIndicatorPath = new QProgressIndicator;
     progressIndicatorSeries = new QProgressIndicator;
 
@@ -67,7 +69,8 @@ MainWindow::~MainWindow()
     delete clearStatusTextTimer;
     delete hideRenameProgressTimer;
     delete statusBarTypeImageLabel;
-    delete shadow;
+    delete renameShadow;
+    delete directPathShadow;
     delete renameSlideProgressAnimation;
     delete renameConfirmationMessageBox;
     delete posterConfirmationMessageBox;
@@ -101,6 +104,7 @@ void MainWindow::setUpGUI()
     ui->seriesLineEditHorizontalLayout->addWidget(progressIndicatorSeries);
 
     this->centralWidget()->setMinimumWidth(MINIMUM_WINDOW_WIDTH);
+    ui->centralControlElementWidget->setFixedHeight(90);
 
     ui->seriesInfohorizontalLayout->setStretch(0, 3);
     ui->seriesInfohorizontalLayout->setStretch(1, 1);
@@ -109,6 +113,8 @@ void MainWindow::setUpGUI()
     ui->seriesSelectionHorizontalLayout->setStretch(2, 3);
     ui->seriesSelectionHorizontalLayout->setStretch(3, 4);
 
+    ui->additionalInfoScrollArea->setLayout(ui->additionalScrollAreaHorizontalLayout);
+    ui->plotGroupBox->setLayout(ui->plotTextVerticalLayout);
     ui->infoGroupBox->setLayout(ui->seriesInfohorizontalLayout);
     ui->pathGroupBox->setLayout(ui->directorySelectionHorizontalLayout);
     ui->seriesGroupBox->setLayout(ui->seriesSelectionHorizontalLayout);
@@ -218,6 +224,13 @@ void MainWindow::setUpConfirmationMessageBoxes()
 
 void MainWindow::setUpDirectoryWidget()
 {
+    directPathShadow->setBlurRadius(40.0);
+    directPathShadow->setDistance(6.0);
+    directPathShadow->setColor(QColor(0, 0, 0, 150));
+
+    ui->directPathInputLineEdit->hide();
+    ui->directPathInputLineEdit->setGraphicsEffect(directPathShadow);
+
     ui->directoryWidgetHorizontalLayout->addWidget(progressIndicatorPath);
     directoryEntriesMenu = new QMenu(this);
 
@@ -244,15 +257,15 @@ void MainWindow::setUpRenameProgressWidget()
     ui->renameProgressWidget->setLayout(ui->renamingProgressVerticalLayout);
     ui->renamingProgressBar->setMinimum(0);
 
-    shadow->setBlurRadius(40.0);
-    shadow->setDistance(6.0);
-    shadow->setColor(QColor(0, 0, 0, 150));
+    renameShadow->setBlurRadius(40.0);
+    renameShadow->setDistance(6.0);
+    renameShadow->setColor(QColor(0, 0, 0, 150));
 
     renameSlideProgressAnimation = new QPropertyAnimation(ui->renameProgressScrollArea, "geometry");
     renameSlideProgressAnimation->setDuration(400);
 
     ui->renameProgressScrollArea->hide();
-    ui->renameProgressScrollArea->setGraphicsEffect(shadow);
+    ui->renameProgressScrollArea->setGraphicsEffect(renameShadow);
 }
 
 void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
@@ -263,12 +276,14 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->correctSeriesLabel->hide();
         progressIndicatorSeries->show();
         progressIndicatorSeries->stopAnimation();
-    } else if (status)
+    }
+    else if (status)
     {
         ui->seriesLineEdit->setStyleSheet(colorGreen);
         ui->correctSeriesLabel->setPixmap(QPixmap(":/images/check-20.png"));
         hideSeriesLoadingAnimation();
-    } else
+    }
+    else
     {
         ui->seriesLineEdit->setStyleSheet(colorRed);
         ui->correctSeriesLabel->setPixmap(QPixmap(":/images/error-20.png"));
@@ -293,40 +308,28 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     if (seriesInformationEnabled)
     {
-        episodeTableWidth = 0.77 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        episodeTableWidth = 0.80 * (windowWidth - 2 * UNIVERSAL_SPACER);
         renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
-        int additionalInfoWidth = 0.23 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        int additionalInfoWidth = 0.20 * (windowWidth - 2 * UNIVERSAL_SPACER);
         int additionalInfoHeight = episodeTableHeight;
 
-        if (additionalInfoWidth > 250)
+        if (additionalInfoWidth > 300)
         {
-            additionalInfoWidth = 250;
+            additionalInfoWidth = 300;
             episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER - additionalInfoWidth;
         }
         int imageLabelWidth = additionalInfoWidth - 2 * UNIVERSAL_SPACER;
-        int imageLabelHeight = additionalInfoHeight * 0.6;
+        int imageLabelHeight = episodeTableHeight * 0.6;
+        int additionalInfoX = episodeTableX + episodeTableWidth - 1;
+        int additionalInfoY = UNIVERSAL_SPACER;
 
         // Scale before further movements to make sure we have the correct image size
         ui->posterInfoLabel->setPixmap(seriesImage.scaled(imageLabelWidth, imageLabelHeight, Qt::KeepAspectRatio));
         ui->posterInfoLabel->setFixedSize(ui->posterInfoLabel->pixmap()->size());
-
-        int additionalInfoX = episodeTableX + episodeTableWidth - 1;
-        int additionalInfoY = UNIVERSAL_SPACER;
-        int imageLabelX = std::max(UNIVERSAL_SPACER, additionalInfoWidth / 2 - ui->posterInfoLabel->pixmap()->width() / 2);
-        int imageLabelY = UNIVERSAL_SPACER;
-        int seriesNameX = (additionalInfoWidth - ui->seriesNameInfoLabelData->sizeHint().width()) / 2;
-        int seriesNameY = ui->posterInfoLabel->y() + ui->posterInfoLabel->height() + UNIVERSAL_SPACER;
-        int infoBoxY = seriesNameY + ui->seriesNameInfoLabelData->height() + 2 * UNIVERSAL_SPACER;
-
         // Resize
         ui->additionalInfoScrollArea->setFixedSize(additionalInfoWidth, additionalInfoHeight);
-        ui->infoGroupBox->setFixedSize(additionalInfoWidth - 2 * UNIVERSAL_SPACER, ui->infoGroupBox->height());
-
         // Move
         ui->additionalInfoScrollArea->move(additionalInfoX, additionalInfoY);
-        ui->posterInfoLabel->move(imageLabelX, imageLabelY);
-        ui->infoGroupBox->move(UNIVERSAL_SPACER, infoBoxY);
-        ui->seriesNameInfoLabelData->move(seriesNameX, seriesNameY);
     }
 
     // Move
@@ -461,7 +464,8 @@ void MainWindow::changeToDarkTheme()
             + QString("background-repeat: no-repeat; ")
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
-    shadow->setColor(QColor(255, 255, 255, 150));
+    renameShadow->setColor(QColor(255, 255, 255, 150));
+    directPathShadow->setColor(QColor(255, 255, 255, 150));
     greyedOutColor = QColor(155, 155, 155);
     normalColor = QColor(255, 255, 255);
 
@@ -1123,12 +1127,18 @@ void MainWindow::notify(Message &msg)
         QString seriesName = *msg.data[4].qsPointer;
         QString airDate = *msg.data[5].qsPointer;
         QString plot = *msg.data[6].qsPointer;
-        // Todo: integrate plot
 
-        if (imageByteArray != NULL)
+        if (imageByteArray != nullptr)
+        {
             seriesImage.loadFromData(*imageByteArray);
+        }
         else
+        {
             seriesImage.load(":/images/default_poster.jpg");
+        }
+        ui->plotPlainTextEdit->clear();
+        ui->plotPlainTextEdit->appendPlainText(plot);
+        ui->plotPlainTextEdit->moveCursor(QTextCursor::Start);
         ui->posterInfoLabel->setPixmap(seriesImage.scaled(ui->posterInfoLabel->width(), ui->posterInfoLabel->height(), Qt::KeepAspectRatio));
 
         ui->totalEpisodesInfoLabelData->setText(totalEpisodes);

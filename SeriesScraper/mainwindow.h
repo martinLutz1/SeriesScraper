@@ -7,7 +7,6 @@
 #include <QMainWindow>
 #include <QDir>
 #include <QLabel>
-#include <QGraphicsBlurEffect>
 #include <QStyleFactory>
 #include <QMessageBox>
 #include <QComboBox>
@@ -31,8 +30,8 @@ private:
     QTimer *clearStatusTextTimer;
     QTimer *hideRenameProgressTimer;
     QLabel *statusBarTypeImageLabel;
-    QGraphicsBlurEffect *blur;
-    CustomShadowEffect *shadow;
+    CustomShadowEffect *renameShadow;
+    CustomShadowEffect *directPathShadow;
     QPropertyAnimation *renameSlideProgressAnimation;
     QProgressIndicator *progressIndicatorPath;
     QProgressIndicator *progressIndicatorSeries;
