@@ -21,5 +21,6 @@
         <file>images/folder_video.png</file>
         <file>images/check-20.png</file>
         <file>images/error-20.png</file>
+        <file>images/notepad.png</file>
     </qresource>
 </RCC>

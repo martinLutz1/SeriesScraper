@@ -132,7 +132,7 @@ void MainWindow::setUpGUI()
     savePosterAction->setIcon(QIcon(":/images/save.png"));
     undoRenameAction->setIcon(QIcon(":/images/undo.png"));
     openDirectoryAction->setIcon(QIcon(":/images/folder.png"));
-    insertPathAction->setIcon(QIcon(":/images/folder.png")); // Todo: change icon to keyboard or so
+    insertPathAction->setIcon(QIcon(":/images/notepad.png"));
     reloadDirectoryAction->setIcon(QIcon(":/images/update.png"));
     fullScreenAction->setIcon(QIcon(":/images/fullscreen.png"));
 
