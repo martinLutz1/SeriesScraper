@@ -672,6 +672,29 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="pathStructureContentButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resource.qrc">
+                  <normaloff>:/images/arrow_down.png</normaloff>:/images/arrow_down.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="directoryUpdateButton">
                 <property name="enabled">
                  <bool>false</bool>
@@ -694,29 +717,6 @@
                 <property name="icon">
                  <iconset resource="resource.qrc">
                   <normaloff>:/images/update.png</normaloff>:/images/update.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pathStructureContentButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>50</width>
-                  <height>32</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>50</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="resource.qrc">
-                  <normaloff>:/images/arrow_down.png</normaloff>:/images/arrow_down.png</iconset>
                 </property>
                </widget>
               </item>
