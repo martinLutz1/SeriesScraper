@@ -77,7 +77,12 @@ MainWindow::~MainWindow()
     delete fileMenu;
     delete helpMenu;
     delete directoryEntriesMenu;
+    delete directoryMenu;
     delete savePosterAction;
+    delete undoRenameAction;
+    delete openDirectoryAction;
+    delete insertPathAction;
+    delete reloadDirectoryAction;
     delete aboutAction;
     delete settingsAction;
     delete fullScreenAction;
@@ -126,6 +131,9 @@ void MainWindow::setUpGUI()
     aboutAction->setIcon(QIcon(":/images/about.png"));
     savePosterAction->setIcon(QIcon(":/images/save.png"));
     undoRenameAction->setIcon(QIcon(":/images/undo.png"));
+    openDirectoryAction->setIcon(QIcon(":/images/folder.png"));
+    insertPathAction->setIcon(QIcon(":/images/folder.png")); // Todo: change icon to keyboard or so
+    reloadDirectoryAction->setIcon(QIcon(":/images/update.png"));
     fullScreenAction->setIcon(QIcon(":/images/fullscreen.png"));
 
     // Initialize view state
@@ -163,11 +171,17 @@ void MainWindow::setUpMenuBar()
     QString aboutText = "About " APPLICATIONNAME;
 
     fileMenu = new QMenu("File");
+    directoryMenu = new QMenu("Directory");
     viewMenu = new QMenu("Display");
     helpMenu = new QMenu("Help");
 
     savePosterAction = new QAction("Save poster");
     undoRenameAction = new QAction("Undo renaming");
+
+    openDirectoryAction = new QAction("Select");
+    insertPathAction = new QAction("Go to path");
+    reloadDirectoryAction = new QAction("Reload");
+
     aboutAction = new QAction(aboutText);
     settingsAction = new QAction("Settings");
     fullScreenAction = new QAction("Fullscreen");
@@ -175,24 +189,35 @@ void MainWindow::setUpMenuBar()
     aboutAction->setMenuRole(QAction::ApplicationSpecificRole);
     settingsAction->setMenuRole(QAction::ApplicationSpecificRole);
 
-    settingsAction->setShortcut(QKeySequence::Preferences);
-    fullScreenAction->setShortcut(QKeySequence::FullScreen);
     savePosterAction->setShortcut(QKeySequence::Save);
     undoRenameAction->setShortcut(QKeySequence::Undo);
+    settingsAction->setShortcut(QKeySequence::Preferences);
+    openDirectoryAction->setShortcut(QKeySequence::Open);
+    insertPathAction->setShortcut(QKeySequence::AddTab);
+    reloadDirectoryAction->setShortcut(QKeySequence::Refresh);
+    fullScreenAction->setShortcut(QKeySequence::FullScreen);
 
     fileMenu->addAction(savePosterAction);
+    fileMenu->addSeparator();
     fileMenu->addAction(undoRenameAction);
-    helpMenu->addAction(aboutAction);
     fileMenu->addAction(settingsAction);
+    directoryMenu->addAction(openDirectoryAction);
+    directoryMenu->addAction(insertPathAction);
+    directoryMenu->addAction(reloadDirectoryAction);
+    helpMenu->addAction(aboutAction);
     viewMenu->addAction(fullScreenAction);
 
     ui->menuBar->addMenu(fileMenu);
+    ui->menuBar->addMenu(directoryMenu);
     ui->menuBar->addMenu(viewMenu);
     ui->menuBar->addMenu(helpMenu);
 
     // Connect Actions
     QObject::connect(savePosterAction, SIGNAL(triggered(bool)), this, SLOT(savePoster()));
     QObject::connect(undoRenameAction, SIGNAL(triggered(bool)), this, SLOT(undoRenaming()));
+    QObject::connect(openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectory()));
+    QObject::connect(insertPathAction, SIGNAL(triggered(bool)), this, SLOT(openDirectory())); // TODO: connect to path line edit
+    QObject::connect(reloadDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(onUpdateDirectory()));
     QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
     QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), this, SLOT(toggleFullScreen()));

@@ -43,12 +43,16 @@ private:
     QComboBox* pathStructureComboBoxList[NUMBER_PATH_STRUCTURE_COMBOBOXES];
 
     QMenu *fileMenu;
+    QMenu *directoryMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
     QMenu *appearanceMenu;
     QMenu *directoryEntriesMenu;
     QAction *savePosterAction;
     QAction *undoRenameAction;
+    QAction *openDirectoryAction;
+    QAction *insertPathAction;
+    QAction *reloadDirectoryAction;
     QAction *aboutAction;
     QAction *settingsAction;
     QAction *fullScreenAction;
