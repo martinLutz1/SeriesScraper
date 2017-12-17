@@ -6,7 +6,6 @@
 
 QT       += core gui
 QT       += network
-QT       += script
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = SeriesScraper
@@ -103,5 +102,5 @@ FORMS += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-CONFIG += c++11
+CONFIG += c++17
 QMAKE_MAC_SDK = macosx10.13

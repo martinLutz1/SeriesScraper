@@ -192,7 +192,8 @@ void Controller::setSeriesInformation()
         poster = fileDownloader.getDownloadedData();
     }
     QString totalEpisodes = QString::number(seriesData.getAmountEpisodes());
-    QString season = QString::number(seriesData.getSelectedSeason());
+    auto season = seriesData.getSelectedSeason();
+    QString seasonAsString = QString::number(season);
     QString totalSeasons = QString::number(seriesData.getAmountSeasons());
     QString seriesName = seriesData.getSeries();
     QString airDate = seriesData.getAirDate();
@@ -203,23 +204,31 @@ void Controller::setSeriesInformation()
     {
         poster = nullptr;
         totalEpisodes = "-";
-        season = "-";
+        season = 0;
+        seasonAsString = "-";
         totalSeasons = "-";
         seriesName = "";
         airDate = "-";
         plot = "";
     }
 
+    // Update series info sidebar.
     Message msgSetSeriesInfo;
     msgSetSeriesInfo.type = Message::controller_setSeriesInfo_view;
     msgSetSeriesInfo.data[0].qbPointer = poster;
     msgSetSeriesInfo.data[1].qsPointer = &totalEpisodes;
-    msgSetSeriesInfo.data[2].qsPointer = &season;
+    msgSetSeriesInfo.data[2].qsPointer = &seasonAsString;
     msgSetSeriesInfo.data[3].qsPointer = &totalSeasons;
     msgSetSeriesInfo.data[4].qsPointer = &seriesName;
     msgSetSeriesInfo.data[5].qsPointer = &airDate;
     msgSetSeriesInfo.data[6].qsPointer = &plot;
     emit(sendMessage(msgSetSeriesInfo));
+
+    // Update selected season.
+    Message msgSetSeason;
+    msgSetSeason.type = Message::controller_setSeason_view;
+    msgSetSeason.data[0].i = season;
+    emit(sendMessage(msgSetSeason));
 }
 
 Controller::Controller(QObject *parent) : QObject(parent)
@@ -249,7 +258,8 @@ Controller::~Controller()
         int season = seriesData.getSelectedSeason();
         settings.setSeries(series);
         settings.setSeason(season);
-    } else
+    }
+    else
     {
         settings.setSeries("");
         settings.setSeason(1);
@@ -259,8 +269,11 @@ Controller::~Controller()
     {
         QString path = directoryHandler->getDirectoryPathInput();
         settings.setPath(path);
-    } else
+    }
+    else
+    {
         settings.setPath("");
+    }
 
     settings.saveSettingsFile();
     workerThreadDirectory.quit();
@@ -288,7 +301,7 @@ bool Controller::loadSeries(QString series, int season)
     QStringList newEpisodeList;
     bool seriesFound(false);
 
-    // Dont scrape the empty string
+    // Dont scrape an empty string
     if (!series.isEmpty())
     {
         // Start loading animation
