@@ -407,7 +407,11 @@ void Controller::changeSeriesLanguage(QString language)
     settings.setSeriesLanguage(language);
     QString series = seriesParser.getSeriesInput();
     int season = seriesData.getSelectedSeason();
-    loadSeries(series, season);
+
+    if (!series.isEmpty())
+    {
+        loadSeries(series, season);
+    }
 }
 
 void Controller::changeSeriesParser(int selectedSeriesParser)
@@ -424,8 +428,11 @@ void Controller::changeSeriesParser(int selectedSeriesParser)
         int season = seriesData.getSelectedSeason();
         seriesParser.setSeriesParser(selectedSeriesParser);
         settings.setSeriesDatabase(selectedSeriesParser);
+
         if (!series.isEmpty())
+        {
             loadSeries(series, season);
+        }
     }
 }
 
