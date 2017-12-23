@@ -3,10 +3,13 @@
 # Project created by QtCreator 2016-06-21T15:59:01
 #
 #-------------------------------------------------
+greaterThan(QT_MAJOR_VERSION, 4)
 
-QT       += core gui
-QT       += network
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui
+QT += network
+QT += widgets
+
+CONFIG += c++14
 
 TARGET = SeriesScraper
 TEMPLATE = app
@@ -43,7 +46,9 @@ SOURCES += main.cpp \
     tvdbseriesparser.cpp \
     directoryhandler.cpp \
     QProgressIndicator.cpp \
-    genericfiledownloader.cpp
+    genericfiledownloader.cpp \
+    episodename.cpp \
+    episodenamehandler.cpp
 
 HEADERS  += mainwindow.h \
     directoryparser.h \
@@ -76,24 +81,9 @@ HEADERS  += mainwindow.h \
     tvdbseriesparser.h \
     directoryhandler.h \
     QProgressIndicator.h \
-    genericfiledownloader.h
-
-win32 {
-    RC_FILE = images/icon/winIcon.rc
-    LIBS += -L"C:\git\SeriesScraper\SeriesScraper\libraries" -llibeay32
-}
-macx {
-    ICON = images/icon/macIcon.icns
-    # Deploying
-    QMAKE_POST_LINK += ~/Qt/5.7/clang_64/bin/macdeployqt SeriesScraper.app;
-    # Copy namescheme list, language folder, series language list and file type list
-    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./SeriesScraper.app/Contents/MacOs;
-    # Copy info.plist
-    QMAKE_POST_LINK += cp -Rf ./../deployment_files/mac/Info.plist ./SeriesScraper.app/Contents;
-}
-unix:!macx {
-    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./;
-}
+    genericfiledownloader.h \
+    episodename.h \
+    episodenamehandler.h
 
 FORMS += mainwindow.ui \
     aboutdialog.ui \
@@ -102,5 +92,23 @@ FORMS += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-CONFIG += c++17
-QMAKE_MAC_SDK = macosx10.13
+win32 {
+    RC_FILE = images/icon/winIcon.rc
+    LIBS += -L"C:\git\SeriesScraper\SeriesScraper\libraries" -llibeay32
+}
+
+macx {
+    debug {
+        #CONFIG -= app_bundle
+    }
+    QMAKE_MAC_SDK = macosx10.13
+    ICON = images/icon/macIcon.icns
+
+    QMAKE_POST_LINK += ~/Qt5.9.3/5.9.3/clang_64/bin/macdeployqt SeriesScraper.app;
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./SeriesScraper.app/Contents/MacOs;
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/mac/Info.plist ./SeriesScraper.app/Contents;
+}
+
+unix:!macx {
+    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./;
+}
