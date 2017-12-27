@@ -9,33 +9,33 @@
 
 Application::Application(int &argc, char *argv[]) : app(argc, argv)
 {
-    view = NULL;
-    about = NULL;
-    settings = NULL;
-    controller = NULL;
+    view = nullptr;
+    about = nullptr;
+    settings = nullptr;
+    controller = nullptr;
 }
 
 Application::~Application()
 {
-    if (view != NULL)
+    if (view != nullptr)
         delete view;
-    if (about != NULL)
+    if (about != nullptr)
         delete about;
-    if (settings != NULL)
+    if (settings != nullptr)
         delete settings;
-    if (controller != NULL)
+    if (controller != nullptr)
         delete controller;
 }
 
 void Application::init()
 {
-    if (view == NULL)
+    if (view == nullptr)
         view = new MainWindow();
-    if (about == NULL)
+    if (about == nullptr)
         about = new AboutDialog();
-    if (settings == NULL)
+    if (settings == nullptr)
         settings = new SettingsWindow();
-    if (controller == NULL)
+    if (controller == nullptr)
         controller = new Controller();
 
     QObject::connect(view, SIGNAL(sendMessage(Message&)), controller, SLOT(notify(Message&)));

@@ -1135,7 +1135,7 @@ void MainWindow::notify(Message &msg)
     {
         seriesInformationEnabled = msg.data[0].b;
         ui->additionalInfoScrollArea->setVisible(seriesInformationEnabled);
-        resizeEvent(NULL);
+        resizeEvent(nullptr);
         break;
     }
     case Message::controller_setSeriesInfo_view:
@@ -1167,7 +1167,7 @@ void MainWindow::notify(Message &msg)
         ui->seriesNameInfoLabelData->setText(seriesName);
         ui->airDateInfoLabelData->setText(airDate);
 
-        resizeEvent(NULL);
+        resizeEvent(nullptr);
         break;
     }
     case Message::controller_posterAlreadyExists_view:
