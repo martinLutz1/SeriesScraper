@@ -67,11 +67,14 @@ public slots:
     void directorySet(const bool &initialized);
     void renameDone(const bool &success);
     void undoRenameDone(const bool &success);
-    void renameProgressUpdate(const int &totalObjects, const int &currentObject, const QString &oldName, const QString &newName);
+    void renameProgressUpdate(const int totalObjects,
+                              const int currentObject,
+                              const QString oldName,
+                              const QString newName);
 
 signals:
     void sendMessage(Message &msg);
-    void initializeDirectory(const QString &);
+    void initializeDirectory(const QString);
     void rename();
     void undoRename();
 };

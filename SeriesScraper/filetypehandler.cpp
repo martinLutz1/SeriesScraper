@@ -74,6 +74,6 @@ bool FileTypeHandler::saveFileTypeFile()
 void FileTypeHandler::sort()
 {
     std::sort(loadedFile.begin(), loadedFile.end(),
-              [](const QString &s1, const QString &s2) {
+              [](const QString& s1, const QString& s2) {
         return s1.toLower() < s2.toLower(); });
 }

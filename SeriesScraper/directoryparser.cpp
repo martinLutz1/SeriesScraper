@@ -119,7 +119,7 @@ QFileInfoList DirectoryParser::naturalSort(QFileInfoList files)
     QCollator collator;
     collator.setNumericMode(true);
     std::sort(fileList.begin(), fileList.end(),
-              [&collator](const QString &file1, const QString &file2)
+              [&collator](const QString& file1, const QString& file2)
     {
         return collator.compare(file1, file2) < 0;
     });
@@ -137,7 +137,7 @@ QStringList DirectoryParser::naturalSort(QStringList toSort)
     QCollator collator;
     collator.setNumericMode(true);
     std::sort(sorted.begin(), sorted.end(),
-              [&collator](const QString &string1, const QString &string2)
+              [&collator](const QString& string1, const QString& string2)
     {
         return collator.compare(string1, string2) < 0;
     });

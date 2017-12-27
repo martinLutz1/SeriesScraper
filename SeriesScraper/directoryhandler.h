@@ -41,10 +41,13 @@ public slots:
     void undoRename();
 
 signals:
-    void directoryInitialized(const bool &);
-    void renameDone(const bool &);
-    void undoRenameDone(const bool &);
-    void updateRenameProgress(const int &, const int &, const QString &, const QString &);
+    void directoryInitialized(const bool);
+    void renameDone(const bool);
+    void undoRenameDone(const bool);
+    void updateRenameProgress(const int,
+                              const int,
+                              const QString,
+                              const QString);
 };
 
 #endif // DIRECTORYHANDLER_H

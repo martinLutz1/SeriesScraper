@@ -1048,8 +1048,8 @@ void Controller::undoRenameDone(const bool &success)
     emit(sendMessage(msgRenameFinished));
 }
 
-void Controller::renameProgressUpdate(const int &totalObjects, const int &currentObject,
-                                      const QString &oldName, const QString &newName)
+void Controller::renameProgressUpdate(const int totalObjects, const int currentObject,
+                                      const QString oldName, const QString newName)
 {
     QString oldFileName = oldName;
     QString newFileName = newName;
