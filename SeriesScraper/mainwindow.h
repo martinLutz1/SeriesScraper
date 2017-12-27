@@ -11,11 +11,13 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include <QPropertyAnimation>
+
 #include "customshadoweffect.h"
 #include "QProgressIndicator.h"
 #include "keypresseater.h"
 #include "aboutdialog.h"
 #include "message.h"
+#include "episodename.h"
 
 namespace Ui {
 class MainWindow;
@@ -64,8 +66,10 @@ private:
     QString colorWhite = "QLineEdit { background: rgb(255, 255, 255); }";
     QString colorGreen = "QLineEdit { background: rgb(204, 255, 204); }";
     QString colorRed = "QLineEdit { background: rgb(255, 217, 204); }";
-    QColor greyedOutColor = QColor(100, 100, 100);
-    QColor normalColor = QColor(0, 0, 0);
+    QColor greyedOutColor {100, 100, 100};
+    QColor normalColor {0, 0, 0};
+    QColor lightRedColor {255, 142, 142};
+    QColor whiteColor {255, 255, 255};
     QPixmap seriesImage;
     bool fullScreenEnabled = false;
     bool seriesInformationEnabled = false;
@@ -88,7 +92,7 @@ private:
     void setStatusMessage(QString message, int type);
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
-    void updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons);
+    void updateView(EpisodeNames* episodeNames, bool atLeastOneSideEmpty, int amountSeasons);
     void updateDirectoryWidget(std::vector<QStringList> pathStructure, bool containsRoot, QString path);
     void clearDirectoryWidget();
     void updateDirectoryWidgetVisibility();
@@ -111,7 +115,7 @@ public:
     ~MainWindow();
 
 private slots:
-    bool updateRow(int row, QString oldFileName, QString newFileName, bool noColorization);
+    void updateRow(int row, EpisodeName& episodeName, bool noColorization);
     void clearTable();
     void openDirectory();
     void onUpdateDirectory();

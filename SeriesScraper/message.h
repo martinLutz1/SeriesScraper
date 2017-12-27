@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QRect>
 #include <vector>
+#include "episodename.h"
 
 class Message
 {
@@ -104,6 +105,7 @@ public:
         std::vector<QStringList> *qsListVectorPointer;
         QRect *qRectPointer;
         QByteArray* qbPointer;
+        EpisodeNames* episodeNamesPointer;
         int i;
         bool b;
     };

@@ -11,7 +11,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
     ui(new Ui::SettingsWindow)
 {
     ui->setupUi(this);
-    createResetConfirmationDialog();;
+    createResetConfirmationDialog();
     windowSize = this->size();
 
     keyPressEaterEscapeSettings = new KeyPressEater;

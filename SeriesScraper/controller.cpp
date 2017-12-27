@@ -1,7 +1,10 @@
 #include "controller.h"
 #include "mainwindow.h" // StatusMessageType enum
+
+#include "episodename.h"
 #include <QDebug>
 #include <vector>
+
 
 void Controller::initializeFileTypes()
 {
@@ -172,7 +175,7 @@ void Controller::updateNewFileNames()
 
     QStringList newFileNamesWithoutSuffix = nameSchemeHandler.getFileNameList(series, airDate, season,
                                                                               amountEpisodes, episodeList);
-    seriesData.setNewFileNamesWithoutSuffix(newFileNamesWithoutSuffix);
+    episodeNameHandler.setNewNames(newFileNamesWithoutSuffix);
 }
 
 void Controller::setStatusMessage(QString status, int type)
@@ -521,7 +524,7 @@ void Controller::savePoster()
     {
         Message msgPosterAlreadyExists;
         msgPosterAlreadyExists.type = Message::controller_posterAlreadyExists_view;
-        emit sendMessage(msgPosterAlreadyExists);
+        emit(sendMessage(msgPosterAlreadyExists));
     }
 }
 
@@ -529,40 +532,40 @@ void Controller::setDirectory(QString path)
 {
     Message msgStartDirectoryLoading;
     msgStartDirectoryLoading.type = Message::controller_startDirectoryLoading_view;
-    emit sendMessage(msgStartDirectoryLoading);
-    emit initializeDirectory(path);
+    emit(sendMessage(msgStartDirectoryLoading));
+    emit(initializeDirectory(path));
 }
 
 void Controller::renameFiles()
 {
     Message msgRenameStarted;
     msgRenameStarted.type = Message::controller_renameStarted_view;
-    emit sendMessage(msgRenameStarted);
+    emit(sendMessage(msgRenameStarted));
 
-    directoryHandler->setNewFileNames(seriesData.getNewFileNames());
-    emit rename();
+    directoryHandler->setEpisodeNames(*episodeNameHandler.getEpisodeNames());
+    emit(rename());
 }
 
 void Controller::undoRenameFiles()
 {
     Message msgRenameStarted;
     msgRenameStarted.type = Message::controller_renameStarted_view;
-    emit sendMessage(msgRenameStarted);
+    emit(sendMessage(msgRenameStarted));
 
-    emit undoRename();
+    emit(undoRename());
 }
 
 void Controller::updateView()
 {
-    QStringList newFileNameList = seriesData.getNewFileNamesWithoutSuffix();
-    QStringList oldFileNameList = seriesData.getOldFileNamesWithoutSuffix();
     int amountSeasons = seriesData.getAmountSeasons();
+    const auto episodeNames = episodeNameHandler.getEpisodeNames();
+    const auto atLeastOneSideEmpty = episodeNameHandler.atLeastOneSideEmpty();
 
     Message msgViewUpdate;
     msgViewUpdate.type = Message::controller_updateView_view;
     msgViewUpdate.data[0].i = amountSeasons;
-    msgViewUpdate.data[1].qsListPointer = &oldFileNameList;
-    msgViewUpdate.data[2].qsListPointer = &newFileNameList;
+    msgViewUpdate.data[1].episodeNamesPointer = episodeNames;
+    msgViewUpdate.data[2].b = atLeastOneSideEmpty;
     emit(sendMessage(msgViewUpdate));
     updateRenameButtonAndSavePoster();
 }
@@ -570,25 +573,11 @@ void Controller::updateView()
 void Controller::updateRenameButtonAndSavePoster()
 {
     QDir testDir("");
-    bool differentFileNames = false;
-    QStringList oldNames = seriesData.getOldFileNames();
-    QStringList newNames = seriesData.getNewFileNames();
-    int minimumSize = std::min(oldNames.size(), newNames.size());
-    for (int i = 0; i < minimumSize; i ++)
-    {
-        bool differentNames = (oldNames.at(i) != newNames.at(i));
-        bool oldNameIsEmpty = oldNames.at(i).isEmpty();
-        bool newNameIsEmpty = newNames.at(i).isEmpty();
-        if (differentNames && !oldNameIsEmpty && !newNameIsEmpty)
-        {
-            differentFileNames = true;
-            break;
-        }
-    }
 
     bool directorySet = (seriesData.getWorkingDirectory().absolutePath() != testDir.absolutePath());
     bool seriesSet = !seriesData.getSeries().isEmpty();
-    bool enableRenameButton = directorySet & differentFileNames;
+
+    bool enableRenameButton = episodeNameHandler.atLeastOneEpisodeCanBeRenamed();
     bool enableSavePoster = seriesSet & directorySet & !seriesData.getPosterUrl().isEmpty();
 
     Message msgEnableRenameButton;
@@ -694,7 +683,8 @@ void Controller::notify(Message &msg)
     {
         int row = msg.data[0].i;
         QString newFileName = *msg.data[1].qsPointer;
-        seriesData.setNewFileName(row, newFileName);
+
+        episodeNameHandler.setNewName(newFileName, row);
         updateRenameButtonAndSavePoster();
         updateView();
         break;
@@ -705,7 +695,9 @@ void Controller::notify(Message &msg)
         int selectedSeason =  seriesData.getSelectedSeason();
 
         if (foundSeason == 0 || foundSeason == selectedSeason)
+        {
             renameFiles();
+        }
         else
         {
             Message msgSeasonMismatch;
@@ -960,16 +952,18 @@ void Controller::directorySet(const bool &initialized)
     QString path = directoryHandler->getDirectoryPathInput();
     QDir newDirectory("");
     QStringList newOldFileNames;
-    QStringList newOldFileNamesWithoutSuffixes;
     QStringList newSuffixes;
+    Positions newPositions;
 
     // Update directory and file infos
     if (initialized)
     {
         newDirectory = QDir(path);
-        newOldFileNames = directoryHandler->getFiles();
+        // Todo: remove getFiles();
+        //newOldFileNames = directoryHandler->getFiles();
         newSuffixes = directoryHandler->getFilesSuffix();
-        newOldFileNamesWithoutSuffixes = directoryHandler->getFilesWithoutSuffix();
+        newOldFileNames = directoryHandler->getFilesWithoutSuffix();
+        newPositions = directoryHandler->getFilePositions();
 
         fileDownloader.setFilePath(path, "poster.jpg");
 
@@ -985,25 +979,26 @@ void Controller::directorySet(const bool &initialized)
     }
 
     seriesData.setWorkingDirectory(newDirectory);
-    seriesData.setOldFileNames(newOldFileNames);
-    seriesData.setOldFileNamesWithoutSuffix(newOldFileNamesWithoutSuffixes);
-    seriesData.setSuffixes(newSuffixes);
+    episodeNameHandler.setOldNames(newOldFileNames);
+    episodeNameHandler.setFileTypes(newSuffixes);
+    episodeNameHandler.setPositionDetermination(newPositions);
+
     updateView();
 
     Message msgStopDirectoryLoading;
     msgStopDirectoryLoading.type = Message::controller_stopDirectoryLoading_view;
-    emit sendMessage(msgStopDirectoryLoading);
+    emit(sendMessage(msgStopDirectoryLoading));
 }
 
 void Controller::renameDone(const bool &success)
 {
     if (settings.getSavePosterInDirectory())
+    {
         savePoster();
+    }
 
     if (success)
     {
-        // Clear new file names
-        seriesData.setNewFileNamesWithoutSuffix(QStringList());
         // Success message
         QString renameSuccessful = interfaceLanguageHandler.getTranslation(LanguageData::renameSuccess);
         setStatusMessage(renameSuccessful, MainWindow::statusMessageType::success);
@@ -1065,5 +1060,5 @@ void Controller::renameProgressUpdate(const int &totalObjects, const int &curren
     msgUpdateRenameProgress.data[1].i = currentObject;
     msgUpdateRenameProgress.data[2].qsPointer = &oldFileName;
     msgUpdateRenameProgress.data[3].qsPointer = &newFileName;
-    emit sendMessage(msgUpdateRenameProgress);
+    emit(sendMessage(msgUpdateRenameProgress));
 }

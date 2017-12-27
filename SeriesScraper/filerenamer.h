@@ -5,18 +5,17 @@
 #include <QStringList>
 #include <QDir>
 #include <vector>
+#include "episodename.h"
 
 class FileRenamer
 {
 public:
     FileRenamer();
-    void setOldFileNames(QStringList oldfileNameList);
-    void setNewFileNames(QStringList newFileNameList);
+    void setEpisodeNames(EpisodeNames& episodeNames);
     void setDirectory(QDir directory);
     int getRenameAmount();
     QString getOldFileName(int index);
     QString getNewFileName(int index);
-    void prepareRename(); // Must be called before calling renameFile!
     bool renameFile(int index);
     void addToUndoQueue();
     bool isRenamePossible();

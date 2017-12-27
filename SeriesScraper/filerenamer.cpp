@@ -5,17 +5,22 @@
 
 FileRenamer::FileRenamer()
 {
-
 }
 
-void FileRenamer::setOldFileNames(QStringList oldFileNames)
+void FileRenamer::setEpisodeNames(EpisodeNames& episodeNames)
 {
-    this->oldFileNameList = oldFileNames;
-}
+    oldFileNameList.clear();
+    newFileNameList.clear();
 
-void FileRenamer::setNewFileNames(QStringList newFileNames)
-{
-    this->newFileNameList = newFileNames;
+    for (auto& episodeName: episodeNames)
+    {
+        if (!episodeName.newAndOldAreEqual() &&
+                !episodeName.atLeastOneNameEmpty())
+        {
+            oldFileNameList.push_back(episodeName.getOldNameWithSuffix());
+            newFileNameList.push_back(episodeName.getNewNameWithSuffix());
+        }
+    }
 }
 
 void FileRenamer::setDirectory(QDir directory)
@@ -30,48 +35,33 @@ int FileRenamer::getRenameAmount()
 
 QString FileRenamer::getOldFileName(int index)
 {
-    QString oldFileName = "";
-    if (index < oldFileNameList.size())
-        oldFileName = oldFileNameList.at(index);
-    return oldFileName;
+    if (index >= oldFileNameList.size())
+    {
+        const auto error = QString("FileRenamer::getOldFileName: ")
+                + QString("Trying to access invalid oldFileName at ")
+                + QString::number(index);
+        throw std::runtime_error(error.toStdString().c_str());
+    }
+    return oldFileNameList.at(index);
 }
 
 QString FileRenamer::getNewFileName(int index)
 {
-    QString newFileName = "";
-    if (index < newFileNameList.size())
-        newFileName = newFileNameList.at(index);
-    return newFileName;
-}
-
-void FileRenamer::prepareRename()
-{
-    QStringList preparedOldFileNameList;
-    QStringList preparedNewFileNameList;
-    int maxAmount = std::min(oldFileNameList.size(), newFileNameList.size());
-
-    for (int i = 0; i < maxAmount; i++)
+    if (index >= newFileNameList.size())
     {
-        bool emptyFileName = oldFileNameList.at(i).isEmpty();
-        bool emptyNewName = newFileNameList.at(i).isEmpty();
-        bool hasAlreadyNewName = (newFileNameList.at(i) == oldFileNameList.at(i));
-
-        // Dont add empty file names and files with the same name
-        if (!emptyFileName && !emptyNewName && !hasAlreadyNewName)
-        {
-            preparedOldFileNameList << oldFileNameList.at(i);
-            preparedNewFileNameList << newFileNameList.at(i);
-        }
+        const auto error = QString("FileRenamer::getOldFileName: ")
+                + QString("Trying to access invalid newFileName at ")
+                + QString::number(index);
+        throw std::runtime_error(error.toStdString().c_str());
     }
-    oldFileNameList = preparedOldFileNameList;
-    newFileNameList = preparedNewFileNameList;
+    return newFileNameList.at(index);
 }
 
 bool FileRenamer::renameFile(int index)
 {
-    QString fileToRename = oldFileNameList.at(index);
+    QString oldFileName = oldFileNameList.at(index);
     QString newFileName = newFileNameList.at(index);
-    return workingDirectory.rename(fileToRename, newFileName);
+    return workingDirectory.rename(oldFileName, newFileName);
 }
 
 void FileRenamer::addToUndoQueue()
@@ -83,7 +73,9 @@ void FileRenamer::addToUndoQueue()
 
 bool FileRenamer::isRenamePossible()
 {
-    return (!oldFileNameList.isEmpty() && !newFileNameList.isEmpty() && workingDirectory.exists());
+    return (!oldFileNameList.isEmpty()
+            && !newFileNameList.isEmpty()
+            && workingDirectory.exists());
 }
 
 bool FileRenamer::isUndoPossible()
@@ -108,6 +100,9 @@ bool FileRenamer::prepareUndo()
         newFileNameListStack.pop_back();
 
         return true;
-    } else
+    }
+    else
+    {
         return false;
+    }
 }

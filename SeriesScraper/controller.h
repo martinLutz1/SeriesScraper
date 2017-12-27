@@ -5,6 +5,7 @@
 #include "settings.h"
 #include "seriesparser.h"
 #include "seriesdata.h"
+#include "episodenamehandler.h"
 #include "serieslanguagehandler.h"
 #include "nameschemehandler.h"
 #include "interfacelanguagehandler.h"
@@ -21,6 +22,7 @@ class Controller : public QObject
 private:
     SeriesParser seriesParser;
     SeriesData seriesData;
+    EpisodeNameHandler episodeNameHandler;
     DirectoryHandler *directoryHandler;
     NameSchemeHandler nameSchemeHandler;
     FileTypeHandler fileTypeHandler;

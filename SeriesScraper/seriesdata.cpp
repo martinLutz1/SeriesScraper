@@ -15,28 +15,6 @@ void SeriesData::setSeries(QString newSeries)
     series = removeSpecialCharacters(newSeries);
 }
 
-void SeriesData::setSuffix(int index, QString newSuffix)
-{
-    if (suffixesList.length() <= index) { // Prepare space if not enough available
-        for (int i = suffixesList.length(); i <= index; i++)
-            suffixesList << "";
-    }
-    suffixesList[index] = newSuffix;
-}
-
-void SeriesData::setSuffixes(QStringList newSuffixList)
-{
-    suffixesList = newSuffixList;
-}
-
-void SeriesData::setNewFileName(int index, QString newFileName)
-{
-    while (index >= newFileNamesWithoutSuffix.size())
-        newFileNamesWithoutSuffix.push_back("");
-
-    newFileNamesWithoutSuffix[index] = removeSpecialCharacters(newFileName);
-}
-
 void SeriesData::setEpisodes(QStringList newEpisodeList)
 {
     int numberEpisodes = newEpisodeList.size();
@@ -61,21 +39,6 @@ void SeriesData::setSelectedSeason(int newSelectedSeason)
 {
     if (newSelectedSeason <= amountSeasons)
         selectedSeason = newSelectedSeason;
-}
-
-void SeriesData::setNewFileNamesWithoutSuffix(QStringList newFileNamesWithoutSuffix)
-{
-    this->newFileNamesWithoutSuffix = newFileNamesWithoutSuffix;
-}
-
-void SeriesData::setOldFileNames(QStringList oldFileNames)
-{
-    this->oldFileNames = oldFileNames;
-}
-
-void SeriesData::setOldFileNamesWithoutSuffix(QStringList oldFileNamesWithoutSuffix)
-{
-    this->oldFileNamesWithoutSuffix = oldFileNamesWithoutSuffix;
 }
 
 void SeriesData::setWorkingDirectory(QDir directory)
@@ -139,7 +102,7 @@ QString SeriesData::getSelectedLanguage()
 
 int SeriesData::getAmountEpisodes()
 {
-    return episodesList.size();;
+    return episodesList.size();
 }
 
 int SeriesData::getAmountSeasons()

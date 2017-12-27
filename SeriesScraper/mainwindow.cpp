@@ -1,13 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "languagedata.h"
-#include "seriesparser.h"
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
 #include <QDesktopServices>
 #include <QDebug>
+
+#include "languagedata.h"
+#include "seriesparser.h"
 
 #define UNIVERSAL_SPACER 10
 #define GROUPBOX_HEIGHT 70
@@ -371,31 +373,20 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     updateDirectoryWidgetVisibility();
 }
 
-void MainWindow::updateView(QStringList oldFileNames, QStringList newFileNames, int amountSeasons)
+void MainWindow::updateView(EpisodeNames* episodeNames, bool atLeastOneSideEmpty, int amountSeasons)
 {
     // Avoid firing cell changed signals
     QObject::disconnect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
 
-    bool noColorization = (oldFileNames.empty() || newFileNames.isEmpty());
-    int tableSize = std::max(newFileNames.size(), oldFileNames.size());
-
+    const auto tableSize = episodeNames->size();
     setAmountSeasons(amountSeasons);
-
-    // Fill up missing items
-    while (newFileNames.size() < tableSize)
-        newFileNames << "";
-    while (oldFileNames.size() < tableSize)
-        oldFileNames << "";
-
-    // Fill table
-    for (int i = 0; i < tableSize; i++)
-        updateRow(i, oldFileNames.at(i), newFileNames.at(i), noColorization);
-
-    // Tidy up what is left of unnecessary entries
     ui->episodeNameTable->setRowCount(tableSize);
 
-    for (int i = ui->episodeNameTable->rowCount(); i >= tableSize; i--)
-        ui->episodeNameTable->removeRow(i);
+    // Fill table
+    for (size_t row = 0; row < tableSize; row++)
+    {
+        updateRow(row, episodeNames->at(row), atLeastOneSideEmpty);
+    }
 
     QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
 }
@@ -481,7 +472,7 @@ void MainWindow::changeToDarkTheme()
     darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
     darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
     darkPalette.setColor(QPalette::HighlightedText, Qt::black);
-    colorWhite = "QLineEdit { background: rgb(25,25,25); }";
+    colorWhite = "QLineEdit { background: rgb(25, 25, 25); }";
     colorGreen = "QLineEdit { background: rgb(4, 55, 4); }";
     colorRed = "QLineEdit { background: rgb(55, 15, 15); }";
     imageBackground = QString("background-image: url(:/images/logo.png); ")
@@ -493,10 +484,12 @@ void MainWindow::changeToDarkTheme()
     directPathShadow->setColor(QColor(255, 255, 255, 150));
     greyedOutColor = QColor(155, 155, 155);
     normalColor = QColor(255, 255, 255);
+    lightRedColor = QColor(96, 31, 31);
+    whiteColor = QColor(25, 25, 25);
 
     qApp->setPalette(darkPalette);
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
-    if (ui->episodeNameTable->itemAt(1,1) == NULL)
+    if (ui->episodeNameTable->itemAt(1,1) == nullptr)
         clearTable();
 }
 
@@ -735,7 +728,7 @@ void MainWindow::onSeriesTextChanged()
     msg.type = Message::view_changeSeriesText_controller;
     msg.data[0].qsPointer = &seriesText;
     msg.data[1].i = 1;
-    emit sendMessage(msg);
+    emit(sendMessage(msg));
 }
 
 void MainWindow::onSeasonChanged(int index)
@@ -917,9 +910,10 @@ void MainWindow::notify(Message &msg)
     case Message::controller_updateView_view:
     {
         int amountSeasons = msg.data[0].i;
-        QStringList oldFileNameList = *msg.data[1].qsListPointer;
-        QStringList newFileNameList = *msg.data[2].qsListPointer;
-        updateView(oldFileNameList, newFileNameList, amountSeasons);
+        EpisodeNames* episodeNames = msg.data[1].episodeNamesPointer;
+        bool atLeastOneSideEmpty = msg.data[2].b;
+
+        updateView(episodeNames, atLeastOneSideEmpty, amountSeasons);
         break;
     }
     case Message::controller_seriesSet_view:
@@ -1123,7 +1117,8 @@ void MainWindow::notify(Message &msg)
     {
         changeToDarkTheme();
         // Workaround for white table headers
-        updateRow(0, "", "", true);
+        EpisodeName episodeName{};
+        updateRow(0, episodeName, true);
         clearTable();
         break;
     }
@@ -1192,49 +1187,76 @@ void MainWindow::notify(Message &msg)
     }
 }
 
-bool MainWindow::updateRow(int row, QString oldFileName, QString newFileName, bool noColorization)
+void MainWindow::updateRow(int row, EpisodeName& episodeName, bool noColorization)
 {
-    // Check if trying to access rows, that are not existent and not the next possible new row
-    if (row > ui->episodeNameTable->rowCount())
-        return false;
+    const auto oldFileName = episodeName.getOldName();
+    const auto newFileName = episodeName.getNewName();
+
+    const auto& table = ui->episodeNameTable;
+    auto leftSide = table->item(row, 0);
+    auto rightSide = table->item(row, 1);
+    const auto tableSize = table->rowCount();
+
+    if (row > tableSize)
+    {
+        const auto error =
+                QString("MainWindow::updateRow(): Trying to access invalid row at ")
+                + QString::number(row)
+                + QString(", but table size is ")
+                + QString::number(tableSize);
+        throw std::runtime_error(error.toStdString().c_str());
+    }
+
+    // Insert both text fields if they are not already set.
+    if (leftSide == nullptr || rightSide == nullptr)
+    {
+        leftSide = new QTableWidgetItem();
+        rightSide = new QTableWidgetItem();
+
+        leftSide->setFlags(leftSide->flags() & ~Qt::ItemIsEditable);
+
+        table->setItem(row, 0, leftSide);
+        table->setItem(row, 1, rightSide);
+    }
+
+    leftSide->setText(oldFileName);
+    rightSide->setText(newFileName);
+
+    table->setStyleSheet(whiteBackground);
+    leftSide->setTextColor(normalColor);
+    rightSide->setTextColor(normalColor);
+
+    if (noColorization)
+    {
+        return;
+    }
+
+    // Grey out what will not be renamed.
+    if (episodeName.atLeastOneNameEmpty())
+    {
+        if (oldFileName.isEmpty())
+        {
+            rightSide->setTextColor(greyedOutColor);
+        }
+        else if (newFileName.isEmpty())
+        {
+            leftSide->setTextColor(greyedOutColor);
+        }
+    }
+    else if (episodeName.newAndOldAreEqual())
+    {
+        leftSide->setTextColor(greyedOutColor);
+        rightSide->setTextColor(greyedOutColor);
+    }
+
+    // Red background if position is not determined.
+    if (!episodeName.isPositionDetermined() &&
+            !episodeName.atLeastOneNameEmpty())
+    {
+        leftSide->setBackground(QBrush(lightRedColor));
+    }
     else
-        ui->episodeNameTable->setStyleSheet(whiteBackground);
-
-    // Check if row items already exist to prevent multiple creations
-    if (ui->episodeNameTable->item(row, 0) != NULL && ui->episodeNameTable->item(row, 1) != NULL)
     {
-        ui->episodeNameTable->item(row, 0)->setText(oldFileName);
-        ui->episodeNameTable->item(row, 1)->setText(newFileName);
+        leftSide->setBackground(whiteColor);
     }
-    else // Not existing
-    {
-        QTableWidgetItem *oldFile = new QTableWidgetItem(oldFileName);
-        QTableWidgetItem *newFile = new QTableWidgetItem(newFileName);
-        oldFile->setFlags(oldFile->flags() & ~Qt::ItemIsEditable);
-
-        ui->episodeNameTable->insertRow(row);
-        ui->episodeNameTable->setItem(row, 0, oldFile);
-        ui->episodeNameTable->setItem(row, 1, newFile);
-    }
-
-    // Colorize the table item
-    if (oldFileName.isEmpty() && !newFileName.isEmpty() && !noColorization)
-    {
-        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOutColor);
-    }
-    else if (!oldFileName.isEmpty() && newFileName.isEmpty() && !noColorization)
-    {
-        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOutColor);
-    }
-    else if ((oldFileName == newFileName) && !noColorization)
-    {
-        ui->episodeNameTable->item(row, 0)->setTextColor(greyedOutColor);
-        ui->episodeNameTable->item(row, 1)->setTextColor(greyedOutColor);
-    }
-    else
-    {
-        ui->episodeNameTable->item(row, 0)->setTextColor(normalColor);
-        ui->episodeNameTable->item(row, 1)->setTextColor(normalColor);
-    }
-    return true;
 }

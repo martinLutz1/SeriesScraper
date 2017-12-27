@@ -5,27 +5,29 @@ bool DirectoryHandler::renameFiles(bool isUndo)
     bool renameSuccess = fileRenamer.isRenamePossible();
     if (renameSuccess)
     {
-        fileRenamer.prepareRename();
         int amountToRename = fileRenamer.getRenameAmount();
         for (int i = 0; i < amountToRename; i++)
         {
             QString oldFileName = fileRenamer.getOldFileName(i);
             QString newFileName = fileRenamer.getNewFileName(i);
-            emit updateRenameProgress(amountToRename, i + 1, oldFileName, newFileName);
+            emit(updateRenameProgress(amountToRename, (i + 1), oldFileName, newFileName));
 
             renameSuccess = fileRenamer.renameFile(i);
             if (!renameSuccess)
+            {
                 break;
+            }
         }
         if (renameSuccess && !isUndo && fileRenamer.isSpaceOnUndoQueue())
+        {
             fileRenamer.addToUndoQueue();
+        }
     }
     return renameSuccess;
 }
 
 DirectoryHandler::DirectoryHandler(QObject *parent) : QObject(parent)
 {
-
 }
 
 void DirectoryHandler::setFileTypes(QStringList fileTypes)
@@ -73,9 +75,14 @@ QStringList DirectoryHandler::getFilesSuffix()
     return directoryParser.getFilesSuffix();
 }
 
-void DirectoryHandler::setNewFileNames(QStringList newFileNameList)
+Positions DirectoryHandler::getFilePositions()
 {
-    fileRenamer.setNewFileNames(newFileNameList);
+    return directoryParser.getFilePositions();
+}
+
+void DirectoryHandler::setEpisodeNames(EpisodeNames episodeNames)
+{
+    fileRenamer.setEpisodeNames(episodeNames);
 }
 
 bool DirectoryHandler::isUndoPossible()
@@ -89,15 +96,14 @@ void DirectoryHandler::initializeDirectory(QString path)
     if (initialized)
     {
         fileRenamer.setDirectory(directoryParser.getDirectory());
-        fileRenamer.setOldFileNames(directoryParser.getFiles());
     }
-    emit directoryInitialized(initialized);
+    emit(directoryInitialized(initialized));
 }
 
 void DirectoryHandler::rename()
 {
     bool renameSuccess = renameFiles();
-    emit renameDone(renameSuccess);
+    emit(renameDone(renameSuccess));
 }
 
 void DirectoryHandler::undoRename()
@@ -105,6 +111,6 @@ void DirectoryHandler::undoRename()
     if (fileRenamer.isUndoPossible() && fileRenamer.prepareUndo())
     {
         bool undoSuccess = renameFiles(true);
-        emit undoRenameDone(undoSuccess);
+        emit(undoRenameDone(undoSuccess));
     }
 }

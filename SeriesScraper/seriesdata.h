@@ -10,16 +10,10 @@ class SeriesData
 public:
     SeriesData();
     void setSeries(QString newSeries);
-    void setSuffix(int index, QString newSuffix);
-    void setSuffixes(QStringList newSuffixList);
-    void setNewFileName(int index, QString newFileName);
     void setEpisodes(QStringList newEpisodeList);
     void setSelectedLanguage(QString languageShortName);
     void setAmountSeasons(int newAmount);
     void setSelectedSeason(int newSelectedSeason);
-    void setNewFileNamesWithoutSuffix(QStringList newFileNamesWithoutSuffix);
-    void setOldFileNames(QStringList oldFileNames);
-    void setOldFileNamesWithoutSuffix(QStringList oldFileNamesWithoutSuffix);
     void setWorkingDirectory(QDir directory);
     void setAirDate(QString airDate);
     void setPlot(QString plot);

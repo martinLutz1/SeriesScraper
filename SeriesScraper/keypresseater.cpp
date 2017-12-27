@@ -14,10 +14,13 @@ void KeyPressEater::setKey(int key)
 
 bool KeyPressEater::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::KeyPress && (static_cast<QKeyEvent *>(event))->key() == key) {
-        emit keyPressed();
+    if (event->type() == QEvent::KeyPress && (static_cast<QKeyEvent *>(event))->key() == key)
+    {
+        emit(keyPressed());
         return true;
-    } else {
+    }
+    else
+    {
         // standard event processing
         return QObject::eventFilter(obj, event);
     }

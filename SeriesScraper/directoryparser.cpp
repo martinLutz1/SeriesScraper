@@ -6,45 +6,104 @@
 #include <unordered_map>
 #include "mainwindow.h" // Path structure box number
 
-int DirectoryParser::getNameSchemeType(QString filename)
+DirectoryParser::NameSchemeType DirectoryParser::getNameSchemeType(QString filename)
 {
     bool isSeasonAndEpisode = seasonAndEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
     if (isSeasonAndEpisode)
-        return seasonAndEpisode;
+    {
+        return NameSchemeType::seasonAndEpisode;
+    }
 
     bool isSeasonSeparatorEpisode = seasonSeparatorEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
     if (isSeasonSeparatorEpisode)
-        return seasonSeparatorEpisode;
+    {
+        return NameSchemeType::seasonSeparatorEpisode;
+    }
 
     bool isDigitOnly = digitOnlySeasonAndEpisodeExpression.match(filename, 0, QRegularExpression::PartialPreferCompleteMatch).hasMatch();
     if (isDigitOnly)
-        return digitOnly;
+    {
+        return NameSchemeType::digitOnly;
+    }
 
-    return none;
+    return NameSchemeType::none;
 }
 
 QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
 {
+    positionsValidity.clear();
+
+    QStringList fileNames;
     QFileInfoList sortedFiles;
-    QStringList fileList;
 
-    for (int i = 0; i < files.size(); i++)  // Get strings to calculate positions
-        fileList << files.at(i).fileName();
+    for (const auto& file: files)
+    {
+        fileNames << file.fileName();
+    }
 
-    std::vector<int> position = getEpisodePositions(fileList);
+    std::vector<int> position = getEpisodePositions(fileNames);
 
-    if (int(position.size()) < files.size()) // Name scheme not found, natural sort
+    // Name scheme not found, natural sort
+    if (int(position.size()) < fileNames.size())
     {
         sortedFiles = naturalSort(files);
     }
-    else // Sort by found positions
+    // Sort by found positions
+    else
     {
+        QFileInfoList unsureFiles;
+
         for (int i = 0; i < files.size(); i++)
         {
-            while (sortedFiles.size() <= position.at(i))  // Prepare space
-                sortedFiles.push_back(QFileInfo(""));
-            if (position.at(i) >= 0)
-                sortedFiles[position.at(i)] = files.at(i);
+            const auto foundPosition = position.at(i);
+
+            // No season should be larger than 10.000 episodes.
+            // We avoid crashing on too large numbers.
+            if (foundPosition > 10000)
+            {
+                break;
+            }
+
+            while (sortedFiles.size() <= foundPosition)
+            {
+                sortedFiles.push_back(QFileInfo());
+                positionsValidity.push_back(EpisodeName::Position::unsure);
+            }
+
+            if (foundPosition >= 0)
+            {
+                sortedFiles[foundPosition] = files.at(i);
+                positionsValidity[foundPosition] = EpisodeName::Position::determined;
+            }
+            else
+            {
+                unsureFiles.push_back(files.at(i));
+            }
+        }
+
+        // Insert files whose positions where unsure.
+        if (!unsureFiles.isEmpty())
+        {
+            for (auto i = 0; i < sortedFiles.size(); i++)
+            {
+                if (positionsValidity.at(i) == EpisodeName::Position::unsure)
+                {
+                    sortedFiles[i] = unsureFiles.front();
+                    unsureFiles.pop_front();
+
+                    if (unsureFiles.isEmpty())
+                    {
+                        break;
+                    }
+                }
+            }
+            // If there are not enough positions to be filled,
+            // just attach the unsure files to the end.
+            for (auto unsureFile: unsureFiles)
+            {
+                sortedFiles.push_back(unsureFile);
+                positionsValidity.push_back(EpisodeName::Position::unsure);
+            }
         }
     }
     return sortedFiles;
@@ -85,12 +144,12 @@ QStringList DirectoryParser::naturalSort(QStringList toSort)
     return sorted;
 }
 
-int DirectoryParser::getSeason(QString fileName, int amountFiles, int type)
+int DirectoryParser::getSeason(QString fileName, int amountFiles, NameSchemeType type)
 {
     int season = 0;
     switch (type)
     {
-    case seasonAndEpisode:
+    case NameSchemeType::seasonAndEpisode:
     {
         QRegularExpressionMatch seasonAndEpisodeMatch = seasonAndEpisodeExpression.match
                 (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -103,7 +162,7 @@ int DirectoryParser::getSeason(QString fileName, int amountFiles, int type)
         }
         break;
     }
-    case seasonSeparatorEpisode:
+    case NameSchemeType::seasonSeparatorEpisode:
     {
         QRegularExpressionMatch seasonSeparatorEpisodeMatch = seasonSeparatorEpisodeExpression.match
                 (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -116,7 +175,7 @@ int DirectoryParser::getSeason(QString fileName, int amountFiles, int type)
         }
         break;
     }
-    case digitOnly:
+    case NameSchemeType::digitOnly:
     {
         QRegularExpressionMatch digitOnlyMatch = digitOnlySeasonAndEpisodeExpression.match
                 (fileName, 0, QRegularExpression::PartialPreferCompleteMatch);
@@ -127,6 +186,11 @@ int DirectoryParser::getSeason(QString fileName, int amountFiles, int type)
             int seasonLength = digitOnlyText.length() - getEpisodeLengthOfDigitOnly(amountFiles);
             season = digitOnlyText.left(seasonLength).toInt();
         }
+        break;
+    }
+    case NameSchemeType::none:
+    default:
+    {
         break;
     }
     }
@@ -227,7 +291,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
 
     for (int i = 0; i < episodeList.size(); i++)
     {
-        int type = getNameSchemeType(episodeList.at(i));
+        NameSchemeType type = getNameSchemeType(episodeList.at(i));
         // Season
         int foundSeason = getSeason(episodeList.at(i), episodeList.size(), type);
         if (foundSeasonToNumberOccurency.find(foundSeason) == foundSeasonToNumberOccurency.end())
@@ -243,16 +307,16 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
         int foundPosition;
         switch (type)
         {
-        case seasonAndEpisode:
+        case NameSchemeType::seasonAndEpisode:
             foundPosition = getEpisodePositionOfSeasonAndEpisode(episodeList.at(i), episodePosition);
             break;
-        case seasonSeparatorEpisode:
+        case NameSchemeType::seasonSeparatorEpisode:
             foundPosition = getEpisodePositionOfSeasonSeparatorEpisode(episodeList.at(i), episodePosition);
             break;
-        case digitOnly:
+        case NameSchemeType::digitOnly:
             foundPosition = getEpisodePositionOfDigitOnly(episodeList.at(i), episodeList.size(), episodePosition);
             break;
-        case none:
+        case NameSchemeType::none:
         default:
             foundPosition = -1;
             break;
@@ -296,7 +360,7 @@ std::vector<int> DirectoryParser::getEpisodePositions(QStringList episodeList)
     // Not found position. Fill the empty space in episodePosition with them.
     if (!sortedEpisodePositions.empty() && sortedEpisodePositions.at(0) == -1)
     {
-        for (int &iter : episodePosition)
+        for (auto iter : episodePosition)
         {
             if (iter == -1 && !emptyPositions.empty())
             {
@@ -415,7 +479,8 @@ void DirectoryParser::setFileInformation()
             newSortedFiles << fileInfo.fileName();
             newSortedFilesWithoutSuffix << fileInfo.completeBaseName();
             newSuffixes << fileInfo.suffix();
-        } else if (!fileInfo.isDir())
+        }
+        else if (!fileInfo.isDir())
         {
             newSortedFiles << "";
             newSortedFilesWithoutSuffix << "";
@@ -511,4 +576,9 @@ QStringList DirectoryParser::getFilesWithoutSuffix()
 QStringList DirectoryParser::getFilesSuffix()
 {
     return suffixes;
+}
+
+Positions DirectoryParser::getFilePositions()
+{
+    return positionsValidity;
 }

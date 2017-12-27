@@ -6,6 +6,8 @@
 #include <QRegularExpression>
 #include <vector>
 
+#include "episodenamehandler.h"
+
 class DirectoryParser
 {
 private:
@@ -25,15 +27,16 @@ private:
     QStringList sortedFiles;
     QStringList sortedFileWithoutSuffix;
     QStringList suffixes;
+    Positions positionsValidity;
     std::vector<QStringList> pathStructure;
     bool containsRoot = false;
-    enum nameSchemeType {seasonAndEpisode, seasonSeparatorEpisode, digitOnly, none};
+    enum class NameSchemeType { seasonAndEpisode, seasonSeparatorEpisode, digitOnly, none };
 
-    int getNameSchemeType(QString filename);
+    NameSchemeType getNameSchemeType(QString filename);
     QFileInfoList sortFiles(QFileInfoList files);
     QFileInfoList naturalSort(QFileInfoList files);
     QStringList naturalSort(QStringList toSort);
-    int getSeason(QString fileName, int amountFiles, int type);
+    int getSeason(QString fileName, int amountFiles, NameSchemeType type);
     int getEpisodePositionOfSeasonAndEpisode(QString fileName, std::vector<int> positions);
     int getEpisodePositionOfSeasonSeparatorEpisode(QString fileName, std::vector<int> positions);
     int getEpisodePositionOfDigitOnly(QString fileName, int amountFiles, std::vector<int> positions);
@@ -59,6 +62,7 @@ public:
     QStringList getFiles();
     QStringList getFilesWithoutSuffix();
     QStringList getFilesSuffix();
+    Positions getFilePositions();
 };
 
 #endif // DIRECTORYPARSER_H

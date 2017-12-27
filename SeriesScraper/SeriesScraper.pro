@@ -99,7 +99,7 @@ win32 {
 
 macx {
     debug {
-        #CONFIG -= app_bundle
+        CONFIG -= app_bundle
     }
     QMAKE_MAC_SDK = macosx10.13
     ICON = images/icon/macIcon.icns

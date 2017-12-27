@@ -3,9 +3,12 @@
 
 #include <QObject>
 #include <QThread>
+#include <QDebug>
+
 #include "directoryparser.h"
 #include "filerenamer.h"
-#include <QDebug>
+#include "episodenamehandler.h"
+#include "episodename.h"
 
 class DirectoryHandler : public QObject
 {
@@ -27,8 +30,9 @@ public:
     QStringList getFiles();
     QStringList getFilesWithoutSuffix();
     QStringList getFilesSuffix();
+    Positions getFilePositions();
 
-    void setNewFileNames(QStringList newFileNameList);
+    void setEpisodeNames(EpisodeNames episodeNames);
     bool isUndoPossible();
 
 public slots:
