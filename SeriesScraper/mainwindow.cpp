@@ -490,7 +490,12 @@ void MainWindow::changeToDarkTheme()
     qApp->setPalette(darkPalette);
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
     if (ui->episodeNameTable->itemAt(1,1) == nullptr)
+    {
         clearTable();
+    }
+    // Workaround for white table headers
+    EpisodeName episodeName{};
+    updateRow(0, episodeName, true);
 }
 
 void MainWindow::showSeriesLoadingAnimation()
@@ -690,8 +695,8 @@ void MainWindow::changeLocalization(QStringList translationList)
 void MainWindow::openDirectory()
 {
     // Open directory-dialog to chose directory
-    QString directoryPath;
-    directoryPath = QFileDialog::getExistingDirectory(this, directorySelectionText, chosenPath.path());
+    QString directoryPath =
+            QFileDialog::getExistingDirectory(this, directorySelectionText, chosenPath.path());
     QDir dir(directoryPath);
 
     if (!directoryPath.isNull() && dir.exists())
@@ -1116,10 +1121,6 @@ void MainWindow::notify(Message &msg)
     case Message::controller_useDarkTheme_view:
     {
         changeToDarkTheme();
-        // Workaround for white table headers
-        EpisodeName episodeName{};
-        updateRow(0, episodeName, true);
-        clearTable();
         break;
     }
     case Message::controller_setWindowRect_view:

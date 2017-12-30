@@ -27,7 +27,6 @@ public:
     bool getStructureContainsRoot();
     QString getDirectoryPathInput();
     int getFoundSeason();
-    QStringList getFiles();
     QStringList getFilesWithoutSuffix();
     QStringList getFilesSuffix();
     Positions getFilePositions();

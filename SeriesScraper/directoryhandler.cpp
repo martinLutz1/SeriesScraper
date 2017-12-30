@@ -60,11 +60,6 @@ int DirectoryHandler::getFoundSeason()
     return directoryParser.getFoundSeason();
 }
 
-QStringList DirectoryHandler::getFiles()
-{
-    return directoryParser.getFiles();
-}
-
 QStringList DirectoryHandler::getFilesWithoutSuffix()
 {
     return directoryParser.getFilesWithoutSuffix();

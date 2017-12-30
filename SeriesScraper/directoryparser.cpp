@@ -563,11 +563,6 @@ int DirectoryParser::getFoundSeason()
     return foundSeason;
 }
 
-QStringList DirectoryParser::getFiles()
-{
-    return sortedFiles;
-}
-
 QStringList DirectoryParser::getFilesWithoutSuffix()
 {
     return sortedFileWithoutSuffix;

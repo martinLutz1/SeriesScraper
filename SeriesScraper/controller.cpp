@@ -475,7 +475,13 @@ void Controller::changeSaveSeries(bool saveSeries)
 void Controller::changeSavePath(bool savePath)
 {
     if (savePath)
+    {
         setDirectory(settings.getPath());
+    }
+    else
+    {
+        setDirectory(QDir::homePath());
+    }
 
     Message msgSavePath;
     msgSavePath.type = Message::controller_savePath_settings;
@@ -959,8 +965,6 @@ void Controller::directorySet(const bool &initialized)
     if (initialized)
     {
         newDirectory = QDir(path);
-        // Todo: remove getFiles();
-        //newOldFileNames = directoryHandler->getFiles();
         newSuffixes = directoryHandler->getFilesSuffix();
         newOldFileNames = directoryHandler->getFilesWithoutSuffix();
         newPositions = directoryHandler->getFilePositions();

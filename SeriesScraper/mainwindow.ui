@@ -505,7 +505,7 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>631</width>
+           <width>656</width>
            <height>129</height>
           </rect>
          </property>
@@ -604,6 +604,9 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="directoryWidgetHorizontalLayout">
+              <item>
+               <widget class="QLineEdit" name="directPathInputLineEdit"/>
+              </item>
               <item>
                <widget class="QComboBox" name="pathStructure4ComboBox">
                 <property name="minimumSize">
@@ -1091,8 +1094,6 @@
       </item>
      </layout>
     </widget>
-    <zorder>horizontalLayoutWidget_5</zorder>
-    <zorder>pathLabel</zorder>
    </widget>
    <widget class="QScrollArea" name="renameProgressScrollArea">
     <property name="geometry">
@@ -1262,23 +1263,6 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QLineEdit" name="directPathInputLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>340</y>
-      <width>501</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
-   <zorder>episodeNameTable</zorder>
-   <zorder>additionalInfoScrollArea</zorder>
-   <zorder>centralControlElementWidget</zorder>
-   <zorder>renameProgressScrollArea</zorder>
-   <zorder>directPathInputLineEdit</zorder>
-   <zorder>plotPlainTextEdit</zorder>
-   <zorder>plotPlainTextEdit</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">

@@ -19,7 +19,7 @@ private:
     QRegularExpression episodeSeparatorNumberExpression = QRegularExpression("(x|X|\\.|\\-)[0-9]+"); // x1 / .1 / -1
     QRegularExpression digitOnlySeasonAndEpisodeExpression = QRegularExpression("[0-9]+[0-9]+[0-9]+"); // 101
     QRegularExpression numberExpression = QRegularExpression("[0-9]+");
-    QDir directory = QDir("");
+    QDir directory = QDir::home();
     bool directorySet = false;
     QString directoryPathInput;
     QStringList filter;
@@ -59,7 +59,6 @@ public:
     QString getDirectoryPathInput();
     QDir getDirectory();
     int getFoundSeason();
-    QStringList getFiles();
     QStringList getFilesWithoutSuffix();
     QStringList getFilesSuffix();
     Positions getFilePositions();
