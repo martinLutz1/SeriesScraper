@@ -1146,6 +1146,27 @@ void MainWindow::notify(Message &msg)
         seriesTextChangeTimer->stop(); // Avoid double loading
         break;
     }
+    case Message::Type::controller_setPath_view:
+    {
+        const QString path = *msg.data[0].qsPointer;
+        ui->directPathInputLineEdit->setText(path);
+        break;
+    }
+    case Message::Type::controller_DirectorySetSuccessful_view:
+    {
+        const auto setSuccessful = msg.data[0].b;
+        // Todo: Colorize the background
+        if (setSuccessful)
+        {
+            qDebug() << "Set successfully";
+        }
+        else
+        {
+            qDebug() << "Not set successfully";
+        }
+        //ui->directorySelectionHorizontalLayout->setText("Wrong!");
+        break;
+    }
     case Message::Type::controller_updateDirectoryWidget_view:
     {
         std::vector<QStringList> pathStructure = *msg.data[0].qsListVectorPointer;

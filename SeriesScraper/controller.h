@@ -65,9 +65,9 @@ public:
 
 public slots:
     void notify(Message &msg);
-    void directorySet(const bool &initialized);
-    void renameDone(const bool &success);
-    void undoRenameDone(const bool &success);
+    void directorySet(const bool initialized);
+    void renameDone(const bool success);
+    void undoRenameDone(const bool success);
     void renameProgressUpdate(const int totalObjects,
                               const int currentObject,
                               const QString oldName,

@@ -54,6 +54,7 @@ public:
         controller_startDirectoryLoading_view,
         controller_stopDirectoryLoading_view,
         controller_setPath_view,
+        controller_DirectorySetSuccessful_view,
         controller_setWindowRect_view,
         controller_updateDirectoryWidget_view,
         controller_enableRenameButton_view,
@@ -100,7 +101,7 @@ public:
         controller_replaceFileType_settings
     };
 
-    union MessageData {
+    union Data {
         QString* qsPointer;
         QStringList* qsListPointer;
         std::vector<QStringList> *qsListVectorPointer;
@@ -112,7 +113,7 @@ public:
     };
 
     Type type;
-    MessageData data[7];
+    Data data[7];
 
     Message();
 };

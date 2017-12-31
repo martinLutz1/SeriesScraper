@@ -962,26 +962,24 @@ void Controller::notify(Message &msg)
     }
 }
 
-void Controller::directorySet(const bool &initialized)
+void Controller::directorySet(const bool initialized)
 {
-    QString path = directoryHandler->getDirectoryPathInput();
-    QDir newDirectory("");
-    QStringList newOldFileNames;
-    QStringList newSuffixes;
-    Positions newPositions;
-
     // Update directory and file infos
     if (initialized)
     {
-        newDirectory = QDir(path);
-        newSuffixes = directoryHandler->getFilesSuffix();
-        newOldFileNames = directoryHandler->getFilesWithoutSuffix();
-        newPositions = directoryHandler->getFilePositions();
-
-        fileDownloader.setFilePath(path, "poster.jpg");
-
+        QString path = directoryHandler->getDirectoryPathInput();
+        QDir newDirectory(path);
+        QStringList newOldFileNames = directoryHandler->getFilesWithoutSuffix();
+        QStringList newSuffixes = directoryHandler->getFilesSuffix();;
+        Positions newPositions = directoryHandler->getFilePositions();
         std::vector<QStringList> pathStructure = directoryHandler->getPathStructure();
         bool containsRoot = directoryHandler->getStructureContainsRoot();
+
+        seriesData.setWorkingDirectory(newDirectory);
+        episodeNameHandler.setOldNames(newOldFileNames);
+        episodeNameHandler.setFileTypes(newSuffixes);
+        episodeNameHandler.setPositionDetermination(newPositions);
+        fileDownloader.setFilePath(path, "poster.jpg");
 
         Message msgUpdateDirectoryWidget;
         msgUpdateDirectoryWidget.type = Message::Type::controller_updateDirectoryWidget_view;
@@ -989,21 +987,26 @@ void Controller::directorySet(const bool &initialized)
         msgUpdateDirectoryWidget.data[1].b = containsRoot;
         msgUpdateDirectoryWidget.data[2].qsPointer = &path;
         emit(sendMessage(msgUpdateDirectoryWidget));
+
+        Message msgUpdateDirectoryPath;
+        msgUpdateDirectoryPath.type = Message::Type::controller_setPath_view;
+        msgUpdateDirectoryPath.data[0].qsPointer = &path;
+        emit(sendMessage(msgUpdateDirectoryPath));
+
+        updateView();
     }
 
-    seriesData.setWorkingDirectory(newDirectory);
-    episodeNameHandler.setOldNames(newOldFileNames);
-    episodeNameHandler.setFileTypes(newSuffixes);
-    episodeNameHandler.setPositionDetermination(newPositions);
-
-    updateView();
+    Message msgDirectorySetSuccessful;
+    msgDirectorySetSuccessful.type = Message::Type::controller_DirectorySetSuccessful_view;
+    msgDirectorySetSuccessful.data[0].b = initialized;
+    emit(sendMessage(msgDirectorySetSuccessful));
 
     Message msgStopDirectoryLoading;
     msgStopDirectoryLoading.type = Message::Type::controller_stopDirectoryLoading_view;
     emit(sendMessage(msgStopDirectoryLoading));
 }
 
-void Controller::renameDone(const bool &success)
+void Controller::renameDone(const bool success)
 {
     if (settings.getSavePosterInDirectory())
     {
@@ -1037,7 +1040,7 @@ void Controller::renameDone(const bool &success)
     emit(sendMessage(msgRenameFinished));
 }
 
-void Controller::undoRenameDone(const bool &success)
+void Controller::undoRenameDone(const bool success)
 {
     if (success)
     {
