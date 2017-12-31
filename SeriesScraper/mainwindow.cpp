@@ -81,7 +81,7 @@ MainWindow::~MainWindow()
     delete savePosterAction;
     delete undoRenameAction;
     delete openDirectoryAction;
-    delete insertPathAction;
+    delete switchDirectorySelectorAction;
     delete reloadDirectoryAction;
     delete aboutAction;
     delete settingsAction;
@@ -132,7 +132,7 @@ void MainWindow::setUpGUI()
     savePosterAction->setIcon(QIcon(":/images/save.png"));
     undoRenameAction->setIcon(QIcon(":/images/undo.png"));
     openDirectoryAction->setIcon(QIcon(":/images/folder.png"));
-    insertPathAction->setIcon(QIcon(":/images/notepad.png"));
+    switchDirectorySelectorAction->setIcon(QIcon(":/images/notepad.png"));
     reloadDirectoryAction->setIcon(QIcon(":/images/update.png"));
     fullScreenAction->setIcon(QIcon(":/images/fullscreen.png"));
 
@@ -179,7 +179,7 @@ void MainWindow::setUpMenuBar()
     undoRenameAction = new QAction("Undo renaming");
 
     openDirectoryAction = new QAction("Select");
-    insertPathAction = new QAction("Go to path");
+    switchDirectorySelectorAction = new QAction("Switch directory selector");
     reloadDirectoryAction = new QAction("Reload");
 
     aboutAction = new QAction(aboutText);
@@ -193,7 +193,7 @@ void MainWindow::setUpMenuBar()
     undoRenameAction->setShortcut(QKeySequence::Undo);
     settingsAction->setShortcut(QKeySequence::Preferences);
     openDirectoryAction->setShortcut(QKeySequence::Open);
-    insertPathAction->setShortcut(QKeySequence::AddTab);
+    switchDirectorySelectorAction->setShortcut(QKeySequence::AddTab);
     reloadDirectoryAction->setShortcut(QKeySequence::Refresh);
     fullScreenAction->setShortcut(QKeySequence::FullScreen);
 
@@ -202,7 +202,7 @@ void MainWindow::setUpMenuBar()
     fileMenu->addAction(undoRenameAction);
     fileMenu->addAction(settingsAction);
     directoryMenu->addAction(openDirectoryAction);
-    directoryMenu->addAction(insertPathAction);
+    directoryMenu->addAction(switchDirectorySelectorAction);
     directoryMenu->addAction(reloadDirectoryAction);
     helpMenu->addAction(aboutAction);
     viewMenu->addAction(fullScreenAction);
@@ -216,7 +216,7 @@ void MainWindow::setUpMenuBar()
     QObject::connect(savePosterAction, SIGNAL(triggered(bool)), this, SLOT(savePoster()));
     QObject::connect(undoRenameAction, SIGNAL(triggered(bool)), this, SLOT(undoRenaming()));
     QObject::connect(openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectory()));
-    QObject::connect(insertPathAction, SIGNAL(triggered(bool)), this, SLOT(openDirectory())); // TODO: connect to path line edit
+    QObject::connect(switchDirectorySelectorAction, SIGNAL(triggered(bool)), this, SLOT(toggleDirectorySelector()));
     QObject::connect(reloadDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(onUpdateDirectory()));
     QObject::connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutDialog()));
     QObject::connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(showSettingsWindow()));
@@ -443,6 +443,11 @@ void MainWindow::clearDirectoryWidget()
 
 void MainWindow::updateDirectoryWidgetVisibility()
 {
+    if (DirectorySelector::text == directorySelector)
+    {
+        return;
+    }
+
     int layoutWidth = ui->centralWidget->width() - 605;
     ui->pathStructure3ComboBox->setVisible(layoutWidth >= 600);
     ui->pathStructure4ComboBox->setVisible(layoutWidth >= 720);
@@ -544,6 +549,34 @@ void MainWindow::updateRenameProgress(int amountFiles, int currentFile, QString 
     if (chopedOff)
         oldFileName += "...";
     ui->renamingProgressCurrentFileLabel->setText(oldFileName);
+}
+
+void MainWindow::switchDirectorySelector(MainWindow::DirectorySelector directorySelector)
+{
+    this->directorySelector = directorySelector;
+
+    switch (directorySelector)
+    {
+    case DirectorySelector::text:
+        ui->pathStructure1ComboBox->hide();
+        ui->pathStructure2ComboBox->hide();
+        ui->pathStructure3ComboBox->hide();
+        ui->pathStructure4ComboBox->hide();
+        ui->pathStructureContentButton->hide();
+
+        ui->directPathInputLineEdit->show();
+        break;
+
+    case DirectorySelector::widget:
+    default:
+        ui->directPathInputLineEdit->hide();
+
+        ui->pathStructure1ComboBox->show();
+        ui->pathStructure2ComboBox->show();
+        ui->pathStructureContentButton->show();
+        updateDirectoryWidgetVisibility();
+        break;
+    }
 }
 
 void MainWindow::clearTable()
@@ -815,6 +848,18 @@ void MainWindow::onDirectoryComboBoxEntryClicked(int level, int selection)
     emit(sendMessage(msgSwitchToFolder));
 }
 
+void MainWindow::toggleDirectorySelector()
+{
+    if (DirectorySelector::text == directorySelector)
+    {
+        switchDirectorySelector(DirectorySelector::widget);
+    }
+    else
+    {
+        switchDirectorySelector(DirectorySelector::text);
+    }
+}
+
 void MainWindow::clearStatusText()
 {
     clearStatusTextTimer->stop();
@@ -1056,7 +1101,7 @@ void MainWindow::notify(Message &msg)
     case Message::Type::controller_changeSeriesParser_view:
     {
         int selectedSeriesParser = msg.data[0].i;
-        switch((SeriesParser::Parser)selectedSeriesParser)
+        switch ((SeriesParser::Parser)selectedSeriesParser)
         {
         default:
         case SeriesParser::Parser::tmdb:

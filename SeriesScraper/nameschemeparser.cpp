@@ -32,7 +32,7 @@ QString NameSchemeParser::getFileName(QString series, QString airDate, QString s
         QString currentString = parsedNameSchemeList.at(i);
         auto variableType = getVariableType(currentString);
 
-        switch(variableType)
+        switch (variableType)
         {
         case VariableType::episodeNumber:
         case VariableType::seasonNumber:

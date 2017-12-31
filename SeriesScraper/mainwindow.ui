@@ -505,7 +505,7 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>656</width>
+           <width>839</width>
            <height>129</height>
           </rect>
          </property>
@@ -605,7 +605,20 @@
             <item>
              <layout class="QHBoxLayout" name="directoryWidgetHorizontalLayout">
               <item>
-               <widget class="QLineEdit" name="directPathInputLineEdit"/>
+               <widget class="QLineEdit" name="directPathInputLineEdit">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QComboBox" name="pathStructure4ComboBox">

@@ -121,24 +121,20 @@ void SettingsWindow::notify(Message &msg)
     {
         auto seriesParser = (SeriesParser::Parser)msg.data[0].i;
 
-        switch(seriesParser)
+        switch (seriesParser)
         {
         default:
         case SeriesParser::Parser::tmdb:
-        {
             ui->tmdbRadioButton->setChecked(true);
             break;
-        }
+
         case SeriesParser::Parser::omdb:
-        {
             ui->omdbRadioButton->setChecked(true);
             break;
-        }
+
         case SeriesParser::Parser::tvdb:
-        {
             ui->tvdbRadioButton->setChecked(true);
             break;
-        }
         }
         break;
     }

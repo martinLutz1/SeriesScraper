@@ -21,7 +21,7 @@ public slots:
 
 private:
     Ui::AboutDialog *ui;
-     void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // ABOUTDIALOG_H

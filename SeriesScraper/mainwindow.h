@@ -31,6 +31,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     enum class StatusMessageType { error, success, info };
+    enum class DirectorySelector { widget, text };
 
 private:
     Ui::MainWindow *ui;
@@ -58,7 +59,7 @@ private:
     QAction *savePosterAction;
     QAction *undoRenameAction;
     QAction *openDirectoryAction;
-    QAction *insertPathAction;
+    QAction *switchDirectorySelectorAction;
     QAction *reloadDirectoryAction;
     QAction *aboutAction;
     QAction *settingsAction;
@@ -81,6 +82,7 @@ private:
     QString directorySelectionText = "Directory selection";
     QString openThisFolderText = "Open this folder";
     bool isRenameProgressHiding = false;
+    DirectorySelector directorySelector = DirectorySelector::widget;
 
     void disableGUIControl();
     void enableGUIControl();
@@ -107,7 +109,7 @@ private:
     void showRenameProgress();
     void hideRenameProgress();
     void updateRenameProgress(int amountFiles, int currentFile, QString oldFileName);
-    void switchDirectorySelection();
+    void switchDirectorySelector(DirectorySelector directorySelector);
 
 private slots:
     void updateRow(int row, EpisodeName& episodeName, bool noColorization);
@@ -127,6 +129,7 @@ private slots:
     void onDirectoryComboBox3EntryClicked(int selection);
     void onDirectoryComboBox4EntryClicked(int selection);
     void onDirectoryComboBoxEntryClicked(int level, int selection);
+    void toggleDirectorySelector();
     void clearStatusText();
 
     void savePoster();
