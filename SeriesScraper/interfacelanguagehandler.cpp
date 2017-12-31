@@ -113,12 +113,16 @@ bool InterfaceLanguageHandler::loadLanguage(QString language)
     return loadingSuccessful;
 }
 
-QString InterfaceLanguageHandler::getTranslation(int translateThis)
+QString InterfaceLanguageHandler::getTranslation(LanguageData::Translate translateThis)
 {
-    if (translateThis < languageData.getTranslationList().size())
+    if ((int)translateThis < languageData.getTranslationList().size())
+    {
         return languageData.getTranslation(translateThis);
+    }
     else
-        return QString("");
+    {
+        return QString();
+    }
 }
 
 QStringList InterfaceLanguageHandler::getTranslationList()

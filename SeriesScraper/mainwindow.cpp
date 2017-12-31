@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
     hideRenameProgressTimer = new QTimer(this);
     statusBarTypeImageLabel = new QLabel();
     renameShadow = new CustomShadowEffect(ui->renameProgressScrollArea);
-    directPathShadow = new CustomShadowEffect(ui->renameProgressScrollArea);
     progressIndicatorPath = new QProgressIndicator;
     progressIndicatorSeries = new QProgressIndicator;
 
@@ -62,7 +61,7 @@ MainWindow::~MainWindow()
 {
     QRect windowRect = this->geometry();
     Message msgSetWindowRect;
-    msgSetWindowRect.type = Message::view_setWindowRect_controller;
+    msgSetWindowRect.type = Message::Type::view_setWindowRect_controller;
     msgSetWindowRect.data[0].qRectPointer = &windowRect;
     emit(sendMessage(msgSetWindowRect));
 
@@ -72,7 +71,6 @@ MainWindow::~MainWindow()
     delete hideRenameProgressTimer;
     delete statusBarTypeImageLabel;
     delete renameShadow;
-    delete directPathShadow;
     delete renameSlideProgressAnimation;
     delete renameConfirmationMessageBox;
     delete posterConfirmationMessageBox;
@@ -251,12 +249,7 @@ void MainWindow::setUpConfirmationMessageBoxes()
 
 void MainWindow::setUpDirectoryWidget()
 {
-    directPathShadow->setBlurRadius(40.0);
-    directPathShadow->setDistance(6.0);
-    directPathShadow->setColor(QColor(0, 0, 0, 150));
-
     ui->directPathInputLineEdit->hide();
-    ui->directPathInputLineEdit->setGraphicsEffect(directPathShadow);
 
     ui->directoryWidgetHorizontalLayout->addWidget(progressIndicatorPath);
     directoryEntriesMenu = new QMenu(this);
@@ -481,7 +474,6 @@ void MainWindow::changeToDarkTheme()
             + QString("background-attachment: fixed; ")
             + QString("background-position: center;");
     renameShadow->setColor(QColor(255, 255, 255, 150));
-    directPathShadow->setColor(QColor(255, 255, 255, 150));
     greyedOutColor = QColor(155, 155, 155);
     normalColor = QColor(255, 255, 255);
     lightRedColor = QColor(96, 31, 31);
@@ -613,23 +605,23 @@ void MainWindow::removeNameSchemeItem(int itemIndex)
         ui->nameSchemeComboBox->setCurrentIndex(selectedIndex - 1);
 }
 
-void MainWindow::setStatusMessage(QString message, int type)
+void MainWindow::setStatusMessage(QString message, StatusMessageType type)
 {
     clearStatusTextTimer->stop();
     QString labelText;
     switch (type)
     {
-    case statusMessageType::error:
+    case StatusMessageType::error:
     {
         labelText = "<img src=:/images/error.png> ";
         break;
     }
-    case statusMessageType::success:
+    case StatusMessageType::success:
     {
         labelText = "<img src=:/images/check.png> ";
         break;
     }
-    case statusMessageType::info:
+    case StatusMessageType::info:
     {
         labelText = "";
         break;
@@ -643,53 +635,53 @@ void MainWindow::setStatusMessage(QString message, int type)
 void MainWindow::changeLocalization(QStringList translationList)
 {
     QStringList tableHeader;
-    tableHeader << translationList.at(LanguageData::oldName)
-                << translationList.at(LanguageData::newName);
+    tableHeader << translationList.at((int)LanguageData::Translate::oldName)
+                << translationList.at((int)LanguageData::Translate::newName);
 
     ui->episodeNameTable->setHorizontalHeaderLabels(tableHeader);
-    ui->pathGroupBox->setTitle(translationList.at(LanguageData::directorySelection));
-    ui->selectionButton->setText(translationList.at(LanguageData::selection));
-    ui->pathLabel->setText(translationList.at(LanguageData::path));
-    ui->seriesGroupBox->setTitle(translationList.at(LanguageData::seriesSelection));
-    ui->seriesLabel->setText(translationList.at(LanguageData::series));
-    ui->seasonLabel->setText(translationList.at(LanguageData::season));
-    ui->seriesLanguageLabel->setText(translationList.at(LanguageData::language));
-    ui->nameSchemeLabel->setText(translationList.at(LanguageData::nameScheme));
-    ui->renameButton->setText(translationList.at(LanguageData::rename));
+    ui->pathGroupBox->setTitle(translationList.at((int)LanguageData::Translate::directorySelection));
+    ui->selectionButton->setText(translationList.at((int)LanguageData::Translate::selection));
+    ui->pathLabel->setText(translationList.at((int)LanguageData::Translate::path));
+    ui->seriesGroupBox->setTitle(translationList.at((int)LanguageData::Translate::seriesSelection));
+    ui->seriesLabel->setText(translationList.at((int)LanguageData::Translate::series));
+    ui->seasonLabel->setText(translationList.at((int)LanguageData::Translate::season));
+    ui->seriesLanguageLabel->setText(translationList.at((int)LanguageData::Translate::language));
+    ui->nameSchemeLabel->setText(translationList.at((int)LanguageData::Translate::nameScheme));
+    ui->renameButton->setText(translationList.at((int)LanguageData::Translate::rename));
     // Menubar
-    fileMenu->setTitle(translationList.at(LanguageData::file));
-    viewMenu->setTitle(translationList.at(LanguageData::display));
-    helpMenu->setTitle(translationList.at(LanguageData::help));
-    aboutAction->setText(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
-    settingsAction->setText(translationList.at(LanguageData::settings));
-    savePosterAction->setText(translationList.at(LanguageData::savePoster));
-    undoRenameAction->setText(translationList.at(LanguageData::undoRenaming));
-    fullScreenAction->setText(translationList.at(LanguageData::fullscreen));
+    fileMenu->setTitle(translationList.at((int)LanguageData::Translate::file));
+    viewMenu->setTitle(translationList.at((int)LanguageData::Translate::display));
+    helpMenu->setTitle(translationList.at((int)LanguageData::Translate::help));
+    aboutAction->setText(translationList.at((int)LanguageData::Translate::about) + " " + APPLICATIONNAME);
+    settingsAction->setText(translationList.at((int)LanguageData::Translate::settings));
+    savePosterAction->setText(translationList.at((int)LanguageData::Translate::savePoster));
+    undoRenameAction->setText(translationList.at((int)LanguageData::Translate::undoRenaming));
+    fullScreenAction->setText(translationList.at((int)LanguageData::Translate::fullscreen));
     // Info sidebar
-    ui->airDateInfoLabel->setText(translationList.at(LanguageData::airDate) + ":");
-    ui->seasonInfoLabel->setText(translationList.at(LanguageData::season) + ":");
-    ui->totalEpisodesInfoLabel->setText(translationList.at(LanguageData::episodeNumber) + ":");
+    ui->airDateInfoLabel->setText(translationList.at((int)LanguageData::Translate::airDate) + ":");
+    ui->seasonInfoLabel->setText(translationList.at((int)LanguageData::Translate::season) + ":");
+    ui->totalEpisodesInfoLabel->setText(translationList.at((int)LanguageData::Translate::episodeNumber) + ":");
     // Rename confirmation dialog
-    renameConfirmationMessageBox->setWindowTitle(translationList.at(LanguageData::areYouSure));
-    renameConfirmationMessageBox->setText(translationList.at(LanguageData::forceRename));
-    renameConfirmationMessageBox->setButtonText(0, translationList.at(LanguageData::yes));
-    renameConfirmationMessageBox->setButtonText(1, translationList.at(LanguageData::no));
+    renameConfirmationMessageBox->setWindowTitle(translationList.at((int)LanguageData::Translate::areYouSure));
+    renameConfirmationMessageBox->setText(translationList.at((int)LanguageData::Translate::forceRename));
+    renameConfirmationMessageBox->setButtonText(0, translationList.at((int)LanguageData::Translate::yes));
+    renameConfirmationMessageBox->setButtonText(1, translationList.at((int)LanguageData::Translate::no));
     // Poster confirmation dialog
-    posterConfirmationMessageBox->setWindowTitle(translationList.at(LanguageData::overridePoster));
-    posterConfirmationMessageBox->setText(translationList.at(LanguageData::posterAlreadyExists));
-    posterConfirmationMessageBox->setButtonText(0, translationList.at(LanguageData::yes));
-    posterConfirmationMessageBox->setButtonText(1, translationList.at(LanguageData::no));
+    posterConfirmationMessageBox->setWindowTitle(translationList.at((int)LanguageData::Translate::overridePoster));
+    posterConfirmationMessageBox->setText(translationList.at((int)LanguageData::Translate::posterAlreadyExists));
+    posterConfirmationMessageBox->setButtonText(0, translationList.at((int)LanguageData::Translate::yes));
+    posterConfirmationMessageBox->setButtonText(1, translationList.at((int)LanguageData::Translate::no));
     // Undo renaming confirmation dialog
-    undoRenameConfirmationBox->setWindowTitle(translationList.at(LanguageData::undoRenaming));
-    undoRenameConfirmationBox->setText(translationList.at(LanguageData::undoRenamingDetailed));
-    undoRenameConfirmationBox->setButtonText(0, translationList.at(LanguageData::yes));
-    undoRenameConfirmationBox->setButtonText(1, translationList.at(LanguageData::no));
+    undoRenameConfirmationBox->setWindowTitle(translationList.at((int)LanguageData::Translate::undoRenaming));
+    undoRenameConfirmationBox->setText(translationList.at((int)LanguageData::Translate::undoRenamingDetailed));
+    undoRenameConfirmationBox->setButtonText(0, translationList.at((int)LanguageData::Translate::yes));
+    undoRenameConfirmationBox->setButtonText(1, translationList.at((int)LanguageData::Translate::no));
     // Renaming progress widget
-    ui->renamingLabel->setText(translationList.at(LanguageData::renaming) + ":");
-    ui->renamingProgressFileOutputLabel->setText(translationList.at(LanguageData::file) + ":");
+    ui->renamingLabel->setText(translationList.at((int)LanguageData::Translate::renaming) + ":");
+    ui->renamingProgressFileOutputLabel->setText(translationList.at((int)LanguageData::Translate::file) + ":");
     // Misc
-    directorySelectionText = translationList.at(LanguageData::directorySelection);
-    openThisFolderText = translationList.at(LanguageData::openThisFolder);
+    directorySelectionText = translationList.at((int)LanguageData::Translate::directorySelection);
+    openThisFolderText = translationList.at((int)LanguageData::Translate::openThisFolder);
 }
 
 void MainWindow::openDirectory()
@@ -705,7 +697,7 @@ void MainWindow::openDirectory()
         ui->directoryUpdateButton->setEnabled(true);
 
         Message directoryChangedMsg;
-        directoryChangedMsg.type = Message::view_changeDirectory_controller;
+        directoryChangedMsg.type = Message::Type::view_changeDirectory_controller;
         directoryChangedMsg.data[0].qsPointer = &directoryPath;
         emit(sendMessage(directoryChangedMsg));
     }
@@ -715,7 +707,7 @@ void MainWindow::openDirectory()
 void MainWindow::onUpdateDirectory()
 {
     Message directoryUpdateMsg;
-    directoryUpdateMsg.type = Message::view_updateDirectory_controller;
+    directoryUpdateMsg.type = Message::Type::view_updateDirectory_controller;
     emit(sendMessage(directoryUpdateMsg));
 }
 
@@ -730,7 +722,7 @@ void MainWindow::onSeriesTextChanged()
     QString seriesText = ui->seriesLineEdit->text();
 
     Message msg;
-    msg.type = Message::view_changeSeriesText_controller;
+    msg.type = Message::Type::view_changeSeriesText_controller;
     msg.data[0].qsPointer = &seriesText;
     msg.data[1].i = 1;
     emit(sendMessage(msg));
@@ -739,7 +731,7 @@ void MainWindow::onSeriesTextChanged()
 void MainWindow::onSeasonChanged(int index)
 {
     Message seasonChangedMsg;
-    seasonChangedMsg.type = Message::view_changeSeason_controller;
+    seasonChangedMsg.type = Message::Type::view_changeSeason_controller;
     seasonChangedMsg.data[0].i = index + 1;
     emit(sendMessage(seasonChangedMsg));
 }
@@ -747,14 +739,14 @@ void MainWindow::onSeasonChanged(int index)
 void MainWindow::onRenameButtonPressed()
 {
     Message renameMsg;
-    renameMsg.type = Message::view_rename_controller;
+    renameMsg.type = Message::Type::view_rename_controller;
     emit(sendMessage(renameMsg));
 }
 
 void MainWindow::onNameSchemeChanged(int index)
 {
     Message msgNameSchemeChanged;
-    msgNameSchemeChanged.type = Message::view_changeNameScheme_controller;
+    msgNameSchemeChanged.type = Message::Type::view_changeNameScheme_controller;
     msgNameSchemeChanged.data[0].i = index;
     emit(sendMessage(msgNameSchemeChanged));
 }
@@ -767,7 +759,7 @@ void MainWindow::onTableEntryChanged(int row, int coloumn)
         QString newFileName = ui->episodeNameTable->item(row, coloumn)->text();
 
         Message msgChangeNewFileName;
-        msgChangeNewFileName.type = Message::view_changeNewFileName_controller;
+        msgChangeNewFileName.type = Message::Type::view_changeNewFileName_controller;
         msgChangeNewFileName.data[0].i = row;
         msgChangeNewFileName.data[1].qsPointer = &newFileName;
         emit(sendMessage(msgChangeNewFileName));
@@ -817,7 +809,7 @@ void MainWindow::onDirectoryComboBox4EntryClicked(int selection)
 void MainWindow::onDirectoryComboBoxEntryClicked(int level, int selection)
 {
     Message msgSwitchToFolder;
-    msgSwitchToFolder.type = Message::view_switchToDirectory_controller;
+    msgSwitchToFolder.type = Message::Type::view_switchToDirectory_controller;
     msgSwitchToFolder.data[0].i = level;
     msgSwitchToFolder.data[1].i = selection;
     emit(sendMessage(msgSwitchToFolder));
@@ -832,7 +824,7 @@ void MainWindow::clearStatusText()
 void MainWindow::savePoster()
 {
     Message msgSavePoster;
-    msgSavePoster.type = Message::view_savePoster_controller;
+    msgSavePoster.type = Message::Type::view_savePoster_controller;
     emit(sendMessage(msgSavePoster));
 }
 
@@ -843,7 +835,7 @@ void MainWindow::undoRenaming()
     if (undoRenameConfirmationBox->exec() == 0) // 0 = Yes button
     {
         Message msgUndoRenaming;
-        msgUndoRenaming.type = Message::view_undoRenaming_controller;
+        msgUndoRenaming.type = Message::Type::view_undoRenaming_controller;
         emit(sendMessage(msgUndoRenaming));
     }
 }
@@ -851,14 +843,14 @@ void MainWindow::undoRenaming()
 void MainWindow::showAboutDialog()
 {
     Message msgShowAbout;
-    msgShowAbout.type = Message::view_showAboutDialog_controller;
+    msgShowAbout.type = Message::Type::view_showAboutDialog_controller;
     emit(sendMessage(msgShowAbout));
 }
 
 void MainWindow::showSettingsWindow()
 {
     Message msgShowSettings;
-    msgShowSettings.type = Message::view_showSettingsWindow_controller;
+    msgShowSettings.type = Message::Type::view_showSettingsWindow_controller;
     emit(sendMessage(msgShowSettings));
 }
 
@@ -904,7 +896,7 @@ void MainWindow::hideRenameProgressWidget()
 void MainWindow::onSeriesLanguageChanged(int index)
 {
     Message msgChangeSeriesLanguage;
-    msgChangeSeriesLanguage.type = Message::view_changeSeriesLanguage_controller;
+    msgChangeSeriesLanguage.type = Message::Type::view_changeSeriesLanguage_controller;
     msgChangeSeriesLanguage.data[0].i = index;
     emit(sendMessage(msgChangeSeriesLanguage));
 }
@@ -912,7 +904,7 @@ void MainWindow::onSeriesLanguageChanged(int index)
 void MainWindow::notify(Message &msg)
 {
     switch (msg.type) {
-    case Message::controller_updateView_view:
+    case Message::Type::controller_updateView_view:
     {
         int amountSeasons = msg.data[0].i;
         EpisodeNames* episodeNames = msg.data[1].episodeNamesPointer;
@@ -921,47 +913,47 @@ void MainWindow::notify(Message &msg)
         updateView(episodeNames, atLeastOneSideEmpty, amountSeasons);
         break;
     }
-    case Message::controller_seriesSet_view:
+    case Message::Type::controller_seriesSet_view:
     {
         bool seriesSet = msg.data[0].b;
         bool isEmpty = msg.data[1].b;
         setSeriesAvailableStatus(seriesSet, isEmpty);
         break;
     }
-    case Message::controller_enableRenameButton_view:
+    case Message::Type::controller_enableRenameButton_view:
     {
         bool enableButton = msg.data[0].b;
         ui->renameButton->setEnabled(enableButton);
         break;
     }
-    case Message::controller_enableSavePoster_view:
+    case Message::Type::controller_enableSavePoster_view:
     {
         bool savePoster = msg.data[0].b;
         savePosterAction->setEnabled(savePoster);
         break;
     }
-    case Message::controller_startSeriesLoading_view:
+    case Message::Type::controller_startSeriesLoading_view:
     {
         showSeriesLoadingAnimation();
         break;
     }
-    case Message::controller_startDirectoryLoading_view:
+    case Message::Type::controller_startDirectoryLoading_view:
     {
         progressIndicatorPath->startAnimation();
         break;
     }
-    case Message::controller_stopDirectoryLoading_view:
+    case Message::Type::controller_stopDirectoryLoading_view:
     {
         progressIndicatorPath->stopAnimation();
         break;
     }
-    case Message::controller_addNameScheme_view:
+    case Message::Type::controller_addNameScheme_view:
     {
         QString nameScheme = *msg.data[0].qsPointer;
         addNameSchemeItem(nameScheme);
         break;
     }
-    case Message::controller_addNameSchemes_view:
+    case Message::Type::controller_addNameSchemes_view:
     {
         ui->nameSchemeComboBox->clear();
         QStringList nameSchemeList = *msg.data[0].qsListPointer;
@@ -973,13 +965,13 @@ void MainWindow::notify(Message &msg)
         ui->nameSchemeComboBox->view()->setMinimumWidth(minimumWidth);
         break;
     }
-    case Message::controller_removeNameScheme_view:
+    case Message::Type::controller_removeNameScheme_view:
     {
         int indexToRemove = msg.data[0].i;
         removeNameSchemeItem(indexToRemove);
         break;
     }
-    case Message::controller_replaceNameScheme_view:
+    case Message::Type::controller_replaceNameScheme_view:
     {
         int indexToChange = msg.data[0].i;
         QString newNameScheme = *msg.data[1].qsPointer;
@@ -987,36 +979,36 @@ void MainWindow::notify(Message &msg)
         ui->nameSchemeComboBox->setItemText(indexToChange, newNameSchemeEntry);
         break;
     }
-    case Message::controller_changeLocalization_view:
+    case Message::Type::controller_changeLocalization_view:
     {
         QStringList translationList = *msg.data[0].qsListPointer;
         changeLocalization(translationList);
         break;
     }
-    case Message::controller_addSeriesLanguages_view:
+    case Message::Type::controller_addSeriesLanguages_view:
     {
         QStringList seriesLanguageList = *msg.data[0].qsListPointer;
         for (int i = 0; i < seriesLanguageList.size(); i++)
             ui->seriesLanguageComboBox->addItem(seriesLanguageList.at(i));
         break;
     }
-    case Message::controller_successSeriesLoading_view:
+    case Message::Type::controller_successSeriesLoading_view:
     {
         setSeriesAvailableStatus(true, false);
         break;
     }
-    case Message::controller_failureSeriesLoading_view:
+    case Message::Type::controller_failureSeriesLoading_view:
     {
         setSeriesAvailableStatus(false, false);
         break;
     }
-    case Message::controller_renameStarted_view:
+    case Message::Type::controller_renameStarted_view:
     {
         disableGUIControl();
         showRenameProgress();
         break;
     }
-    case Message::controller_updateRenameProgess_view:
+    case Message::Type::controller_updateRenameProgess_view:
     {
         int amountFiles = msg.data[0].i;
         int currentFile = msg.data[1].i;
@@ -1026,26 +1018,26 @@ void MainWindow::notify(Message &msg)
         updateRenameProgress(amountFiles, currentFile, oldFileName);
         break;
     }
-    case Message::controller_renameFinished_view:
+    case Message::Type::controller_renameFinished_view:
     {
         hideRenameProgress();
         enableGUIControl();
         break;
     }
-    case Message::controller_enableUndoRenaming_view:
+    case Message::Type::controller_enableUndoRenaming_view:
     {
         bool enableUndoRenaming = msg.data[0].b;
         undoRenameAction->setEnabled(enableUndoRenaming);
         break;
     }
-    case Message::controller_seasonMismatch_view:
+    case Message::Type::controller_seasonMismatch_view:
     {
         renameConfirmationMessageBox->show();
         renameConfirmationMessageBox->buttons().at(1)->setFocus();
         if (renameConfirmationMessageBox->exec() == 0) // 0 = Yes button
         {
             Message msgForceRename;
-            msgForceRename.type = Message::view_forceRename_controller;
+            msgForceRename.type = Message::Type::view_forceRename_controller;
             emit(sendMessage(msgForceRename));
         } else
         {
@@ -1054,25 +1046,25 @@ void MainWindow::notify(Message &msg)
         ui->renameButton->setDown(false);
         break;
     }
-    case Message::controller_setStatus_view:
+    case Message::Type::controller_setStatus_view:
     {
         QString status = *msg.data[0].qsPointer;
         int type = msg.data[1].i;
-        setStatusMessage(status, type);
+        setStatusMessage(status, (StatusMessageType)type);
         break;
     }
-    case Message::controller_changeSeriesParser_view:
+    case Message::Type::controller_changeSeriesParser_view:
     {
         int selectedSeriesParser = msg.data[0].i;
-        switch(selectedSeriesParser)
+        switch((SeriesParser::Parser)selectedSeriesParser)
         {
         default:
-        case SeriesParser::tmdb:
+        case SeriesParser::Parser::tmdb:
         {
             ui->seriesLanguageComboBox->setEnabled(true);
             break;
         }
-        case SeriesParser::omdb:
+        case SeriesParser::Parser::omdb:
         {
             ui->seriesLanguageComboBox->setEnabled(false);
             break;
@@ -1080,20 +1072,20 @@ void MainWindow::notify(Message &msg)
         }
         break;
     }
-    case Message::controller_changeSeriesLanguage_view:
+    case Message::Type::controller_changeSeriesLanguage_view:
     {
         QString language = *msg.data[0].qsPointer;
         int indexOfLanguage = ui->seriesLanguageComboBox->findText(language);
         ui->seriesLanguageComboBox->setCurrentIndex(indexOfLanguage);
         break;
     }
-    case Message::controller_changeNameScheme_view:
+    case Message::Type::controller_changeNameScheme_view:
     {
         int nameSchemeIndex = msg.data[0].i;
         ui->nameSchemeComboBox->setCurrentIndex(nameSchemeIndex);
         break;
     }
-    case Message::controller_setSeries_view:
+    case Message::Type::controller_setSeries_view:
     {
         QString series = *msg.data[0].qsPointer;
         int season = msg.data[1].i - 1;
@@ -1102,14 +1094,14 @@ void MainWindow::notify(Message &msg)
         seriesTextChangeTimer->stop(); // Avoid double loading
         break;
     }
-    case Message::controller_setSeason_view:
+    case Message::Type::controller_setSeason_view:
     {
         int season = msg.data[0].i - 1;
         ui->seasonComboBox->setCurrentIndex(season);
         seriesTextChangeTimer->stop(); // Avoid double loading
         break;
     }
-    case Message::controller_updateDirectoryWidget_view:
+    case Message::Type::controller_updateDirectoryWidget_view:
     {
         std::vector<QStringList> pathStructure = *msg.data[0].qsListVectorPointer;
         bool containsRoot = msg.data[1].b;
@@ -1118,12 +1110,12 @@ void MainWindow::notify(Message &msg)
         updateDirectoryWidget(pathStructure, containsRoot, path);
         break;
     }
-    case Message::controller_useDarkTheme_view:
+    case Message::Type::controller_useDarkTheme_view:
     {
         changeToDarkTheme();
         break;
     }
-    case Message::controller_setWindowRect_view:
+    case Message::Type::controller_setWindowRect_view:
     {
         QRect windowRect = *msg.data[0].qRectPointer;
         if (windowRect.y() >= 0)
@@ -1132,14 +1124,14 @@ void MainWindow::notify(Message &msg)
         }
         break;
     }
-    case Message::controller_showSeriesInfo_view:
+    case Message::Type::controller_showSeriesInfo_view:
     {
         seriesInformationEnabled = msg.data[0].b;
         ui->additionalInfoScrollArea->setVisible(seriesInformationEnabled);
         resizeEvent(nullptr);
         break;
     }
-    case Message::controller_setSeriesInfo_view:
+    case Message::Type::controller_setSeriesInfo_view:
     {
         QByteArray *imageByteArray = msg.data[0].qbPointer;
         QString totalEpisodes = *msg.data[1].qsPointer;
@@ -1171,14 +1163,14 @@ void MainWindow::notify(Message &msg)
         resizeEvent(nullptr);
         break;
     }
-    case Message::controller_posterAlreadyExists_view:
+    case Message::Type::controller_posterAlreadyExists_view:
     {
         posterConfirmationMessageBox->show();
         posterConfirmationMessageBox->buttons().at(1)->setFocus();
         if (posterConfirmationMessageBox->exec() == 0) // 0 = Yes button
         {
             Message msgForceSavePoster;
-            msgForceSavePoster.type = Message::view_forceSavePoster_conroller;
+            msgForceSavePoster.type = Message::Type::view_forceSavePoster_conroller;
             emit(sendMessage(msgForceSavePoster));
         }
         break;

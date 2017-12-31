@@ -87,7 +87,7 @@ SettingsWindow::~SettingsWindow()
 void SettingsWindow::notify(Message &msg)
 {
     switch (msg.type) {
-    case Message::controller_showSettingsWindow_settings:
+    case Message::Type::controller_showSettingsWindow_settings:
     {
         this->show();
         this->setFocus();
@@ -95,7 +95,7 @@ void SettingsWindow::notify(Message &msg)
         this->setWindowIcon(QIcon(":/images/settings.png"));
         break;
     }
-    case Message::controller_changeLocalization_view:
+    case Message::Type::controller_changeLocalization_view:
     {
         QString language = *msg.data[1].qsPointer;
         int indexOfLanguage = ui->selectInterfaceLanguageComboBox->findText(language);
@@ -105,35 +105,36 @@ void SettingsWindow::notify(Message &msg)
         changeLocalization(translationList);
         break;
     }
-    case Message::controller_addGUILanguages_settings:
+    case Message::Type::controller_addGUILanguages_settings:
     {
         QStringList guiLanguageList = *msg.data[0].qsListPointer;
         for (int i = 0; i < guiLanguageList.size(); i++)
             ui->selectInterfaceLanguageComboBox->addItem(guiLanguageList.at(i));
         break;
     }
-    case Message::controller_noGUILanguagesFound_settings:
+    case Message::Type::controller_noGUILanguagesFound_settings:
     {
         ui->selectInterfaceLanguageComboBox->setEnabled(false);
         break;
     }
-    case Message::controller_changeSeriesParser_view:
+    case Message::Type::controller_changeSeriesParser_view:
     {
-        int seriesParser = msg.data[0].i;
+        auto seriesParser = (SeriesParser::Parser)msg.data[0].i;
+
         switch(seriesParser)
         {
         default:
-        case SeriesParser::tmdb:
+        case SeriesParser::Parser::tmdb:
         {
             ui->tmdbRadioButton->setChecked(true);
             break;
         }
-        case SeriesParser::omdb:
+        case SeriesParser::Parser::omdb:
         {
             ui->omdbRadioButton->setChecked(true);
             break;
         }
-        case SeriesParser::tvdb:
+        case SeriesParser::Parser::tvdb:
         {
             ui->tvdbRadioButton->setChecked(true);
             break;
@@ -141,43 +142,43 @@ void SettingsWindow::notify(Message &msg)
         }
         break;
     }
-    case Message::controller_saveSeries_settings:
+    case Message::Type::controller_saveSeries_settings:
     {
         bool saveSeries = msg.data[0].b;
         ui->saveSeriesCheckBox->setChecked(saveSeries);
         break;
     }
-    case Message::controller_savePath_settings:
+    case Message::Type::controller_savePath_settings:
     {
         bool savePath = msg.data[0].b;
         ui->savePathCheckBox->setChecked(savePath);
         break;
     }
-    case Message::controller_savePoster_settings:
+    case Message::Type::controller_savePoster_settings:
     {
         bool savePoster = msg.data[0].b;
         ui->savePosterCheckBox->setChecked(savePoster);
         break;
     }
-    case Message::controller_setDetectedSeason_settings:
+    case Message::Type::controller_setDetectedSeason_settings:
     {
         bool setDetectedSeason = msg.data[0].b;
         ui->autoSetDetectedSeasonCheckBox->setChecked(setDetectedSeason);
         break;
     }
-    case Message::controller_useDarkTheme_settings:
+    case Message::Type::controller_useDarkTheme_settings:
     {
         bool useDarkTheme = msg.data[0].b;
         ui->darkThemeCheckBox->setChecked(useDarkTheme);
         break;
     }
-    case Message::controller_showSeriesInfo_settings:
+    case Message::Type::controller_showSeriesInfo_settings:
     {
         bool showSeriesInfo = msg.data[0].b;
         ui->showSeriesInformationCheckBox->setChecked(showSeriesInfo);
         break;
     }
-    case Message::controller_setRawNameSchemes_settings:
+    case Message::Type::controller_setRawNameSchemes_settings:
     {
         QStringList nameSchemes = *msg.data[0].qsListPointer;
         ui->nameSchemeListWidget->clear();
@@ -189,7 +190,7 @@ void SettingsWindow::notify(Message &msg)
         }
         break;
     }
-    case Message::controller_addRawNameScheme_settings:
+    case Message::Type::controller_addRawNameScheme_settings:
     {
         QString nameScheme = *msg.data[0].qsPointer;
         ui->nameSchemeListWidget->addItem(nameScheme);
@@ -200,21 +201,21 @@ void SettingsWindow::notify(Message &msg)
         ui->nameSchemeListWidget->setCurrentItem(item);
         break;
     }
-    case Message::controller_removeNameScheme_view:
+    case Message::Type::controller_removeNameScheme_view:
     {
         int index = msg.data[0].i;
         QListWidgetItem *item = ui->nameSchemeListWidget->takeItem(index);
         delete item;
         break;
     }
-    case Message::controller_setFileTypes_settings:
+    case Message::Type::controller_setFileTypes_settings:
     {
         QStringList fileTypes = *msg.data[0].qsListPointer;
         setFileTypeList(fileTypes);
         break;
     }
-    case Message::controller_addFileType_settings:
-    case Message::controller_replaceFileType_settings:
+    case Message::Type::controller_addFileType_settings:
+    case Message::Type::controller_replaceFileType_settings:
     {
         int index = msg.data[0].i;
         QStringList fileTypes = *msg.data[1].qsListPointer;
@@ -222,7 +223,7 @@ void SettingsWindow::notify(Message &msg)
         ui->fileTypeListWidget->setCurrentRow(index);
         break;
     }
-    case Message::controller_removeFileType_settings:
+    case Message::Type::controller_removeFileType_settings:
     {
         int index = msg.data[0].i;
         QListWidgetItem *item = ui->fileTypeListWidget->takeItem(index);
@@ -236,36 +237,36 @@ void SettingsWindow::notify(Message &msg)
 
 void SettingsWindow::changeLocalization(QStringList translationList)
 {
-    this->setWindowTitle(translationList.at(LanguageData::settings));
-    ui->tabWidget->setTabText(0, translationList.at(LanguageData::general));
-    ui->tabWidget->setTabText(1, translationList.at(LanguageData::video));
-    ui->tabWidget->setTabText(2, translationList.at(LanguageData::nameScheme));
-    ui->resetButton->setText(translationList.at(LanguageData::reset));
-    ui->doneButton->setText(translationList.at(LanguageData::done));
-    ui->interfaceGroupBox->setTitle(translationList.at(LanguageData::interface));
-    ui->languageLabel->setText(translationList.at(LanguageData::language));
-    ui->darkThemeCheckBox->setText(translationList.at(LanguageData::darkTheme));
-    ui->showSeriesInformationCheckBox->setText(translationList.at(LanguageData::showSeriesInformation));
-    ui->saveOnExitGroupBox->setTitle(translationList.at(LanguageData::saveOnExit));
-    ui->savePathCheckBox->setText(translationList.at(LanguageData::path));
-    ui->saveSeriesCheckBox->setText(translationList.at(LanguageData::series));
-    ui->seriesDatabaseGroupBox->setTitle(translationList.at(LanguageData::seriesDatabase));
-    ui->recommendLabel->setText(translationList.at(LanguageData::recommended));
-    ui->saveInDirectoryGroupBox->setTitle(translationList.at(LanguageData::saveInSeriesDirectory));
-    ui->savePosterCheckBox->setText(translationList.at(LanguageData::poster));
-    ui->miscGroupBox->setTitle(translationList.at(LanguageData::miscellaneous));
-    ui->autoSetDetectedSeasonCheckBox->setText(translationList.at(LanguageData::setDetectedSeason));
-    ui->videoGroupBox->setTitle(translationList.at(LanguageData::newFormat));
-    ui->newFileTypeAddButton->setText(translationList.at(LanguageData::add));
-    ui->fileTypeRemoveButton->setText(translationList.at(LanguageData::remove));
-    ui->newNameSchemeGroupBox->setTitle(translationList.at(LanguageData::newNameScheme));
-    ui->newNameSchemeAddButton->setText(translationList.at(LanguageData::add));
-    ui->nameSchemeRemoveButton->setText(translationList.at(LanguageData::remove));
+    this->setWindowTitle(translationList.at((int)LanguageData::Translate::settings));
+    ui->tabWidget->setTabText(0, translationList.at((int)LanguageData::Translate::general));
+    ui->tabWidget->setTabText(1, translationList.at((int)LanguageData::Translate::video));
+    ui->tabWidget->setTabText(2, translationList.at((int)LanguageData::Translate::nameScheme));
+    ui->resetButton->setText(translationList.at((int)LanguageData::Translate::reset));
+    ui->doneButton->setText(translationList.at((int)LanguageData::Translate::done));
+    ui->interfaceGroupBox->setTitle(translationList.at((int)LanguageData::Translate::interface));
+    ui->languageLabel->setText(translationList.at((int)LanguageData::Translate::language));
+    ui->darkThemeCheckBox->setText(translationList.at((int)LanguageData::Translate::darkTheme));
+    ui->showSeriesInformationCheckBox->setText(translationList.at((int)LanguageData::Translate::showSeriesInformation));
+    ui->saveOnExitGroupBox->setTitle(translationList.at((int)LanguageData::Translate::saveOnExit));
+    ui->savePathCheckBox->setText(translationList.at((int)LanguageData::Translate::path));
+    ui->saveSeriesCheckBox->setText(translationList.at((int)LanguageData::Translate::series));
+    ui->seriesDatabaseGroupBox->setTitle(translationList.at((int)LanguageData::Translate::seriesDatabase));
+    ui->recommendLabel->setText(translationList.at((int)LanguageData::Translate::recommended));
+    ui->saveInDirectoryGroupBox->setTitle(translationList.at((int)LanguageData::Translate::saveInSeriesDirectory));
+    ui->savePosterCheckBox->setText(translationList.at((int)LanguageData::Translate::poster));
+    ui->miscGroupBox->setTitle(translationList.at((int)LanguageData::Translate::miscellaneous));
+    ui->autoSetDetectedSeasonCheckBox->setText(translationList.at((int)LanguageData::Translate::setDetectedSeason));
+    ui->videoGroupBox->setTitle(translationList.at((int)LanguageData::Translate::newFormat));
+    ui->newFileTypeAddButton->setText(translationList.at((int)LanguageData::Translate::add));
+    ui->fileTypeRemoveButton->setText(translationList.at((int)LanguageData::Translate::remove));
+    ui->newNameSchemeGroupBox->setTitle(translationList.at((int)LanguageData::Translate::newNameScheme));
+    ui->newNameSchemeAddButton->setText(translationList.at((int)LanguageData::Translate::add));
+    ui->nameSchemeRemoveButton->setText(translationList.at((int)LanguageData::Translate::remove));
     // Reset confirmation dialog
-    resetConfirmationMessageBox.setWindowTitle(translationList.at(LanguageData::areYouSure));
-    resetConfirmationMessageBox.setText(translationList.at(LanguageData::areYouSureDetailed));
-    resetConfirmationMessageBox.setButtonText(0, translationList.at(LanguageData::yes));
-    resetConfirmationMessageBox.setButtonText(1, translationList.at(LanguageData::no));
+    resetConfirmationMessageBox.setWindowTitle(translationList.at((int)LanguageData::Translate::areYouSure));
+    resetConfirmationMessageBox.setText(translationList.at((int)LanguageData::Translate::areYouSureDetailed));
+    resetConfirmationMessageBox.setButtonText(0, translationList.at((int)LanguageData::Translate::yes));
+    resetConfirmationMessageBox.setButtonText(1, translationList.at((int)LanguageData::Translate::no));
 }
 
 void SettingsWindow::createResetConfirmationDialog()
@@ -316,7 +317,7 @@ void SettingsWindow::setFileTypeList(QStringList fileTypes)
 void SettingsWindow::onGUILanguageChanged(QString language)
 {
     Message msgChangeGUILanguage;
-    msgChangeGUILanguage.type = Message::settings_changeGUILanguage_controller;
+    msgChangeGUILanguage.type = Message::Type::settings_changeGUILanguage_controller;
     msgChangeGUILanguage.data[0].qsPointer = &language;
     emit(sendMessage(msgChangeGUILanguage));
 }
@@ -328,22 +329,22 @@ void SettingsWindow::onSeriesParserChanged()
     bool tvdb = ui->tvdbRadioButton->isChecked();
 
     Message msgSeriesParserChanged;
-    msgSeriesParserChanged.type = Message::settings_changeSeriesParser_controller;
+    msgSeriesParserChanged.type = Message::Type::settings_changeSeriesParser_controller;
     if (tmdb)
-        msgSeriesParserChanged.data[0].i = SeriesParser::tmdb;
+        msgSeriesParserChanged.data[0].i = (int)SeriesParser::Parser::tmdb;
     else if (omdb)
-        msgSeriesParserChanged.data[0].i = SeriesParser::omdb;
+        msgSeriesParserChanged.data[0].i = (int)SeriesParser::Parser::omdb;
     else if (tvdb)
-        msgSeriesParserChanged.data[0].i = SeriesParser::tvdb;
+        msgSeriesParserChanged.data[0].i = (int)SeriesParser::Parser::tvdb;
     else // Should never happen
-        msgSeriesParserChanged.data[0].i = SeriesParser::tmdb;
+        msgSeriesParserChanged.data[0].i = (int)SeriesParser::Parser::tmdb;
     emit(sendMessage(msgSeriesParserChanged));
 }
 
 void SettingsWindow::onSaveSeriesChanged(bool saveSeries)
 {
     Message msgSaveSeries;
-    msgSaveSeries.type = Message::settings_saveSeries_controller;
+    msgSaveSeries.type = Message::Type::settings_saveSeries_controller;
     msgSaveSeries.data[0].b = saveSeries;
     emit(sendMessage(msgSaveSeries));
 }
@@ -351,7 +352,7 @@ void SettingsWindow::onSaveSeriesChanged(bool saveSeries)
 void SettingsWindow::onSavePathChanged(bool savePath)
 {
     Message msgSavePath;
-    msgSavePath.type = Message::settings_savePath_controller;
+    msgSavePath.type = Message::Type::settings_savePath_controller;
     msgSavePath.data[0].b = savePath;
     emit(sendMessage(msgSavePath));
 }
@@ -359,7 +360,7 @@ void SettingsWindow::onSavePathChanged(bool savePath)
 void SettingsWindow::onSavePosterChanged(bool savePoster)
 {
     Message msgSavePoster;
-    msgSavePoster.type = Message::settings_savePoster_controller;
+    msgSavePoster.type = Message::Type::settings_savePoster_controller;
     msgSavePoster.data[0].b = savePoster;
     emit(sendMessage(msgSavePoster));
 }
@@ -367,7 +368,7 @@ void SettingsWindow::onSavePosterChanged(bool savePoster)
 void SettingsWindow::onSetDetectedSeason(bool setDetectedSeason)
 {
     Message msgSetDetectedSeason;
-    msgSetDetectedSeason.type = Message::settings_setDetectedSeason_controller;
+    msgSetDetectedSeason.type = Message::Type::settings_setDetectedSeason_controller;
     msgSetDetectedSeason.data[0].b = setDetectedSeason;
     emit(sendMessage(msgSetDetectedSeason));
 }
@@ -378,7 +379,7 @@ void SettingsWindow::onResetClicked()
     if (resetConfirmationMessageBox.exec() == 0) // 0 = Yes button
     {
         Message msgResetSettings;
-        msgResetSettings.type = Message::settings_reset_controller;
+        msgResetSettings.type = Message::Type::settings_reset_controller;
         emit(sendMessage(msgResetSettings));
     }
 }
@@ -386,7 +387,7 @@ void SettingsWindow::onResetClicked()
 void SettingsWindow::onDarkThemeChanged(bool useDarkTheme)
 {
     Message msgChangeDarkTheme;
-    msgChangeDarkTheme.type = Message::settings_useDarkTheme_controller;
+    msgChangeDarkTheme.type = Message::Type::settings_useDarkTheme_controller;
     msgChangeDarkTheme.data[0].b = useDarkTheme;
     emit(sendMessage(msgChangeDarkTheme));
 }
@@ -394,7 +395,7 @@ void SettingsWindow::onDarkThemeChanged(bool useDarkTheme)
 void SettingsWindow::onShowSeriesInformationChanged(bool showInfo)
 {
     Message msgChangeShowSeriesInfo;
-    msgChangeShowSeriesInfo.type = Message::settings_showSeriesInfo_controller;
+    msgChangeShowSeriesInfo.type = Message::Type::settings_showSeriesInfo_controller;
     msgChangeShowSeriesInfo.data[0].b = showInfo;
     emit(sendMessage(msgChangeShowSeriesInfo));
 }
@@ -434,7 +435,7 @@ void SettingsWindow::onAddNameScheme()
     ui->newNameSchemeLineEdit->clear();
 
     Message msgAddNameScheme;
-    msgAddNameScheme.type = Message::settings_addNameScheme_controller;
+    msgAddNameScheme.type = Message::Type::settings_addNameScheme_controller;
     msgAddNameScheme.data[0].qsPointer = &newNameScheme;
     emit(sendMessage(msgAddNameScheme));
 }
@@ -445,7 +446,7 @@ void SettingsWindow::onRemoveNameScheme()
     if (index >= 0)
     {
         Message msgRemoveNameScheme;
-        msgRemoveNameScheme.type = Message::settings_removeNameScheme_controller;
+        msgRemoveNameScheme.type = Message::Type::settings_removeNameScheme_controller;
         msgRemoveNameScheme.data[0].i = index;
         emit(sendMessage(msgRemoveNameScheme));
     }
@@ -462,7 +463,7 @@ void SettingsWindow::onNameSchemeChanged(QListWidgetItem *item)
         QString changedNameScheme = item->text();
 
         Message msgReplaceNameScheme;
-        msgReplaceNameScheme.type = Message::settings_replaceNameScheme_controller;
+        msgReplaceNameScheme.type = Message::Type::settings_replaceNameScheme_controller;
         msgReplaceNameScheme.data[0].i = index;
         msgReplaceNameScheme.data[1].qsPointer = &changedNameScheme;
         emit(sendMessage(msgReplaceNameScheme));
@@ -490,7 +491,7 @@ void SettingsWindow::onAddFileType()
     ui->newFileTypeLineEdit->clear();
 
     Message msgAddFileType;
-    msgAddFileType.type = Message::settings_addFileType_controller;
+    msgAddFileType.type = Message::Type::settings_addFileType_controller;
     msgAddFileType.data[0].qsPointer = &newFileType;
     emit(sendMessage(msgAddFileType));
 }
@@ -501,7 +502,7 @@ void SettingsWindow::onRemoveFileType()
     if (index >= 0)
     {
         Message msgRemoveFileType;
-        msgRemoveFileType.type = Message::settings_removeFileType_controller;
+        msgRemoveFileType.type = Message::Type::settings_removeFileType_controller;
         msgRemoveFileType.data[0].i = index;
         emit(sendMessage(msgRemoveFileType));
     }
@@ -517,7 +518,7 @@ void SettingsWindow::onFileTypeChanged(QListWidgetItem *item)
     {
         QString changedFileType = item->text();
         Message msgChangeFileType;
-        msgChangeFileType.type = Message::settings_replaceFileType_controller;
+        msgChangeFileType.type = Message::Type::settings_replaceFileType_controller;
         msgChangeFileType.data[0].i = index;
         msgChangeFileType.data[1].qsPointer = &changedFileType;
         emit(sendMessage(msgChangeFileType));

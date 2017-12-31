@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QRect>
 #include "jsonloader.h"
-
+#include "seriesparser.h" // Parser enum
 
 class Settings : public JsonLoader
 {
@@ -24,7 +24,7 @@ public:
     void setPath(QString path);
     void setSeries(QString series);
     void setSeason(int season);
-    void setSeriesDatabase(int seriesDatabase);
+    void setSeriesDatabase(SeriesParser::Parser seriesDatabase);
     void setNameScheme(int nameScheme);
     void setGuiLanguage(QString guiLanguage);
     void setSeriesLanguage(QString seriesLanguage);
@@ -41,7 +41,7 @@ public:
     QString getGuiLanguage();
     QString getSeriesLanguage();
     int getSeason();
-    int getSeriesDatabase();
+    SeriesParser::Parser getSeriesDatabase();
     int getNameScheme();
     QRect getWindowRect();
 
@@ -57,7 +57,7 @@ private:
     QString path;
     QString series;
     int season;
-    int seriesDatabase; // 0 = TMDb, 1 = OMDb
+    SeriesParser::Parser seriesDatabase;
     int nameScheme;
     QString guiLanguage;
     QString seriesLanguage;
@@ -93,7 +93,7 @@ private:
     const QString defaultPath = "";
     const QString defaultSeries = "";
     const int defaultSeason = 1;
-    const int defaultSeriesDatabase = 0;
+    const SeriesParser::Parser defaultSeriesDatabase = SeriesParser::Parser::tmdb;
     const int defaultNameScheme = 0;
     const QString defaultGuiLanguage = "English";
     const QString defaultSeriesLanguage = "English";

@@ -1,6 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "mainwindow.h" // StatusMessageType enum
 #include "message.h"
 #include "settings.h"
 #include "seriesparser.h"
@@ -37,14 +38,14 @@ private:
     void initializeInterfaceLanguages();
     void initializeSettings();
     void updateNewFileNames();
-    void setStatusMessage(QString status, int type);
+    void setStatusMessage(QString status, MainWindow::StatusMessageType type);
     void setSeriesInformation();
 
     bool loadSeries(QString series, int season);
     bool changeSeason(int season);
     bool changeInterfaceLanguage(QString language);
     void changeSeriesLanguage(QString language);
-    void changeSeriesParser(int seriesParser);
+    void changeSeriesParser(SeriesParser::Parser seriesParser);
     void changeSeries(QString series, int season);
     void changeSaveSeries(bool saveSeries);
     void changeSavePath(bool savePath);

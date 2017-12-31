@@ -10,7 +10,7 @@
 class Message
 {
 public:
-    enum MessageType
+    enum class Type
     {
         view_changeSeriesText_controller,
         view_changeSeason_controller,
@@ -110,7 +110,7 @@ public:
         bool b;
     };
 
-    MessageType type;
+    Type type;
     MessageData data[7];
 
     Message();

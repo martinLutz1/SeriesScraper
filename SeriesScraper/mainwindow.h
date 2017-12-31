@@ -26,6 +26,12 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+    enum class StatusMessageType { error, success, info };
+
 private:
     Ui::MainWindow *ui;
     QTimer *seriesTextChangeTimer;
@@ -33,7 +39,6 @@ private:
     QTimer *hideRenameProgressTimer;
     QLabel *statusBarTypeImageLabel;
     CustomShadowEffect *renameShadow;
-    CustomShadowEffect *directPathShadow;
     QPropertyAnimation *renameSlideProgressAnimation;
     QProgressIndicator *progressIndicatorPath;
     QProgressIndicator *progressIndicatorSeries;
@@ -89,7 +94,7 @@ private:
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
     void removeNameSchemeItem(int itemIndex);
-    void setStatusMessage(QString message, int type);
+    void setStatusMessage(QString message, StatusMessageType type);
     void changeLocalization(QStringList translationList);
     void resizeEvent(QResizeEvent *event);
     void updateView(EpisodeNames* episodeNames, bool atLeastOneSideEmpty, int amountSeasons);
@@ -102,17 +107,7 @@ private:
     void showRenameProgress();
     void hideRenameProgress();
     void updateRenameProgress(int amountFiles, int currentFile, QString oldFileName);
-
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    enum statusMessageType
-    {
-        error,
-        success,
-        info
-    };
-
-    ~MainWindow();
+    void switchDirectorySelection();
 
 private slots:
     void updateRow(int row, EpisodeName& episodeName, bool noColorization);

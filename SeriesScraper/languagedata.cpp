@@ -10,9 +10,9 @@ QString LanguageData::getLanguage()
     return selectedLanguage;
 }
 
-QString LanguageData::getTranslation(int toTranslate)
+QString LanguageData::getTranslation(Translate toTranslate)
 {
-    return translations.at(toTranslate);
+    return translations.at((int)toTranslate);
 }
 
 QStringList LanguageData::getTranslationList()
@@ -25,13 +25,15 @@ void LanguageData::setLanguage(QString language)
     selectedLanguage = language;
 }
 
-void LanguageData::setTranslation(int toTranslate, QString translation)
+void LanguageData::setTranslation(Translate toTranslate, QString translation)
 {
     // Prepare space
-    while (translations.size() <= toTranslate)
-        translations.push_back(QString(""));
+    while (translations.size() <= (int)toTranslate)
+    {
+        translations.push_back(QString());
+    }
 
-    translations[toTranslate] = translation;
+    translations[(int)toTranslate] = translation;
 }
 
 void LanguageData::setTranslationSet(QStringList translationList)

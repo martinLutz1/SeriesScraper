@@ -30,33 +30,55 @@ QString NameSchemeParser::getFileName(QString series, QString airDate, QString s
     for (int i = 0; i < parsedNameSchemeList.size(); i++)
     {
         QString currentString = parsedNameSchemeList.at(i);
-        int variableType = getVariableType(currentString);
+        auto variableType = getVariableType(currentString);
 
-        if (variableType == episodeNumber || variableType == seasonNumber)
+        switch(variableType)
+        {
+        case VariableType::episodeNumber:
+        case VariableType::seasonNumber:
         {
             QRegularExpressionMatch numberMatch = numberExpression.match(currentString);
             QString foundNumber = numberMatch.captured();
             // Simple format
             if (foundNumber.isEmpty())
-                fileName += variables[variableType];
+            {
+                fileName += variables[(int)variableType];
+            }
             // Advanced format (leading zeros)
             else
             {
                 int numberLenght = foundNumber.toInt();
                 QString number;
-                if (variableType == episodeNumber)
+
+                if (variableType == VariableType::episodeNumber)
+                {
                     number = QString("%1").arg(episode.toInt(), numberLenght, 10, QChar('0'));
-                else if(variableType == seasonNumber)
+                }
+                else if (variableType == VariableType::seasonNumber)
+                {
                     number = QString("%1").arg(season.toInt(), numberLenght, 10, QChar('0'));
+                }
 
                 fileName += number;
             }
-        } else if (variableType != none)
+            break;
+        }
+        case VariableType::seriesName:
+        case VariableType::airDate:
+        case VariableType::episodeName:
         {
-            fileName += variables[variableType];
-        } else
+            fileName += variables[(int)variableType];
+            break;
+        }
+        case VariableType::none:
         {
             fileName += currentString;
+            break;
+        }
+        default:
+        {
+            break;
+        }
         }
     }
 
@@ -166,26 +188,32 @@ QStringList NameSchemeParser::parseNameScheme(QString nameScheme)
     return parsedNameScheme;
 }
 
-int NameSchemeParser::getVariableType(QString toCheck)
+NameSchemeParser::VariableType NameSchemeParser::getVariableType(QString toCheck)
 {
-    if (seriesNameExpression.match(toCheck).hasMatch()) {
-        return seriesName;
+    if (seriesNameExpression.match(toCheck).hasMatch())
+    {
+        return VariableType::seriesName;
     }
-    if (airDateExpression.match(toCheck).hasMatch()) {
-        return airDate;
+    else if (airDateExpression.match(toCheck).hasMatch())
+    {
+        return VariableType::airDate;
     }
     else if (seasonNumberExpression.match(toCheck).hasMatch()
-             || seasonNumberAdvancedExpression.match(toCheck).hasMatch()) {
-        return seasonNumber;
+             || seasonNumberAdvancedExpression.match(toCheck).hasMatch())
+    {
+        return VariableType::seasonNumber;
     }
     else if (episodeNumberExpression.match(toCheck).hasMatch()
-             || episodeNumberAdvancedExpression.match(toCheck).hasMatch()) {
-        return episodeNumber;
+             || episodeNumberAdvancedExpression.match(toCheck).hasMatch())
+    {
+        return VariableType::episodeNumber;
     }
-    else if (episodeNameExpression.match(toCheck).hasMatch()) {
-        return episodeName;
+    else if (episodeNameExpression.match(toCheck).hasMatch())
+    {
+        return VariableType::episodeName;
     }
-    else {
-        return none;
+    else
+    {
+        return VariableType::none;
     }
 }

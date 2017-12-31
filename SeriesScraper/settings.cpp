@@ -22,7 +22,7 @@ bool Settings::loadSettingsFile()
         setPath(loadedObject.find(jsonKeyPath).value().toString());
         setSeries(loadedObject.find(jsonKeySeries).value().toString());
         setSeason(loadedObject.find(jsonKeySeason).value().toInt());
-        setSeriesDatabase(loadedObject.find(jsonKeySeriesDatabase).value().toInt());
+        setSeriesDatabase((SeriesParser::Parser)loadedObject.find(jsonKeySeriesDatabase).value().toInt());
         setNameScheme(loadedObject.find(jsonKeyNameScheme).value().toInt());
         setGuiLanguage(loadedObject.find(jsonKeyGUILanguage).value().toString());
         setSeriesLanguage(loadedObject.find(jsonKeySeriesLanguage).value().toString());
@@ -50,7 +50,7 @@ bool Settings::saveSettingsFile()
     jsonSettings.insert(jsonKeySeries, series);
     jsonSettings.insert(jsonKeySavePosterInDirectory, savePosterInDirectory);
     jsonSettings.insert(jsonKeyAutoSetDetectedSeason, autoSetDetectedSeason);
-    jsonSettings.insert(jsonKeySeriesDatabase, seriesDatabase);
+    jsonSettings.insert(jsonKeySeriesDatabase, (int)seriesDatabase);
     jsonSettings.insert(jsonKeyGUILanguage, guiLanguage);
     jsonSettings.insert(jsonKeySeriesLanguage, seriesLanguage);
     jsonSettings.insert(jsonKeyNameScheme, nameScheme);
@@ -119,12 +119,12 @@ void Settings::setSeason(int season)
     this->season = season;
 }
 
-void Settings::setSeriesDatabase(int seriesDatabase)
+void Settings::setSeriesDatabase(SeriesParser::Parser seriesDatabase)
 {
-    if (seriesDatabase >= 0 && seriesDatabase <= 2)
+    if ((int)seriesDatabase >= 0 && (int)seriesDatabase <= 2)
         this->seriesDatabase = seriesDatabase;
-    else // Set to default if seriesDatabase is not valid
-        this->seriesDatabase = 0;
+    else
+        this->seriesDatabase = defaultSeriesDatabase;
 }
 
 void Settings::setNameScheme(int nameScheme)
@@ -205,7 +205,7 @@ int Settings::getSeason()
     return season;
 }
 
-int Settings::getSeriesDatabase()
+SeriesParser::Parser Settings::getSeriesDatabase()
 {
     return seriesDatabase;
 }

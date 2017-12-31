@@ -5,7 +5,6 @@
 #include "jsonloader.h"
 #include <QDir>
 
-
 class InterfaceLanguageHandler : public JsonLoader
 {
 private:
@@ -18,7 +17,7 @@ public:
     bool initialize();
     QStringList getLanguageList();
     bool loadLanguage(QString language);
-    QString getTranslation(int translateThis);
+    QString getTranslation(LanguageData::Translate translateThis);
     QStringList getTranslationList();
 };
 

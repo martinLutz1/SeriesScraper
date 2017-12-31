@@ -10,31 +10,32 @@ SeriesParser::~SeriesParser()
     parser = nullptr;
 }
 
-void SeriesParser::setSeriesParser(int selectedSeriesParser)
+void SeriesParser::setSeriesParser(Parser selectedSeriesParser)
 {
     switch (selectedSeriesParser)
     {
-    case seriesParser::tmdb:
+    case Parser::tmdb:
         this->selectedSeriesParser = selectedSeriesParser;
         parser = &tmdbSeriesParser;
         break;
 
-    case seriesParser::omdb:
+    case Parser::omdb:
         this->selectedSeriesParser = selectedSeriesParser;
         parser = &omdbSeriesParser;
         break;
 
-    case seriesParser::tvdb:
+    case Parser::tvdb:
         this->selectedSeriesParser = selectedSeriesParser;
         parser = &tvdbSeriesParser;
         break;
+
     default:
-        qDebug() << "Selected not available series parser with index " + QString::number(selectedSeriesParser);
+        qDebug() << "Selected not available series parser with index " + QString::number((int)selectedSeriesParser);
         break;
     }
 }
 
-int SeriesParser::getSeriesParserIndex()
+SeriesParser::Parser SeriesParser::getSeriesParserIndex()
 {
     return selectedSeriesParser;
 }

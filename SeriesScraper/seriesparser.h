@@ -9,17 +9,17 @@
 class SeriesParser
 {
 public:
+    enum class Parser { tmdb, omdb, tvdb };
+
+public:
     SeriesParser();
     ~SeriesParser();
-    void setSeriesParser(int selectedSeriesParser);
+    void setSeriesParser(Parser selectedSeriesParser);
     void setSeriesInput(QString series);
 
     BaseSeriesParser *getSeriesParser();
-    int getSeriesParserIndex();
+    SeriesParser::Parser getSeriesParserIndex();
     QString getSeriesInput();
-
-public:
-    enum seriesParser{tmdb, omdb, tvdb};
 
 private:
     OMDbSeriesParser omdbSeriesParser;
@@ -27,7 +27,7 @@ private:
     TVDBSeriesParser tvdbSeriesParser;
     BaseSeriesParser *parser;
 
-    int selectedSeriesParser = seriesParser::tmdb;
+    Parser selectedSeriesParser = Parser::tmdb;
     QString seriesInput;
 };
 

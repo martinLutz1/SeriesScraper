@@ -5,15 +5,7 @@
 class LanguageData
 {
 public:
-    LanguageData();
-    QString getLanguage();
-    QString getTranslation(int toTranslate);
-    QStringList getTranslationList();
-    void setLanguage(QString language);
-    void setTranslation(int toTranslate, QString translation);
-    void setTranslationSet(QStringList translationList);
-
-    enum translate {
+    enum class Translate {
         about,
         add,
         airDate,
@@ -78,6 +70,15 @@ public:
         video,
         yes,
     };
+
+public:
+    LanguageData();
+    QString getLanguage();
+    QString getTranslation(Translate toTranslate);
+    QStringList getTranslationList();
+    void setLanguage(QString language);
+    void setTranslation(Translate toTranslate, QString translation);
+    void setTranslationSet(QStringList translationList);
 
 private:
     QStringList translations;

@@ -12,6 +12,17 @@ public:
     QString getNameSchemeRepresentation();
 
 private:
+    enum class VariableType
+    {
+        seriesName,
+        airDate,
+        seasonNumber,
+        episodeNumber,
+        episodeName,
+        none
+    };
+
+private:
     QRegularExpression nameSchemeNameExpression;
     QRegularExpression replaceExpression;
     QRegularExpression generalVariableExpression;
@@ -29,18 +40,9 @@ private:
     QString nameSchemeName;
     QStringList replaceFrom, replaceTo;
 
-    enum VariableType {
-        seriesName,
-        airDate,
-        seasonNumber,
-        episodeNumber,
-        episodeName,
-        none
-    };
-
     QString preParseNameScheme(QString nameScheme);
     QStringList parseNameScheme(QString nameScheme);
-    int getVariableType(QString toCheck);
+    VariableType getVariableType(QString toCheck);
 };
 
 #endif // NAMESCHEMEPARSER_H

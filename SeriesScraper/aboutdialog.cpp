@@ -2,7 +2,7 @@
 
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
-#include "languagedata.h" // To lookup enum
+#include "languagedata.h" // Translate enum
 #include "QDebug"
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -22,17 +22,17 @@ AboutDialog::~AboutDialog()
 void AboutDialog::notify(Message &msg)
 {
     switch (msg.type) {
-    case Message::controller_showAboutDialog_about:
+    case Message::Type::controller_showAboutDialog_about:
     {
         this->show();
         this->setWindowIcon(QIcon(":/images/about.png"));
         break;
     }
-    case Message::controller_changeLocalization_view:
+    case Message::Type::controller_changeLocalization_view:
     {
         QStringList translationList = *msg.data[0].qsListPointer;
-        ui->closeButton->setText(translationList.at(LanguageData::close));
-        this->setWindowTitle(translationList.at(LanguageData::about) + " " + APPLICATIONNAME);
+        ui->closeButton->setText(translationList.at((int)LanguageData::Translate::close));
+        this->setWindowTitle(translationList.at((int)LanguageData::Translate::about) + " " + APPLICATIONNAME);
         break;
     }
     default:
