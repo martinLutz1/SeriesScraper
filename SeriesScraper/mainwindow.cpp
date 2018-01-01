@@ -283,7 +283,7 @@ void MainWindow::setUpRenameProgressWidget()
     renameShadow->setColor(QColor(0, 0, 0, 150));
 
     renameSlideProgressAnimation = new QPropertyAnimation(ui->renameProgressScrollArea, "geometry");
-    renameSlideProgressAnimation->setDuration(400);
+    renameSlideProgressAnimation->setDuration(150);
 
     ui->renameProgressScrollArea->hide();
     ui->renameProgressScrollArea->setGraphicsEffect(renameShadow);
