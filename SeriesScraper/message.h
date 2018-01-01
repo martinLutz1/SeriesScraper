@@ -19,7 +19,6 @@ public:
         view_changeDirectory_controller,
         view_updateDirectory_controller,
         view_switchToDirectory_controller,
-        view_switchDirectorySelector_controller, // Todo: Use it!
         view_rename_controller,
         view_forceRename_controller,
         view_undoRenaming_controller,

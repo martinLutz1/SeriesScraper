@@ -123,6 +123,7 @@ private slots:
     void onRenameButtonPressed();
     void onNameSchemeChanged(int index);
     void onTableEntryChanged(int row, int coloumn);
+    void onPathLineEditTextChanged(QString path);
     void onDirectoryEntryClicked(QAction* clickedAction);
     void onDirectoryComboBox1EntryClicked(int selection);
     void onDirectoryComboBox2EntryClicked(int selection);

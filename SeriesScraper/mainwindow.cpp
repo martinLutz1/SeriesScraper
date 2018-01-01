@@ -254,6 +254,7 @@ void MainWindow::setUpDirectoryWidget()
     ui->directoryWidgetHorizontalLayout->addWidget(progressIndicatorPath);
     directoryEntriesMenu = new QMenu(this);
 
+    QObject::connect(ui->directPathInputLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onPathLineEditTextChanged(QString)));
     QObject::connect(ui->pathStructureContentButton, SIGNAL(clicked()), this, SLOT(onPathStructureContentButtonClicked()));
     QObject::connect(directoryEntriesMenu, SIGNAL(triggered(QAction*)), this, SLOT(onDirectoryEntryClicked(QAction*)));
     QObject::connect(ui->pathStructure1ComboBox, SIGNAL(activated(int)), this, SLOT(onDirectoryComboBox1EntryClicked(int)));
@@ -799,6 +800,14 @@ void MainWindow::onTableEntryChanged(int row, int coloumn)
     }
 }
 
+void MainWindow::onPathLineEditTextChanged(QString path)
+{
+    Message directoryChangedMsg;
+    directoryChangedMsg.type = Message::Type::view_changeDirectory_controller;
+    directoryChangedMsg.data[0].qsPointer = &path;
+    emit(sendMessage(directoryChangedMsg));
+}
+
 void MainWindow::onDirectoryEntryClicked(QAction *clickedAction)
 {
     QString selectedText = clickedAction->text();
@@ -1155,16 +1164,16 @@ void MainWindow::notify(Message &msg)
     case Message::Type::controller_DirectorySetSuccessful_view:
     {
         const auto setSuccessful = msg.data[0].b;
-        // Todo: Colorize the background
+        // Todo: Handle empty path
+        // Add status / loading icon
         if (setSuccessful)
         {
-            qDebug() << "Set successfully";
+            ui->directPathInputLineEdit->setStyleSheet(colorGreen);
         }
         else
         {
-            qDebug() << "Not set successfully";
+            ui->directPathInputLineEdit->setStyleSheet(colorRed);
         }
-        //ui->directorySelectionHorizontalLayout->setText("Wrong!");
         break;
     }
     case Message::Type::controller_updateDirectoryWidget_view:
