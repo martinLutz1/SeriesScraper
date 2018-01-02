@@ -178,8 +178,8 @@ void MainWindow::setUpMenuBar()
     savePosterAction = new QAction("Save poster");
     undoRenameAction = new QAction("Undo renaming");
 
-    openDirectoryAction = new QAction("Select");
-    switchDirectorySelectorAction = new QAction("Switch directory selector");
+    openDirectoryAction = new QAction("Selection");
+    switchDirectorySelectorAction = new QAction("Switch directory view");
     reloadDirectoryAction = new QAction("Reload");
 
     aboutAction = new QAction(aboutText);
@@ -689,12 +689,17 @@ void MainWindow::changeLocalization(QStringList translationList)
     fileMenu->setTitle(translationList.at((int)LanguageData::Translate::file));
     viewMenu->setTitle(translationList.at((int)LanguageData::Translate::display));
     helpMenu->setTitle(translationList.at((int)LanguageData::Translate::help));
+    directoryMenu->setTitle(translationList.at((int)LanguageData::Translate::directory));
     aboutAction->setText(translationList.at((int)LanguageData::Translate::about) + " " + APPLICATIONNAME);
     settingsAction->setText(translationList.at((int)LanguageData::Translate::settings));
     savePosterAction->setText(translationList.at((int)LanguageData::Translate::savePoster));
     undoRenameAction->setText(translationList.at((int)LanguageData::Translate::undoRenaming));
     fullScreenAction->setText(translationList.at((int)LanguageData::Translate::fullscreen));
+    openDirectoryAction->setText(translationList.at((int)LanguageData::Translate::selection));
+    switchDirectorySelectorAction->setText(translationList.at((int)LanguageData::Translate::switchDirectoryView));
+    reloadDirectoryAction->setText(translationList.at((int)LanguageData::Translate::reload));
     // Info sidebar
+    ui->infoGroupBox->setTitle(translationList.at((int)LanguageData::Translate::seriesInfo));
     ui->airDateInfoLabel->setText(translationList.at((int)LanguageData::Translate::airDate) + ":");
     ui->seasonInfoLabel->setText(translationList.at((int)LanguageData::Translate::season) + ":");
     ui->totalEpisodesInfoLabel->setText(translationList.at((int)LanguageData::Translate::episodeNumber) + ":");
@@ -719,6 +724,10 @@ void MainWindow::changeLocalization(QStringList translationList)
     // Misc
     directorySelectionText = translationList.at((int)LanguageData::Translate::directorySelection);
     openThisFolderText = translationList.at((int)LanguageData::Translate::openThisFolder);
+    if (directoryEntriesMenu->actions().size() > 0)
+    {
+        directoryEntriesMenu->actions().last()->setText(openThisFolderText);
+    }
 }
 
 void MainWindow::openDirectory()

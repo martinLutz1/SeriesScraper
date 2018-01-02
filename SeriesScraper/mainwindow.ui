@@ -221,7 +221,7 @@
             </size>
            </property>
            <property name="title">
-            <string>Series info</string>
+            <string>Series information</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1111,8 +1111,8 @@
    <widget class="QScrollArea" name="renameProgressScrollArea">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>15</y>
+      <x>60</x>
+      <y>20</y>
       <width>500</width>
       <height>100</height>
      </rect>
@@ -1140,7 +1140,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>401</width>
+        <width>501</width>
         <height>101</height>
        </rect>
       </property>
