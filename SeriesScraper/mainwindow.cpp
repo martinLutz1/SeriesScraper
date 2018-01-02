@@ -1044,7 +1044,8 @@ void MainWindow::notify(Message &msg)
     }
     case Message::Type::controller_stopDirectoryLoading_view:
     {
-        if (DirectorySelector::text == directorySelector)
+        if (DirectorySelector::text == directorySelector
+                && !ui->directPathInputLineEdit->text().isEmpty())
         {
             progressIndicatorPath->hide();
             ui->correctPathLabel->show();
