@@ -93,6 +93,7 @@ private:
     void setUpDirectoryWidget();
     void setUpRenameProgressWidget();
     void setSeriesAvailableStatus(bool status, bool isEmpty);
+    void setPathCorrectStatus(bool status, bool isEmpty);
     void setAmountSeasons(int amount);
     void addNameSchemeItem(QString nameScheme);
     void removeNameSchemeItem(int itemIndex);

@@ -505,7 +505,7 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>839</width>
+           <width>907</width>
            <height>129</height>
           </rect>
          </property>
@@ -736,6 +736,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QLabel" name="correctPathLabel">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -779,7 +786,7 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>481</width>
+           <width>575</width>
            <height>101</height>
           </rect>
          </property>

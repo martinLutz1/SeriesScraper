@@ -148,6 +148,7 @@ void MainWindow::setUpGUI()
     ui->seasonComboBox->setEnabled(false);
     ui->additionalInfoScrollArea->hide();
     ui->correctSeriesLabel->hide();
+    ui->correctPathLabel->hide();
 
     this->activateWindow();
 }
@@ -314,6 +315,26 @@ void MainWindow::setSeriesAvailableStatus(bool status, bool isEmpty)
         ui->seriesLineEdit->setStyleSheet(colorRed);
         ui->correctSeriesLabel->setPixmap(QPixmap(":/images/error-20.png"));
         hideSeriesLoadingAnimation();
+    }
+}
+
+void MainWindow::setPathCorrectStatus(bool status, bool isEmpty)
+{
+    if (isEmpty)
+    {
+        ui->directPathInputLineEdit->setStyleSheet(colorWhite);
+        ui->correctPathLabel->hide();
+        progressIndicatorPath->show();
+    }
+    else if (status)
+    {
+        ui->directPathInputLineEdit->setStyleSheet(colorGreen);
+        ui->correctPathLabel->setPixmap(QPixmap(":/images/check-20.png"));
+    }
+    else
+    {
+        ui->directPathInputLineEdit->setStyleSheet(colorRed);
+        ui->correctPathLabel->setPixmap(QPixmap(":/images/error-20.png"));
     }
 }
 
@@ -582,6 +603,8 @@ void MainWindow::switchDirectorySelector(MainWindow::DirectorySelector directory
         ui->pathStructure1ComboBox->show();
         ui->pathStructure2ComboBox->show();
         ui->pathStructureContentButton->show();
+        ui->correctPathLabel->hide();
+        progressIndicatorPath->show();
         updateDirectoryWidgetVisibility();
 
         break;
@@ -1010,11 +1033,23 @@ void MainWindow::notify(Message &msg)
     }
     case Message::Type::controller_startDirectoryLoading_view:
     {
+        if (DirectorySelector::text == directorySelector)
+        {
+            ui->correctPathLabel->hide();
+            progressIndicatorPath->show();
+        }
+
         progressIndicatorPath->startAnimation();
         break;
     }
     case Message::Type::controller_stopDirectoryLoading_view:
     {
+        if (DirectorySelector::text == directorySelector)
+        {
+            progressIndicatorPath->hide();
+            ui->correctPathLabel->show();
+        }
+
         progressIndicatorPath->stopAnimation();
         break;
     }
@@ -1188,19 +1223,7 @@ void MainWindow::notify(Message &msg)
     {
         const auto setSuccessful = msg.data[0].b;
         const auto isEmpty = msg.data[1].b;
-        // Todo: Add status / loading icon
-        if (isEmpty)
-        {
-            ui->directPathInputLineEdit->setStyleSheet(colorWhite);
-        }
-        else if (setSuccessful)
-        {
-            ui->directPathInputLineEdit->setStyleSheet(colorGreen);
-        }
-        else
-        {
-            ui->directPathInputLineEdit->setStyleSheet(colorRed);
-        }
+        setPathCorrectStatus(setSuccessful, isEmpty);
         break;
     }
     case Message::Type::controller_updateDirectoryWidget_view:
