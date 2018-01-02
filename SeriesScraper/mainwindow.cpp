@@ -65,6 +65,11 @@ MainWindow::~MainWindow()
     msgSetWindowRect.data[0].qRectPointer = &windowRect;
     emit(sendMessage(msgSetWindowRect));
 
+    Message msgSetDirectorySelector;
+    msgSetDirectorySelector.type = Message::Type::view_setDirectorySelector_controller;
+    msgSetDirectorySelector.data[0].i = (int)directorySelector;
+    emit(sendMessage(msgSetDirectorySelector));
+
     delete ui;
     delete seriesTextChangeTimer;
     delete clearStatusTextTimer;
@@ -1011,6 +1016,12 @@ void MainWindow::notify(Message &msg)
     case Message::Type::controller_stopDirectoryLoading_view:
     {
         progressIndicatorPath->stopAnimation();
+        break;
+    }
+    case Message::Type::controller_switchDirectorySelector_view:
+    {
+        auto selectedDirectorySelector = (DirectorySelector)msg.data[0].i;
+        switchDirectorySelector(selectedDirectorySelector);
         break;
     }
     case Message::Type::controller_addNameScheme_view:

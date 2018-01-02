@@ -29,6 +29,7 @@ public:
         view_showAboutDialog_controller,
         view_showSettingsWindow_controller,
         view_setWindowRect_controller,
+        view_setDirectorySelector_controller,
 
         settings_changeGUILanguage_controller,
         settings_changeSeriesParser_controller,
@@ -54,6 +55,7 @@ public:
         controller_stopDirectoryLoading_view,
         controller_setPath_view,
         controller_directorySetSuccessful_view,
+        controller_switchDirectorySelector_view,
         controller_setWindowRect_view,
         controller_updateDirectoryWidget_view,
         controller_enableRenameButton_view,

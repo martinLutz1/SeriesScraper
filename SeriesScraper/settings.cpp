@@ -19,6 +19,7 @@ bool Settings::loadSettingsFile()
         setAutoSetDetectedSeason(loadedObject.find(jsonKeyAutoSetDetectedSeason).value().toBool());
         setDarkTheme(loadedObject.find(jsonKeyDarkTheme).value().toBool());
         setShowSeriesInfo(loadedObject.find(jsonKeyShowSeriesInfo).value().toBool());
+        setDirectoryView(loadedObject.find(jsonKeyDirectoryView).value().toString());
         setPath(loadedObject.find(jsonKeyPath).value().toString());
         setSeries(loadedObject.find(jsonKeySeries).value().toString());
         setSeason(loadedObject.find(jsonKeySeason).value().toInt());
@@ -27,14 +28,18 @@ bool Settings::loadSettingsFile()
         setGuiLanguage(loadedObject.find(jsonKeyGUILanguage).value().toString());
         setSeriesLanguage(loadedObject.find(jsonKeySeriesLanguage).value().toString());
 
-        // Window position and size
+        // Window position and size.
         int x = loadedObject.find(jsonKeyWindowPosX).value().toInt();
         int y = loadedObject.find(jsonKeyWindowPosY).value().toInt();
         int width = loadedObject.find(jsonKeyWindowWidth).value().toInt();
         int height = loadedObject.find(jsonKeyWindowHeight).value().toInt();
         setWindowRect(QRect(x, y, width, height));
-    } else
-        saveSettingsFile(); // Creates settings file with default values defined in constructor
+    }
+    else
+    {
+        // Creates settings file with default values defined in constructor.
+        saveSettingsFile();
+    }
 
     return loadingSuccessful;
 }
@@ -44,6 +49,7 @@ bool Settings::saveSettingsFile()
     QJsonObject jsonSettings;
     jsonSettings.insert(jsonKeySavePath, savePath);
     jsonSettings.insert(jsonKeyPath, path);
+    jsonSettings.insert(jsonKeyDirectoryView, directoryView);
     jsonSettings.insert(jsonKeyDarkTheme, useDarkTheme);
     jsonSettings.insert(jsonKeyShowSeriesInfo, showSeriesInfo);
     jsonSettings.insert(jsonKeySaveSeries, saveSeries);
@@ -62,7 +68,9 @@ bool Settings::saveSettingsFile()
 
     bool successReading = settingsFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
     if (successReading)
+    {
         settingsFile.write(QJsonDocument(jsonSettings).toJson());
+    }
     settingsFile.close();
 
     return successReading;
@@ -104,6 +112,23 @@ void Settings::setShowSeriesInfo(bool showSeriesInfo)
     this->showSeriesInfo = showSeriesInfo;
 }
 
+void Settings::setDirectoryView(MainWindow::DirectorySelector directoryView)
+{
+    if (MainWindow::DirectorySelector::widget == directoryView)
+    {
+        this->directoryView = "Widget";
+    }
+    else if (MainWindow::DirectorySelector::text == directoryView)
+    {
+        this->directoryView = "Text";
+    }
+}
+
+void Settings::setDirectoryView(QString directoryView)
+{
+    this->directoryView = directoryView;
+}
+
 void Settings::setPath(QString path)
 {
     this->path = path;
@@ -121,10 +146,7 @@ void Settings::setSeason(int season)
 
 void Settings::setSeriesDatabase(SeriesParser::Parser seriesDatabase)
 {
-    if ((int)seriesDatabase >= 0 && (int)seriesDatabase <= 2)
-        this->seriesDatabase = seriesDatabase;
-    else
-        this->seriesDatabase = defaultSeriesDatabase;
+    this->seriesDatabase = seriesDatabase;
 }
 
 void Settings::setNameScheme(int nameScheme)
@@ -180,6 +202,16 @@ bool Settings::getShowSeriesInfo()
     return showSeriesInfo;
 }
 
+MainWindow::DirectorySelector Settings::getDirectoryView()
+{
+    if (directoryView.toLower() == "text")
+    {
+        return MainWindow::DirectorySelector::text;
+    }
+
+    return MainWindow::DirectorySelector::widget;
+}
+
 QString Settings::getSeries()
 {
     return series;
@@ -229,6 +261,7 @@ void Settings::setDefaultValues()
     autoSetDetectedSeason = defaultAutoSetDetectedSeason;
     useDarkTheme = defaultUseDarkTheme;
     showSeriesInfo = defaultShowSeriesInfo;
+    directoryView = defaultDirectoryView;
     path = defaultPath;
     series = defaultSeries;
     season = defaultSeason;

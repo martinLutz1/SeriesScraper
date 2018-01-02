@@ -114,18 +114,19 @@ void Controller::initializeSettings()
     settings.loadSettingsFile();
 
     auto selectedSeriesParser = (SeriesParser::Parser)settings.getSeriesDatabase();
-    int selectedNameScheme = settings.getNameScheme();
-    QString selectedInterfaceLanguage = settings.getGuiLanguage();
-    QString selectedSeriesLanguage = settings.getSeriesLanguage();
+    auto selectedNameScheme = settings.getNameScheme();
+    auto selectedInterfaceLanguage = settings.getGuiLanguage();
+    auto selectedSeriesLanguage = settings.getSeriesLanguage();
+    auto selectedDirectorySelector = settings.getDirectoryView();
     bool saveSeries = settings.getSaveSeries();
     bool savePath = settings.getSavePath();
     bool savePosterInDirectory = settings.getSavePosterInDirectory();
     bool setDetectedSeason = settings.getAutoSetDetectedSeason();
     bool useDarkTheme = settings.getDarkTheme();
     bool showSeriesInfo = settings.getShowSeriesInfo();
-    QRect windowRect = settings.getWindowRect();
+    auto windowRect = settings.getWindowRect();
 
-    // Dont change theme afterwards!
+    // Don't change theme afterwards!
     if (useDarkTheme)
     {
         Message msgUseDarkTheme;
@@ -139,6 +140,11 @@ void Controller::initializeSettings()
     changeSeriesLanguage(selectedSeriesLanguage);
     changeSaveSeries(saveSeries);
     changeSavePath(savePath);
+
+    Message msgSwitchDirectorySelector;
+    msgSwitchDirectorySelector.type = Message::Type::controller_switchDirectorySelector_view;
+    msgSwitchDirectorySelector.data[0].i = (int)selectedDirectorySelector;
+    emit(sendMessage(msgSwitchDirectorySelector));
 
     Message msgSavePosterInDirectory;
     msgSavePosterInDirectory.type = Message::Type::controller_savePoster_settings;
@@ -764,6 +770,12 @@ void Controller::notify(Message &msg)
     {
         QRect windowRect = *msg.data[0].qRectPointer;
         settings.setWindowRect(windowRect);
+        break;
+    }
+    case Message::Type::view_setDirectorySelector_controller:
+    {
+        auto selectedDirectorySelector = (MainWindow::DirectorySelector)msg.data[0].i;
+        settings.setDirectoryView(selectedDirectorySelector);
         break;
     }
     case Message::Type::view_showAboutDialog_controller:

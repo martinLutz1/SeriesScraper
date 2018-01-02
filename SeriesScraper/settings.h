@@ -6,6 +6,7 @@
 #include <QRect>
 #include "jsonloader.h"
 #include "seriesparser.h" // Parser enum
+#include "mainwindow.h" // Directory selector enum
 
 class Settings : public JsonLoader
 {
@@ -21,6 +22,8 @@ public:
     void setAutoSetDetectedSeason(bool autoSetDetectedSeason);
     void setDarkTheme(bool useDarkTheme);
     void setShowSeriesInfo(bool showSeriesInfo);
+    void setDirectoryView(MainWindow::DirectorySelector directoryView);
+    void setDirectoryView(QString directoryView);
     void setPath(QString path);
     void setSeries(QString series);
     void setSeason(int season);
@@ -36,6 +39,7 @@ public:
     bool getAutoSetDetectedSeason();
     bool getDarkTheme();
     bool getShowSeriesInfo();
+    MainWindow::DirectorySelector getDirectoryView();
     QString getPath();
     QString getSeries();
     QString getGuiLanguage();
@@ -54,6 +58,7 @@ private:
     bool autoSetDetectedSeason;
     bool useDarkTheme;
     bool showSeriesInfo;
+    QString directoryView;
     QString path;
     QString series;
     int season;
@@ -70,6 +75,7 @@ private:
     const QString jsonKeySaveSeries = "SaveSeries";
     const QString jsonKeySavePosterInDirectory = "SavePosterInDirectory";
     const QString jsonKeyAutoSetDetectedSeason = "AutoSetDetectedSeason";
+    const QString jsonKeyDirectoryView = "DirectoryView";
     const QString jsonKeyDarkTheme = "DarkTheme";
     const QString jsonKeyShowSeriesInfo = "ShowSeriesInfo";
     const QString jsonKeyPath = "Path";
@@ -90,6 +96,7 @@ private:
     const bool defaultAutoSetDetectedSeason = false;
     const bool defaultUseDarkTheme = false;
     const bool defaultShowSeriesInfo = true;
+    const QString defaultDirectoryView = "Widget";
     const QString defaultPath = "";
     const QString defaultSeries = "";
     const int defaultSeason = 1;
