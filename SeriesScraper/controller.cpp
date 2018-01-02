@@ -964,21 +964,23 @@ void Controller::notify(Message &msg)
 
 void Controller::directorySet(const bool initialized)
 {
+    QString path = directoryHandler->getDirectoryPathInput();
+
     // Update directory and file infos
     if (initialized)
     {
-        QString path = directoryHandler->getDirectoryPathInput();
         QDir newDirectory(path);
-        QStringList newOldFileNames = directoryHandler->getFilesWithoutSuffix();
-        QStringList newSuffixes = directoryHandler->getFilesSuffix();;
-        Positions newPositions = directoryHandler->getFilePositions();
-        std::vector<QStringList> pathStructure = directoryHandler->getPathStructure();
+        auto newOldFileNames = directoryHandler->getFilesWithoutSuffix();
+        auto newSuffixes = directoryHandler->getFilesSuffix();;
+        auto newPositions = directoryHandler->getFilePositions();
+        auto pathStructure = directoryHandler->getPathStructure();
         bool containsRoot = directoryHandler->getStructureContainsRoot();
 
         seriesData.setWorkingDirectory(newDirectory);
+        episodeNameHandler.clearOldNamesAndFileTypesAndPositions();
         episodeNameHandler.setOldNames(newOldFileNames);
-        episodeNameHandler.setFileTypes(newSuffixes);
         episodeNameHandler.setPositionDetermination(newPositions);
+        episodeNameHandler.setFileTypes(newSuffixes);
         fileDownloader.setFilePath(path, "poster.jpg");
 
         Message msgUpdateDirectoryWidget;
@@ -997,8 +999,9 @@ void Controller::directorySet(const bool initialized)
     }
 
     Message msgDirectorySetSuccessful;
-    msgDirectorySetSuccessful.type = Message::Type::controller_DirectorySetSuccessful_view;
+    msgDirectorySetSuccessful.type = Message::Type::controller_directorySetSuccessful_view;
     msgDirectorySetSuccessful.data[0].b = initialized;
+    msgDirectorySetSuccessful.data[1].b = path.isEmpty();
     emit(sendMessage(msgDirectorySetSuccessful));
 
     Message msgStopDirectoryLoading;

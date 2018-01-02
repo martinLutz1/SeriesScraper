@@ -13,6 +13,7 @@ public:
     EpisodeNameHandler();
     ~EpisodeNameHandler();
 
+    void clearOldNamesAndFileTypesAndPositions();
     void setOldNames(const QStringList& oldNames);
     void setNewNames(const QStringList& newNames);
     void setNewName(const QString newName, size_t index);

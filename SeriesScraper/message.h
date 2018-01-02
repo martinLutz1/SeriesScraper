@@ -53,7 +53,7 @@ public:
         controller_startDirectoryLoading_view,
         controller_stopDirectoryLoading_view,
         controller_setPath_view,
-        controller_DirectorySetSuccessful_view,
+        controller_directorySetSuccessful_view,
         controller_setWindowRect_view,
         controller_updateDirectoryWidget_view,
         controller_enableRenameButton_view,

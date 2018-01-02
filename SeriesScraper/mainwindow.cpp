@@ -566,16 +566,19 @@ void MainWindow::switchDirectorySelector(MainWindow::DirectorySelector directory
         ui->pathStructureContentButton->hide();
 
         ui->directPathInputLineEdit->show();
+        QObject::connect(ui->directPathInputLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onPathLineEditTextChanged(QString)));
         break;
 
     case DirectorySelector::widget:
     default:
         ui->directPathInputLineEdit->hide();
+        QObject::disconnect(ui->directPathInputLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onPathLineEditTextChanged(QString)));
 
         ui->pathStructure1ComboBox->show();
         ui->pathStructure2ComboBox->show();
         ui->pathStructureContentButton->show();
         updateDirectoryWidgetVisibility();
+
         break;
     }
 }
@@ -1161,12 +1164,16 @@ void MainWindow::notify(Message &msg)
         ui->directPathInputLineEdit->setText(path);
         break;
     }
-    case Message::Type::controller_DirectorySetSuccessful_view:
+    case Message::Type::controller_directorySetSuccessful_view:
     {
         const auto setSuccessful = msg.data[0].b;
-        // Todo: Handle empty path
-        // Add status / loading icon
-        if (setSuccessful)
+        const auto isEmpty = msg.data[1].b;
+        // Todo: Add status / loading icon
+        if (isEmpty)
+        {
+            ui->directPathInputLineEdit->setStyleSheet(colorWhite);
+        }
+        else if (setSuccessful)
         {
             ui->directPathInputLineEdit->setStyleSheet(colorGreen);
         }
@@ -1294,6 +1301,16 @@ void MainWindow::updateRow(int row, EpisodeName& episodeName, bool noColorizatio
     leftSide->setTextColor(normalColor);
     rightSide->setTextColor(normalColor);
 
+    // Red background if position is not determined.
+    if (!episodeName.isPositionDetermined() && !oldFileName.isEmpty())
+    {
+        leftSide->setBackground(QBrush(lightRedColor));
+    }
+    else
+    {
+        leftSide->setBackground(whiteColor);
+    }
+
     if (noColorization)
     {
         return;
@@ -1315,16 +1332,5 @@ void MainWindow::updateRow(int row, EpisodeName& episodeName, bool noColorizatio
     {
         leftSide->setTextColor(greyedOutColor);
         rightSide->setTextColor(greyedOutColor);
-    }
-
-    // Red background if position is not determined.
-    if (!episodeName.isPositionDetermined() &&
-            !episodeName.atLeastOneNameEmpty())
-    {
-        leftSide->setBackground(QBrush(lightRedColor));
-    }
-    else
-    {
-        leftSide->setBackground(whiteColor);
     }
 }

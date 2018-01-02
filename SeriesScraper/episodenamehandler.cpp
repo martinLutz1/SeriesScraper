@@ -10,10 +10,15 @@ EpisodeNameHandler::~EpisodeNameHandler()
     delete episodeNames;
 }
 
-void EpisodeNameHandler::setOldNames(const QStringList& oldNames)
+void EpisodeNameHandler::clearOldNamesAndFileTypesAndPositions()
 {
     clearOldNames();
+    clearFileTypes();
+    clearPositions();
+}
 
+void EpisodeNameHandler::setOldNames(const QStringList& oldNames)
+{
     oldNameSize = oldNames.size();
     calculateAndAdjustEpisodeNamesSize();
 
@@ -47,11 +52,6 @@ void EpisodeNameHandler::setNewName(const QString newName, size_t index)
 
 void EpisodeNameHandler::setFileTypes(const QStringList& fileTypes)
 {
-    clearFileTypes();
-
-    oldNameSize = fileTypes.size();
-    calculateAndAdjustEpisodeNamesSize();
-
     for (size_t i = 0; i < oldNameSize; i++)
     {
         episodeNames->at(i).setFileType(fileTypes.at(i));
@@ -60,11 +60,6 @@ void EpisodeNameHandler::setFileTypes(const QStringList& fileTypes)
 
 void EpisodeNameHandler::setPositionDetermination(const Positions &positions)
 {
-    clearPositions();
-
-    oldNameSize = positions.size();
-    calculateAndAdjustEpisodeNamesSize();
-
     for (size_t i = 0; i < oldNameSize; i++)
     {
         episodeNames->at(i).setPosition(positions.at(i));
@@ -147,7 +142,7 @@ void EpisodeNameHandler::clearOldNames()
 {
     for (size_t i = 0; i < oldNameSize; i++)
     {
-        episodeNames->at(i).setOldName(QString(""));
+        episodeNames->at(i).setOldName(QString());
     }
 }
 
@@ -155,7 +150,7 @@ void EpisodeNameHandler::clearNewNames()
 {
     for (size_t i = 0; i < newNameSize; i++)
     {
-        episodeNames->at(i).setNewName(QString(""));
+        episodeNames->at(i).setNewName(QString());
     }
 }
 
@@ -163,7 +158,7 @@ void EpisodeNameHandler::clearFileTypes()
 {
     for (size_t i = 0; i < oldNameSize; i++)
     {
-        episodeNames->at(i).setFileType(QString(""));
+        episodeNames->at(i).setFileType(QString());
     }
 }
 
