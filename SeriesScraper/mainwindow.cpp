@@ -593,6 +593,12 @@ void MainWindow::switchDirectorySelector(MainWindow::DirectorySelector directory
 
         ui->directPathInputLineEdit->show();
         QObject::connect(ui->directPathInputLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onPathLineEditTextChanged(QString)));
+
+        if (!progressIndicatorPath->isAnimated())
+        {
+                progressIndicatorPath->hide();
+                ui->correctPathLabel->show();
+        }
         break;
 
     case DirectorySelector::widget:
