@@ -280,7 +280,7 @@ int DirectoryParser::getEpisodeLengthOfDigitOnly(int amountFiles)
     for (int i = 1; true; i++)
     {
         if ((amountFiles - pow(10, i)) <= 0)
-            return i + 1;
+            return i;
     }
 }
 
