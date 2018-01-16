@@ -4,7 +4,6 @@
 #include <QDebug>
 #include <cmath>
 #include <unordered_map>
-#include "mainwindow.h" // Path structure box number
 
 DirectoryParser::NameSchemeType DirectoryParser::getNameSchemeType(QString filename)
 {

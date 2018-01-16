@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #define APPLICATIONNAME "SeriesScraper"
-#define NUMBER_PATH_STRUCTURE_COMBOBOXES 4
+
 
 #include <QMainWindow>
 #include <QDir>
@@ -18,6 +18,8 @@
 #include "aboutdialog.h"
 #include "message.h"
 #include "episodename.h"
+#include "settings.h" // DirectorySelector enum.
+#include "directoryparser.h" // NUMBER_PATH_STRUCTURE_COMBOBOXES
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +33,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     enum class StatusMessageType { error, success, info };
-    enum class DirectorySelector { widget, text };
 
 private:
     Ui::MainWindow *ui;
@@ -82,7 +83,7 @@ private:
     QString directorySelectionText = "Directory selection";
     QString openThisFolderText = "Open this folder";
     bool isRenameProgressHiding = false;
-    DirectorySelector directorySelector = DirectorySelector::widget;
+    Settings::DirectorySelector directorySelector = Settings::DirectorySelector::widget;
 
     void disableGUIControl();
     void enableGUIControl();
@@ -110,7 +111,7 @@ private:
     void showRenameProgress();
     void hideRenameProgress();
     void updateRenameProgress(int amountFiles, int currentFile, QString oldFileName);
-    void switchDirectorySelector(DirectorySelector directorySelector);
+    void switchDirectorySelector(Settings::DirectorySelector directorySelector);
 
 private slots:
     void updateRow(int row, EpisodeName& episodeName, bool noColorization);

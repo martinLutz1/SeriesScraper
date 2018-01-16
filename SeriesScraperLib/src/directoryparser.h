@@ -6,6 +6,8 @@
 #include <QRegularExpression>
 #include <vector>
 
+#define NUMBER_PATH_STRUCTURE_COMBOBOXES 4
+
 #include "episodenamehandler.h"
 
 class DirectoryParser

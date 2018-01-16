@@ -1,28 +1,40 @@
 greaterThan(QT_MAJOR_VERSION, 4)
 
-TARGET = SeriesScraper
+TARGET = SeriesScraperApp
 TEMPLATE += app
 
 CONFIG += c++14
-QT += core gui network widgets
+QT += core gui widgets network
 DEFINES += QT_DEPRECATED_WARNINGS
 
+##### INCLUDE LIBRARY #####
+#--------------------------------------#
+INCLUDEPATH += $$PWD/../SeriesScraperLib/src
+DEPENDPATH += $$PWD/../SeriesScraperLib
 
-VPATH += ./src
+unix|win32: LIBS += -L$$PWD/../BuildSeriesScraperLib/ -lSeriesScraperLib
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../BuildSeriesScraperLib/SeriesScraperLib.lib
+else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../BuildSeriesScraperLib/libSeriesScraperLib.a
+
+
 SOURCES += \
-    main.cpp \
-    application.cpp \
-    mainwindow.cpp \
-    aboutdialog.cpp \
-    settingswindow.cpp
+    src/main.cpp \
+    src/application.cpp \
+    src/controller.cpp \
+    src/mainwindow.cpp \
+    src/aboutdialog.cpp \
+    src/settingswindow.cpp \
+    src/customshadoweffect.cpp \
+    src/QProgressIndicator.cpp
 
  HEADERS += \
-    application.h \
-    mainwindow.h \
-    aboutdialog.h \
-    settingswindow.h
-
-include(SeriesScraperAppSrc.pri)
+    src/application.h \
+    src/controller.h \
+    src/mainwindow.h \
+    src/aboutdialog.h \
+    src/settingswindow.h \
+    src/customshadoweffect.h \
+    src/QProgressIndicator.h
 
 FORMS += \
     forms/mainwindow.ui \
@@ -35,7 +47,7 @@ RESOURCES += \
 ##### PLATFORM SPECIFIC DEPLOYMENT #####
 #--------------------------------------#
 win32 {
-    RC_FILE = images/app_logo/winIcon.rc
+    RC_FILE = ./images/app_logo/winIcon.rc
     LIBS += -L"C:/git/SeriesScraper/SeriesScraperApp/libraries" -llibeay32
 }
 
@@ -44,13 +56,13 @@ macx {
         #CONFIG -= app_bundle
     }
     QMAKE_MAC_SDK = macosx10.13
-    ICON = images/app_logo/macIcon.icns
+    ICON = $$PWD/images/app_logo/macIcon.icns
 
-    QMAKE_POST_LINK += ~/Qt5.10.0/5.10.0/clang_64/bin/macdeployqt SeriesScraper.app;
-    QMAKE_POST_LINK += cp -Rf ./../DeploymentFiles/general/* ./SeriesScraper.app/Contents/MacOs;
-    QMAKE_POST_LINK += cp -Rf ./../DeploymentFiles/mac/Info.plist ./SeriesScraper.app/Contents;
+    QMAKE_POST_LINK += ~/Qt5.10.0/5.10.0/clang_64/bin/macdeployqt $$OUT_PWD/SeriesScraperApp.app;
+    QMAKE_POST_LINK += cp -Rf $$PWD/../DeploymentFiles/general/* $$OUT_PWD/SeriesScraperApp.app/Contents/MacOs;
+    QMAKE_POST_LINK += cp -Rf $$PWD/../DeploymentFiles/mac/Info.plist $$OUT_PWD/SeriesScraperApp.app/Contents;
 }
 
 unix:!macx {
-    QMAKE_POST_LINK += cp -Rf ./../deployment_files/general/* ./;
+    QMAKE_POST_LINK += cp -Rf $$PWD/../DeploymentFiles/general/* ./;
 }

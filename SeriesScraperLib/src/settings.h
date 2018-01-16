@@ -5,11 +5,13 @@
 #include <QFile>
 #include <QRect>
 #include "jsonloader.h"
-#include "seriesparser.h" // Parser enum
-#include "mainwindow.h" // Directory selector enum
+#include "seriesparser.h" // Parser enum.
+
 
 class Settings : public JsonLoader
 {
+public:
+    enum class DirectorySelector { widget, text };
 public:
     Settings();
     bool loadSettingsFile();
@@ -22,7 +24,7 @@ public:
     void setAutoSetDetectedSeason(bool autoSetDetectedSeason);
     void setDarkTheme(bool useDarkTheme);
     void setShowSeriesInfo(bool showSeriesInfo);
-    void setDirectoryView(MainWindow::DirectorySelector directoryView);
+    void setDirectoryView(DirectorySelector directoryView);
     void setDirectoryView(QString directoryView);
     void setPath(QString path);
     void setSeries(QString series);
@@ -39,7 +41,7 @@ public:
     bool getAutoSetDetectedSeason();
     bool getDarkTheme();
     bool getShowSeriesInfo();
-    MainWindow::DirectorySelector getDirectoryView();
+    DirectorySelector getDirectoryView();
     QString getPath();
     QString getSeries();
     QString getGuiLanguage();

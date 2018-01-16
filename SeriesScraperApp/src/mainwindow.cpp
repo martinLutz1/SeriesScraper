@@ -470,7 +470,7 @@ void MainWindow::clearDirectoryWidget()
 
 void MainWindow::updateDirectoryWidgetVisibility()
 {
-    if (DirectorySelector::text == directorySelector)
+    if (Settings::DirectorySelector::text == directorySelector)
     {
         return;
     }
@@ -578,13 +578,13 @@ void MainWindow::updateRenameProgress(int amountFiles, int currentFile, QString 
     ui->renamingProgressCurrentFileLabel->setText(oldFileName);
 }
 
-void MainWindow::switchDirectorySelector(MainWindow::DirectorySelector directorySelector)
+void MainWindow::switchDirectorySelector(Settings::DirectorySelector directorySelector)
 {
     this->directorySelector = directorySelector;
 
     switch (directorySelector)
     {
-    case DirectorySelector::text:
+    case Settings::DirectorySelector::text:
         ui->pathStructure1ComboBox->hide();
         ui->pathStructure2ComboBox->hide();
         ui->pathStructure3ComboBox->hide();
@@ -601,7 +601,7 @@ void MainWindow::switchDirectorySelector(MainWindow::DirectorySelector directory
         }
         break;
 
-    case DirectorySelector::widget:
+    case Settings::DirectorySelector::widget:
     default:
         ui->directPathInputLineEdit->hide();
         QObject::disconnect(ui->directPathInputLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onPathLineEditTextChanged(QString)));
@@ -905,13 +905,13 @@ void MainWindow::onDirectoryComboBoxEntryClicked(int level, int selection)
 
 void MainWindow::toggleDirectorySelector()
 {
-    if (DirectorySelector::text == directorySelector)
+    if (Settings::DirectorySelector::text == directorySelector)
     {
-        switchDirectorySelector(DirectorySelector::widget);
+        switchDirectorySelector(Settings::DirectorySelector::widget);
     }
     else
     {
-        switchDirectorySelector(DirectorySelector::text);
+        switchDirectorySelector(Settings::DirectorySelector::text);
     }
 }
 
@@ -1039,7 +1039,7 @@ void MainWindow::notify(Message &msg)
     }
     case Message::Type::controller_startDirectoryLoading_view:
     {
-        if (DirectorySelector::text == directorySelector)
+        if (Settings::DirectorySelector::text == directorySelector)
         {
             ui->correctPathLabel->hide();
             progressIndicatorPath->show();
@@ -1050,7 +1050,7 @@ void MainWindow::notify(Message &msg)
     }
     case Message::Type::controller_stopDirectoryLoading_view:
     {
-        if (DirectorySelector::text == directorySelector
+        if (Settings::DirectorySelector::text == directorySelector
                 && !ui->directPathInputLineEdit->text().isEmpty())
         {
             progressIndicatorPath->hide();
@@ -1062,7 +1062,7 @@ void MainWindow::notify(Message &msg)
     }
     case Message::Type::controller_switchDirectorySelector_view:
     {
-        auto selectedDirectorySelector = (DirectorySelector)msg.data[0].i;
+        auto selectedDirectorySelector = (Settings::DirectorySelector)msg.data[0].i;
         switchDirectorySelector(selectedDirectorySelector);
         break;
     }

@@ -774,7 +774,7 @@ void Controller::notify(Message &msg)
     }
     case Message::Type::view_setDirectorySelector_controller:
     {
-        auto selectedDirectorySelector = (MainWindow::DirectorySelector)msg.data[0].i;
+        auto selectedDirectorySelector = (Settings::DirectorySelector)msg.data[0].i;
         settings.setDirectoryView(selectedDirectorySelector);
         break;
     }

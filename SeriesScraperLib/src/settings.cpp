@@ -112,13 +112,13 @@ void Settings::setShowSeriesInfo(bool showSeriesInfo)
     this->showSeriesInfo = showSeriesInfo;
 }
 
-void Settings::setDirectoryView(MainWindow::DirectorySelector directoryView)
+void Settings::setDirectoryView(DirectorySelector directoryView)
 {
-    if (MainWindow::DirectorySelector::widget == directoryView)
+    if (DirectorySelector::widget == directoryView)
     {
         this->directoryView = "Widget";
     }
-    else if (MainWindow::DirectorySelector::text == directoryView)
+    else if (DirectorySelector::text == directoryView)
     {
         this->directoryView = "Text";
     }
@@ -202,14 +202,14 @@ bool Settings::getShowSeriesInfo()
     return showSeriesInfo;
 }
 
-MainWindow::DirectorySelector Settings::getDirectoryView()
+Settings::DirectorySelector Settings::getDirectoryView()
 {
     if (directoryView.toLower() == "text")
     {
-        return MainWindow::DirectorySelector::text;
+        return DirectorySelector::text;
     }
 
-    return MainWindow::DirectorySelector::widget;
+    return DirectorySelector::widget;
 }
 
 QString Settings::getSeries()
