@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui_icons/button_blue.png</file>
+        <file>ui_icons/button_blue_pressed.png</file>
+        <file>ui_icons/logo.png</file>
+        <file>ui_icons/button_grey.png</file>
+        <file>ui_icons/default_poster.jpg</file>
+        <file>ui_icons/update.png</file>
+        <file>ui_icons/about.png</file>
+        <file>ui_icons/arrow_down.png</file>
+        <file>ui_icons/hdd.png</file>
+        <file>ui_icons/save.png</file>
+        <file>ui_icons/settings.png</file>
+        <file>ui_icons/fullscreen.png</file>
+        <file>ui_icons/folder.png</file>
+        <file>ui_icons/check.png</file>
+        <file>ui_icons/error.png</file>
+        <file>ui_icons/undo.png</file>
+        <file>ui_icons/folder_video.png</file>
+        <file>ui_icons/check-20.png</file>
+        <file>ui_icons/error-20.png</file>
+        <file>ui_icons/notepad.png</file>
+        <file>other_logos/tmdb.png</file>
+        <file>app_logo/macIcon.icns</file>
+        <file>app_logo/seriesScraper_icon.png</file>
+    </qresource>
+</RCC>
