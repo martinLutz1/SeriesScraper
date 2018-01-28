@@ -63,11 +63,15 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
                 break;
             }
 
+            sortedFiles.reserve(foundPosition);
+            positionsValidity.reserve(foundPosition);
+
             while (sortedFiles.size() <= foundPosition)
             {
                 sortedFiles.push_back(QFileInfo());
                 positionsValidity.push_back(EpisodeName::Position::unsure);
             }
+
 
             if (foundPosition >= 0)
             {

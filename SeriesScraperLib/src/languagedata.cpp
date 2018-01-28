@@ -27,13 +27,15 @@ void LanguageData::setLanguage(QString language)
 
 void LanguageData::setTranslation(Translate toTranslate, QString translation)
 {
+    const auto index = (int)toTranslate;
     // Prepare space
-    while (translations.size() <= (int)toTranslate)
+    translations.reserve((index));
+    while (translations.size() <= index)
     {
         translations.push_back(QString());
     }
 
-    translations[(int)toTranslate] = translation;
+    translations[index] = translation;
 }
 
 void LanguageData::setTranslationSet(QStringList translationList)

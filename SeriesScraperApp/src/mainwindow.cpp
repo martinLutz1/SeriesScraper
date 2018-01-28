@@ -403,7 +403,7 @@ void MainWindow::updateView(EpisodeNames* episodeNames, bool atLeastOneSideEmpty
     ui->episodeNameTable->setRowCount(tableSize);
 
     // Fill table
-    for (size_t row = 0; row < tableSize; row++)
+    for (auto row = 0; row < tableSize; row++)
     {
         updateRow(row, episodeNames->at(row), atLeastOneSideEmpty);
     }

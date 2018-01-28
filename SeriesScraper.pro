@@ -1,13 +1,13 @@
 TEMPLATE = subdirs
  
 SUBDIRS = \
-    SeriesScraperApp \
     SeriesScraperTest \
+    SeriesScraperApp \
     SeriesScraperLib
- 
+
+SeriesScraperLib.subdir = SeriesScraperLib
 SeriesScraperApp.subdir = SeriesScraperApp
 SeriesScraperTest.subdir = SeriesScraperTest
-SeriesScraperLib.subdir = SeriesScraperLib
 
 SeriesScraperApp.depends = SeriesScraperLib
 SeriesScraperTest.depends = SeriesScraperLib

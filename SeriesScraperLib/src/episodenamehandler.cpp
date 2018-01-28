@@ -126,16 +126,7 @@ void EpisodeNameHandler::calculateAndAdjustEpisodeNamesSize()
 {
     const auto newEpisodeNameSize = std::max(oldNameSize, newNameSize);
 
-    // More elements, so we increase the size.
-    while (episodeNames->size() < newEpisodeNameSize)
-    {
-        episodeNames->emplace_back();
-    }
-    // Less elements, so we shrink the size.
-    while (episodeNames->size() > newEpisodeNameSize)
-    {
-        episodeNames->pop_back();
-    }
+    episodeNames->resize(newEpisodeNameSize);
 }
 
 void EpisodeNameHandler::clearOldNames()
