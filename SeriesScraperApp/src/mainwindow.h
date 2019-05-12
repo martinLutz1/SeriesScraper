@@ -1,8 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define APPLICATIONNAME "SeriesScraper"
-
 #include <QMainWindow>
 #include <QDir>
 #include <QLabel>

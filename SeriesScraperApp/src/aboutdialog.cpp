@@ -1,15 +1,16 @@
-#define APPLICATIONNAME "SeriesScraper"
-
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "languagedata.h" // Translate enum
-#include "QDebug"
+#include <QDebug>
+#include <QCoreApplication>
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+    ui->nameAndVersionLabel->setText(QCoreApplication::applicationName() + " " + QCoreApplication::applicationVersion());
+
     QObject::connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(hide()));
 }
 
@@ -30,8 +31,8 @@ void AboutDialog::notify(Message &msg)
     case Message::Type::controller_changeLocalization_view:
     {
         QStringList translationList = *msg.data[0].qsListPointer;
-        ui->closeButton->setText(translationList.at((int)LanguageData::Translate::close));
-        this->setWindowTitle(translationList.at((int)LanguageData::Translate::about) + " " + APPLICATIONNAME);
+        ui->closeButton->setText(translationList.at(static_cast<int>(LanguageData::Translate::close)));
+        this->setWindowTitle(translationList.at(static_cast<int>(LanguageData::Translate::about)) + " " + QCoreApplication::applicationName());
         break;
     }
     default:

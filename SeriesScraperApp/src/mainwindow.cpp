@@ -174,7 +174,7 @@ void MainWindow::setUpTable()
 
 void MainWindow::setUpMenuBar()
 {
-    QString aboutText = "About " APPLICATIONNAME;
+    QString aboutText = "About " + QCoreApplication::applicationName();
 
     fileMenu = new QMenu("File");
     directoryMenu = new QMenu("Directory");
@@ -724,7 +724,7 @@ void MainWindow::changeLocalization(QStringList translationList)
     viewMenu->setTitle(translationList.at((int)LanguageData::Translate::display));
     helpMenu->setTitle(translationList.at((int)LanguageData::Translate::help));
     directoryMenu->setTitle(translationList.at((int)LanguageData::Translate::directory));
-    aboutAction->setText(translationList.at((int)LanguageData::Translate::about) + " " + APPLICATIONNAME);
+    aboutAction->setText(translationList.at((int)LanguageData::Translate::about) + " " + QCoreApplication::applicationName());
     settingsAction->setText(translationList.at((int)LanguageData::Translate::settings));
     savePosterAction->setText(translationList.at((int)LanguageData::Translate::savePoster));
     undoRenameAction->setText(translationList.at((int)LanguageData::Translate::undoRenaming));

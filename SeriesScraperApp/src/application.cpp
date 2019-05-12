@@ -13,6 +13,9 @@ Application::Application(int &argc, char *argv[]) : app(argc, argv)
     about = nullptr;
     settings = nullptr;
     controller = nullptr;
+
+    app.setApplicationName("SeriesScraper");
+    app.setApplicationVersion("0.7.1");
 }
 
 Application::~Application()
