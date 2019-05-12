@@ -3,7 +3,6 @@
 
 #define APPLICATIONNAME "SeriesScraper"
 
-
 #include <QMainWindow>
 #include <QDir>
 #include <QLabel>
@@ -14,7 +13,6 @@
 
 #include "customshadoweffect.h"
 #include "QProgressIndicator.h"
-#include "lineedit.h"
 #include "keypresseater.h"
 #include "aboutdialog.h"
 #include "message.h"
