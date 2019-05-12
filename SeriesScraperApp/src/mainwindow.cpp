@@ -67,7 +67,7 @@ MainWindow::~MainWindow()
 
     Message msgSetDirectorySelector;
     msgSetDirectorySelector.type = Message::Type::view_setDirectorySelector_controller;
-    msgSetDirectorySelector.data[0].i = (int)directorySelector;
+    msgSetDirectorySelector.data[0].i = static_cast<int>(directorySelector);
     emit(sendMessage(msgSetDirectorySelector));
 
     delete ui;
@@ -355,9 +355,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     if (seriesInformationEnabled)
     {
-        episodeTableWidth = 0.80 * (windowWidth - 2 * UNIVERSAL_SPACER);
-        renameProgressWidgetX = (episodeTableWidth - renameProgressWidgetWidth) / 2;
-        int additionalInfoWidth = 0.20 * (windowWidth - 2 * UNIVERSAL_SPACER);
+        episodeTableWidth = static_cast<int>(0.80 * (windowWidth - 2 * UNIVERSAL_SPACER));
+        renameProgressWidgetX = static_cast<int>((episodeTableWidth - renameProgressWidgetWidth) / 2);
+        int additionalInfoWidth = static_cast<int>(0.20 * (windowWidth - 2 * UNIVERSAL_SPACER));
         int additionalInfoHeight = episodeTableHeight;
 
         if (additionalInfoWidth > 300)
@@ -366,7 +366,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
             episodeTableWidth = windowWidth - 2 * UNIVERSAL_SPACER - additionalInfoWidth;
         }
         int imageLabelWidth = additionalInfoWidth - 2 * UNIVERSAL_SPACER;
-        int imageLabelHeight = episodeTableHeight * 0.6;
+        int imageLabelHeight = static_cast<int>(episodeTableHeight * 0.6);
         int additionalInfoX = episodeTableX + episodeTableWidth - 1;
         int additionalInfoY = UNIVERSAL_SPACER;
 
@@ -385,8 +385,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     //Resize
     ui->episodeNameTable->setFixedSize(episodeTableWidth, episodeTableHeight);
-    ui->episodeNameTable->setColumnWidth(0, episodeTableWidth*0.45);
-    ui->episodeNameTable->setColumnWidth(1, episodeTableWidth*0.47);
+    ui->episodeNameTable->setColumnWidth(0, static_cast<int>(episodeTableWidth * 0.45));
+    ui->episodeNameTable->setColumnWidth(1, static_cast<int>(episodeTableWidth * 0.47));
     ui->additionalInfoScrollArea->setFixedHeight(episodeTableHeight);
     ui->centralControlElementWidget->setFixedWidth(controlWidth);
 
@@ -400,12 +400,12 @@ void MainWindow::updateView(EpisodeNames* episodeNames, bool atLeastOneSideEmpty
 
     const auto tableSize = episodeNames->size();
     setAmountSeasons(amountSeasons);
-    ui->episodeNameTable->setRowCount(tableSize);
+    ui->episodeNameTable->setRowCount(static_cast<int>(tableSize));
 
     // Fill table
-    for (auto row = 0; row < tableSize; row++)
+    for (std::size_t row = 0; row < tableSize; row++)
     {
-        updateRow(row, episodeNames->at(row), atLeastOneSideEmpty);
+        updateRow(static_cast<int>(row), episodeNames->at(row), atLeastOneSideEmpty);
     }
 
     QObject::connect(ui->episodeNameTable, SIGNAL(cellChanged(int,int)), this, SLOT(onTableEntryChanged(int,int)));
@@ -426,11 +426,11 @@ void MainWindow::updateDirectoryWidget(std::vector<QStringList> pathStructure, b
     directoryEntriesMenu->addAction(QIcon(":/ui_icons/folder_video.png"), openThisFolderText);
 
     // Fill comboboxes
-    for (int i = 0; i < int(pathStructure.size() - 2); i++)
+    for (std::size_t i = 0; i < (pathStructure.size() - 2); i++)
     {
-        for (int j = 0; j < pathStructure.at(i + 1).size(); j++)
+        for (std::size_t j = 0; j < static_cast<std::size_t>(pathStructure.at(i + 1).size()); j++)
         {
-            if (containsRoot && (int(pathStructure.size() - 3) == i))
+            if (containsRoot && ((pathStructure.size() - 3) == i))
             {
                 pathStructureComboBoxList[i]->addItem(QIcon(":/ui_icons/hdd.png"), pathStructure.at(i + 1).at(j));
             }
@@ -733,7 +733,6 @@ void MainWindow::changeLocalization(QStringList translationList)
     switchDirectorySelectorAction->setText(translationList.at((int)LanguageData::Translate::switchDirectoryView));
     reloadDirectoryAction->setText(translationList.at((int)LanguageData::Translate::reload));
     // Info sidebar
-    ui->infoGroupBox->setTitle(translationList.at((int)LanguageData::Translate::seriesInfo));
     ui->airDateInfoLabel->setText(translationList.at((int)LanguageData::Translate::airDate) + ":");
     ui->seasonInfoLabel->setText(translationList.at((int)LanguageData::Translate::season) + ":");
     ui->totalEpisodesInfoLabel->setText(translationList.at((int)LanguageData::Translate::episodeNumber) + ":");
@@ -1317,7 +1316,7 @@ void MainWindow::updateRow(int row, EpisodeName& episodeName, bool noColorizatio
     const auto oldFileName = episodeName.getOldName();
     const auto newFileName = episodeName.getNewName();
 
-    const auto& table = ui->episodeNameTable;
+    auto& table = ui->episodeNameTable;
     auto leftSide = table->item(row, 0);
     auto rightSide = table->item(row, 1);
     const auto tableSize = table->rowCount();

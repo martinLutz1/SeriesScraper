@@ -14,6 +14,7 @@
 
 #include "customshadoweffect.h"
 #include "QProgressIndicator.h"
+#include "lineedit.h"
 #include "keypresseater.h"
 #include "aboutdialog.h"
 #include "message.h"
@@ -21,8 +22,9 @@
 #include "settings.h" // DirectorySelector enum.
 #include "directoryparser.h" // NUMBER_PATH_STRUCTURE_COMBOBOXES
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -30,7 +32,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     enum class StatusMessageType { error, success, info };
 

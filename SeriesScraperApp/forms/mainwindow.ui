@@ -231,7 +231,7 @@
             </size>
            </property>
            <property name="title">
-            <string>Series information</string>
+            <string/>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

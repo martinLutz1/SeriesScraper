@@ -16,16 +16,16 @@ public:
 
 public:
     EpisodeName(
-            QString oldName = "",
-            QString newName = "",
-            QString fileType = "",
-            Position position = Position::unsure);
+        QString oldName = "",
+        QString newName = "",
+        QString fileType = "",
+        Position position = Position::unsure);
 
-    const QString getOldName() const;
+    const QString& getOldName() const;
     const QString getOldNameWithSuffix() const;
-    const QString getNewName() const;
+    const QString& getNewName() const;
     const QString getNewNameWithSuffix() const;
-    const QString getFileType() const;
+    const QString& getFileType() const;
     bool newAndOldAreEqual() const;
     bool isPositionDetermined() const;
     bool atLeastOneNameEmpty() const;

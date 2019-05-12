@@ -45,6 +45,11 @@ int FileTypeHandler::addFileType(QString newFileType)
 
 void FileTypeHandler::removeFileType(int index)
 {
+    if (index >= loadedFile.size())
+    {
+        qWarning() << "Trying to remove non existing file type";
+        return;
+    }
     loadedFile.removeAt(index);
     saveFileTypeFile();
 }

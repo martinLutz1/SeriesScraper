@@ -1,8 +1,12 @@
-#include <QCoreApplication>
+#include <iostream>
+#include <QApplication>
+#include "TestCollector.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication application(argc, argv);
 
-    return a.exec();
+    const auto numberOfFailedTests = TestCollector::RunAllTests(argc, argv);
+    std::cout << "Total number of failed tests: "<< numberOfFailedTests << std::endl;
+    return numberOfFailedTests;
 }

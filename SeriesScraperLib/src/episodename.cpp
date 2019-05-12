@@ -12,7 +12,7 @@ EpisodeName::EpisodeName(
 {
 }
 
-const QString EpisodeName::getOldName() const
+const QString& EpisodeName::getOldName() const
 {
     return oldName;
 }
@@ -23,7 +23,7 @@ const QString EpisodeName::getOldNameWithSuffix() const
     return oldNameWithSuffix;
 }
 
-const QString EpisodeName::getNewName() const
+const QString& EpisodeName::getNewName() const
 {
     return newName;
 }
@@ -34,7 +34,7 @@ const QString EpisodeName::getNewNameWithSuffix() const
     return newNameWithSuffix;
 }
 
-const QString EpisodeName::getFileType() const
+const QString& EpisodeName::getFileType() const
 {
     return fileType;
 }
