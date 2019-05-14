@@ -40,10 +40,10 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
         fileNames << file.fileName();
     }
 
-    std::vector<int> position = getEpisodePositions(fileNames);
+    auto positions = getEpisodePositions(fileNames);
 
     // Name scheme not found, natural sort
-    if (int(position.size()) < fileNames.size())
+    if (positions.size() < static_cast<std::size_t>(fileNames.size()))
     {
         sortedFiles = naturalSort(files);
     }
@@ -52,9 +52,9 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     {
         QFileInfoList unsureFiles;
 
-        for (int i = 0; i < files.size(); i++)
+        for (std::size_t i = 0; i < static_cast<std::size_t>(files.size()); i++)
         {
-            const auto foundPosition = position.at(i);
+            const auto foundPosition = positions.at(i);
 
             // No season should be larger than 10.000 episodes.
             // We avoid crashing on too large numbers.
@@ -63,15 +63,17 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
                 break;
             }
 
-            sortedFiles.reserve(foundPosition);
-            positionsValidity.reserve(foundPosition);
-
-            while (sortedFiles.size() <= foundPosition)
+            if (foundPosition > 0)
             {
-                sortedFiles.push_back(QFileInfo());
-                positionsValidity.push_back(EpisodeName::Position::unsure);
-            }
+                sortedFiles.reserve(foundPosition);
+                positionsValidity.reserve(foundPosition);
 
+                while (sortedFiles.size() <= foundPosition)
+                {
+                    sortedFiles.push_back(QFileInfo());
+                    positionsValidity.push_back(EpisodeName::Position::unsure);
+                }
+            }
 
             if (foundPosition >= 0)
             {
