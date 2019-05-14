@@ -2,8 +2,10 @@
 #define DIRECTORYPARSER_H
 
 #include <QDir>
+#include <QFileInfo>
 #include <QStringList>
 #include <QRegularExpression>
+
 #include <vector>
 
 #define NUMBER_PATH_STRUCTURE_COMBOBOXES 4
@@ -13,6 +15,8 @@
 class DirectoryParser
 {
 private:
+    using QFileInfos = std::vector<QFileInfo>;
+
     QRegularExpression seasonAndEpisodeExpression = QRegularExpression("(s|S)[0-9]+(.*)(e|E)[0-9]+"); // S01E01
     QRegularExpression seasonNumberExpression = QRegularExpression("(s|S)[0-9]*"); // S01
     QRegularExpression episodeNumberExpression = QRegularExpression("(e|E)[0-9]*"); // E01
@@ -35,8 +39,8 @@ private:
     enum class NameSchemeType { seasonAndEpisode, seasonSeparatorEpisode, digitOnly, none };
 
     NameSchemeType getNameSchemeType(QString filename);
-    QFileInfoList sortFiles(QFileInfoList files);
-    QFileInfoList naturalSort(QFileInfoList files);
+    QFileInfos sortFiles(QFileInfos files);
+    QFileInfos naturalSort(QFileInfos files);
     QStringList naturalSort(QStringList toSort);
     int getSeason(QString fileName, int amountFiles, NameSchemeType type);
     int getEpisodePositionOfSeasonAndEpisode(QString fileName, std::vector<int> positions);

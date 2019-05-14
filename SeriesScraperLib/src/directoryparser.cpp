@@ -28,12 +28,12 @@ DirectoryParser::NameSchemeType DirectoryParser::getNameSchemeType(QString filen
     return NameSchemeType::none;
 }
 
-QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
+DirectoryParser::QFileInfos DirectoryParser::sortFiles(QFileInfos files)
 {
     positionsValidity.clear();
 
     QStringList fileNames;
-    QFileInfoList sortedFiles;
+    QFileInfos sortedFiles;
 
     for (const auto& file: files)
     {
@@ -50,7 +50,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     // Sort by found positions
     else
     {
-        QFileInfoList unsureFiles;
+        QFileInfos unsureFiles;
 
         for (std::size_t i = 0; i < static_cast<std::size_t>(files.size()); i++)
         {
@@ -63,20 +63,14 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
                 break;
             }
 
-            if (foundPosition > 0)
-            {
-                sortedFiles.reserve(foundPosition);
-                positionsValidity.reserve(foundPosition);
-
-                while (sortedFiles.size() <= foundPosition)
-                {
-                    sortedFiles.push_back(QFileInfo());
-                    positionsValidity.push_back(EpisodeName::Position::unsure);
-                }
-            }
-
             if (foundPosition >= 0)
             {
+                if (foundPosition > sortedFiles.size())
+                {
+                    sortedFiles.resize((foundPosition + 1), QFileInfo());
+                    positionsValidity.resize((foundPosition + 1), EpisodeName::Position::unsure);
+                }
+
                 sortedFiles[foundPosition] = files.at(i);
                 positionsValidity[foundPosition] = EpisodeName::Position::determined;
             }
@@ -87,16 +81,16 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
         }
 
         // Insert files whose positions where unsure.
-        if (!unsureFiles.isEmpty())
+        if (!unsureFiles.empty())
         {
             for (auto i = 0; i < sortedFiles.size(); i++)
             {
                 if (positionsValidity.at(i) == EpisodeName::Position::unsure)
                 {
-                    sortedFiles[i] = unsureFiles.front();
-                    unsureFiles.pop_front();
+                    sortedFiles[i] = unsureFiles.back();
+                    unsureFiles.pop_back();
 
-                    if (unsureFiles.isEmpty())
+                    if (unsureFiles.empty())
                     {
                         break;
                     }
@@ -114,7 +108,7 @@ QFileInfoList DirectoryParser::sortFiles(QFileInfoList files)
     return sortedFiles;
 }
 
-QFileInfoList DirectoryParser::naturalSort(QFileInfoList files)
+DirectoryParser::QFileInfos DirectoryParser::naturalSort(QFileInfos files)
 {
     // Use strings to use collators natural sort function
     QStringList fileList;
@@ -130,9 +124,11 @@ QFileInfoList DirectoryParser::naturalSort(QFileInfoList files)
     });
 
     // Convert strings back to fileInfo
-    QFileInfoList fileInfos;
+    QFileInfos fileInfos;
     for (int i = 0; i < fileList.size(); i ++)
-        fileInfos << QFileInfo(fileList.at(i));
+    {
+        fileInfos.push_back(QFileInfo(fileList.at(i)));
+    }
     return fileInfos;
 }
 
@@ -403,7 +399,7 @@ void DirectoryParser::setPathStructure(int depth)
         if (workingDirectory.isRoot())
         {
             QStringList rootDriveList;
-            QFileInfoList rootDrives = QDir::drives();
+            const auto rootDrives = QDir::drives();
             for (int i = 0; i < rootDrives.size(); i++)
             {
                 rootDriveList << rootDrives.at(i).absolutePath();
@@ -442,7 +438,7 @@ void DirectoryParser::setPathStructure(int depth)
                 if (parentDir.isRoot() && (depth != i + 1))
                 {
                     QStringList rootDriveList;
-                    QFileInfoList rootDrives = QDir::drives();
+                    const auto rootDrives = QDir::drives();
                     for (int i = 0; i < rootDrives.size(); i++)
                     {
                         rootDriveList << rootDrives.at(i).absolutePath();
@@ -468,17 +464,15 @@ void DirectoryParser::setPathStructure(int depth)
 
 void DirectoryParser::setFileInformation()
 {
-    QFileInfoList fileInfoList = directory.entryInfoList(filter);
-    QFileInfoList sortedFileInfoList = sortFiles(fileInfoList);
+    const auto fileInfoList = directory.entryInfoList(filter).toVector().toStdVector();
+    const QFileInfos sortedFileInfoList = sortFiles(fileInfoList);
 
     QStringList newSortedFiles;
     QStringList newSortedFilesWithoutSuffix;
     QStringList newSuffixes;
 
-    QFileInfo fileInfo;
-    for (int i = 0; i < sortedFileInfoList.size(); ++i)
+    for (const auto& fileInfo : sortedFileInfoList)
     {
-        fileInfo = sortedFileInfoList.at(i);
         if (fileInfo.isFile())
         {
             newSortedFiles << fileInfo.fileName();
@@ -492,6 +486,7 @@ void DirectoryParser::setFileInformation()
             newSuffixes << "";
         }
     }
+
     setPathStructure(NUMBER_PATH_STRUCTURE_COMBOBOXES);
 
     sortedFiles = newSortedFiles;
