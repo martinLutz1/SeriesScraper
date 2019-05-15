@@ -2,7 +2,9 @@
 #include <QCoreApplication>
 #include <QCollator>
 #include <QDebug>
+
 #include <cmath>
+#include <iterator>
 #include <unordered_map>
 
 DirectoryParser::NameSchemeType DirectoryParser::getNameSchemeType(QString filename)
@@ -31,80 +33,68 @@ DirectoryParser::NameSchemeType DirectoryParser::getNameSchemeType(QString filen
 DirectoryParser::QFileInfos DirectoryParser::sortFiles(QFileInfos files)
 {
     positionsValidity.clear();
+    files = naturalSort(files);
 
     QStringList fileNames;
-    QFileInfos sortedFiles;
-
     for (const auto& file: files)
     {
         fileNames << file.fileName();
     }
 
-    auto positions = getEpisodePositions(fileNames);
+    const auto positions = getEpisodePositions(fileNames);
+    assert(positions.size() == static_cast<std::size_t>(fileNames.size()));
 
-    // Name scheme not found, natural sort
-    if (positions.size() < static_cast<std::size_t>(fileNames.size()))
-    {
-        sortedFiles = naturalSort(files);
-    }
+    QFileInfos sortedFiles;
+    QFileInfos unsureFiles;
+
     // Sort by found positions
-    else
+    for (std::size_t i = 0; i < files.size(); i++)
     {
-        QFileInfos unsureFiles;
+        const auto foundPosition = positions.at(i);
 
-        for (std::size_t i = 0; i < static_cast<std::size_t>(files.size()); i++)
+        // No season should be larger than 10.000 episodes.
+        // We avoid crashing on too large numbers.
+        if (foundPosition > 10000)
         {
-            const auto foundPosition = positions.at(i);
-
-            // No season should be larger than 10.000 episodes.
-            // We avoid crashing on too large numbers.
-            if (foundPosition > 10000)
-            {
-                break;
-            }
-
-            if (foundPosition >= 0)
-            {
-                if (foundPosition > sortedFiles.size())
-                {
-                    sortedFiles.resize((foundPosition + 1), QFileInfo());
-                    positionsValidity.resize((foundPosition + 1), EpisodeName::Position::unsure);
-                }
-
-                sortedFiles[foundPosition] = files.at(i);
-                positionsValidity[foundPosition] = EpisodeName::Position::determined;
-            }
-            else
-            {
-                unsureFiles.push_back(files.at(i));
-            }
+            break;
         }
 
-        // Insert files whose positions where unsure.
-        if (!unsureFiles.empty())
+        if (foundPosition >= 0)
         {
-            for (auto i = 0; i < sortedFiles.size(); i++)
+            if (foundPosition > sortedFiles.size())
             {
-                if (positionsValidity.at(i) == EpisodeName::Position::unsure)
-                {
-                    sortedFiles[i] = unsureFiles.back();
-                    unsureFiles.pop_back();
-
-                    if (unsureFiles.empty())
-                    {
-                        break;
-                    }
-                }
+                sortedFiles.resize((foundPosition + 1), QFileInfo());
+                positionsValidity.resize((foundPosition + 1), EpisodeName::Position::unsure);
             }
+
+            sortedFiles[foundPosition] = files.at(i);
+            positionsValidity[foundPosition] = EpisodeName::Position::determined;
+        }
+        else
+        {
+            unsureFiles.push_back(files.at(i));
+        }
+    }
+
+    // Insert files whose positions where unsure.
+    std::size_t index = 0;
+    for (const auto& unsureFile : unsureFiles)
+    {
+        if (index >= positionsValidity.size())
+        {
             // If there are not enough positions to be filled,
             // just attach the unsure files to the end.
-            for (auto unsureFile: unsureFiles)
-            {
-                sortedFiles.push_back(unsureFile);
-                positionsValidity.push_back(EpisodeName::Position::unsure);
-            }
+            sortedFiles.push_back(unsureFile);
+            positionsValidity.push_back(EpisodeName::Position::unsure);
         }
+        else if (positionsValidity.at(index) == EpisodeName::Position::unsure)
+        {
+            sortedFiles[index] = unsureFile;
+        }
+
+        ++index;
     }
+
     return sortedFiles;
 }
 
@@ -464,7 +454,12 @@ void DirectoryParser::setPathStructure(int depth)
 
 void DirectoryParser::setFileInformation()
 {
-    const auto fileInfoList = directory.entryInfoList(filter).toVector().toStdVector();
+    const auto fileInfoListAsQList = directory.entryInfoList(filter);
+    const QFileInfos fileInfoList
+    {
+        std::make_move_iterator(std::begin(fileInfoListAsQList)),
+                std::make_move_iterator(std::end(fileInfoListAsQList))
+    };
     const QFileInfos sortedFileInfoList = sortFiles(fileInfoList);
 
     QStringList newSortedFiles;

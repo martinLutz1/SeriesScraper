@@ -7,7 +7,7 @@ class DirectoryParserTest: public QObject
     Q_OBJECT
 
 private slots:
-    void DirectoryParser_NoCrashOnUnknownPositions();
+    void DirectoryParser_initializeDirectory_NoCrashOnUnknownPositions();
 };
 
 ADD_TEST(DirectoryParserTest)
