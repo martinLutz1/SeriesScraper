@@ -61,7 +61,7 @@ DirectoryParser::QFileInfos DirectoryParser::sortFiles(QFileInfos files)
 
         if (foundPosition >= 0)
         {
-            if (foundPosition > sortedFiles.size())
+            if (foundPosition >= sortedFiles.size())
             {
                 sortedFiles.resize((foundPosition + 1), QFileInfo());
                 positionsValidity.resize((foundPosition + 1), EpisodeName::Position::unsure);
@@ -80,19 +80,26 @@ DirectoryParser::QFileInfos DirectoryParser::sortFiles(QFileInfos files)
     std::size_t index = 0;
     for (const auto& unsureFile : unsureFiles)
     {
-        if (index >= positionsValidity.size())
+        bool unsureFileInserted = false;
+        while ((index < positionsValidity.size()) && !unsureFileInserted)
+        {
+            if (positionsValidity.at(index) == EpisodeName::Position::unsure)
+            {
+                sortedFiles[index] = unsureFile;
+                unsureFileInserted = true;
+            }
+
+            ++index;
+        }
+        if (!unsureFileInserted)
         {
             // If there are not enough positions to be filled,
             // just attach the unsure files to the end.
             sortedFiles.push_back(unsureFile);
             positionsValidity.push_back(EpisodeName::Position::unsure);
-        }
-        else if (positionsValidity.at(index) == EpisodeName::Position::unsure)
-        {
-            sortedFiles[index] = unsureFile;
-        }
 
-        ++index;
+            ++index;
+        }
     }
 
     return sortedFiles;
@@ -458,7 +465,7 @@ void DirectoryParser::setFileInformation()
     const QFileInfos fileInfoList
     {
         std::make_move_iterator(std::begin(fileInfoListAsQList)),
-                std::make_move_iterator(std::end(fileInfoListAsQList))
+        std::make_move_iterator(std::end(fileInfoListAsQList))
     };
     const QFileInfos sortedFileInfoList = sortFiles(fileInfoList);
 
