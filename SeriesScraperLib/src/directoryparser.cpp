@@ -83,6 +83,7 @@ DirectoryParser::QFileInfos DirectoryParser::sortFiles(QFileInfos files)
         bool unsureFileInserted = false;
         while ((index < positionsValidity.size()) && !unsureFileInserted)
         {
+            // Try to fill the gaps in bewteen the already detected positions.
             if (positionsValidity.at(index) == EpisodeName::Position::unsure)
             {
                 sortedFiles[index] = unsureFile;

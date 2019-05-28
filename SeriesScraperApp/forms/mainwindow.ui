@@ -934,13 +934,13 @@
              <widget class="QComboBox" name="seasonComboBox">
               <property name="minimumSize">
                <size>
-                <width>50</width>
+                <width>60</width>
                 <height>26</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>50</width>
+                <width>60</width>
                 <height>26</height>
                </size>
               </property>
@@ -948,6 +948,9 @@
                <font>
                 <family>Segoe UI</family>
                </font>
+              </property>
+              <property name="maxVisibleItems">
+               <number>15</number>
               </property>
              </widget>
             </item>
