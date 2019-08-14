@@ -58,8 +58,7 @@ macx {
     QMAKE_MAC_SDK = macosx10.14
     ICON = $$PWD/images/app_logo/macIcon.icns
 
-    QMAKE_POST_LINK += cd ~/Qt/5.12.3/;
-    QMAKE_POST_LINK += ~/Qt/5.12.3/clang_64/bin/macdeployqt $$OUT_PWD/SeriesScraperApp.app;
+    QMAKE_POST_LINK += $$[QT_INSTALL_LIBS]/../bin/macdeployqt $$OUT_PWD/SeriesScraperApp.app;
     QMAKE_POST_LINK += cp -Rf $$PWD/../DeploymentFiles/general/* $$OUT_PWD/SeriesScraperApp.app/Contents/MacOs;
     QMAKE_POST_LINK += cp -Rf $$PWD/../DeploymentFiles/mac/Info.plist $$OUT_PWD/SeriesScraperApp.app/Contents;
 }
